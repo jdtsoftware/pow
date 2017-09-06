@@ -1,50 +1,21 @@
 {
     "name": "jdtsoftware/pow",
+    "description": "Laravel 5 product, ordering and wallet system",
     "type": "library",
-    "description": ":package_description",
-    "keywords": [
-        "jdtsoftware",
-        "pow"
-    ],
-    "homepage": "https://github.com/jdtsoftware/pow",
-    "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
-            "role": "Developer"
+            "name": "Dan Dunford",
+            "email": "dan@jdtsoftware.co.uk"
         }
     ],
     "require": {
-        "illuminate/support": "~5.1",
-        "php" : "~5.6|~7.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit" : ">=5.4.3",
-        "squizlabs/php_codesniffer": "^2.3"
+        "illuminate/contracts": "^5.4",
+        "illuminate/database": "^5.4",
+        "illuminate/mail": "^5.4.17"
     },
     "autoload": {
         "psr-4": {
-            "jdtsoftware\\pow\\": "src"
+            "JDT\\Pow\\": "src/"
         }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "jdtsoftware\\pow\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "phpunit",
-        "check-style": "phpcs -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests",
-        "fix-style": "phpcbf -p --standard=PSR2 --runtime-set ignore_errors_on_exit 1 --runtime-set ignore_warnings_on_exit 1 src tests"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "1.0-dev"
-        }
-    },
-    "config": {
-        "sort-packages": true
     }
 }
