@@ -1,6 +1,6 @@
 <?php
 
-namespace JDT\Pow;
+namespace JDT\Pow\Service;
 
 /**
  * Class Pow.

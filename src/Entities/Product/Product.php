@@ -8,7 +8,7 @@ use App\Services\Geocoder\Geocoder;
 /**
  * Class Product.
  */
-class Product extends Model
+class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
 {
     use SoftDeletes;
 
@@ -52,4 +52,23 @@ class Product extends Model
     protected $with = [
     ];
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getTotalValue()
+    {
+        return $this->total_value;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

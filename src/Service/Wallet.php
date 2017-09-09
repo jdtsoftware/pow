@@ -1,17 +1,17 @@
 <?php
 
-namespace JDT\Pow;
+namespace JDT\Pow\Service;
 
 use JDT\Pow\Interfaces\WalletOwner;
 
 /**
  * Class Pow.
  */
-class Wallet
+class Wallet implements \JDT\Pow\Interfaces\Wallet
 {
     public function __construct(WalletOwner $walletOwner)
     {
-        $this->models = Config::get('pow.models');
+        $this->models = \Config::get('pow.models');
         $this->wallet = $this->models['wallet']::find($walletOwner->getWalletId());
     }
 
@@ -34,4 +34,5 @@ class Wallet
     {
 
     }
+
 }

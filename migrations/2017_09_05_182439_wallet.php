@@ -17,7 +17,7 @@ class Wallet extends Migration
 
         Schema::table('wallet_token_type', function(Blueprint $table) {
             //so we can support tokens and monetary values
-            $table->string('symbol')->after('id');
+            $table->string('icon')->after('id');
         });
 
         $this->createLookupTable('wallet_transaction_type', true);
@@ -93,6 +93,7 @@ class Wallet extends Migration
 
         Schema::create('wallet_organisation_linker', function(Blueprint $table) {
             $table->increments('id');
+            $table->unsignedInteger('wallet_id');
             $table->unsignedInteger('organisation_id');
             $this->timestampsAndSoftDeletes($table);
 

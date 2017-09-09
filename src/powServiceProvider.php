@@ -2,8 +2,8 @@
 
 namespace JDT\Pow;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use JDT\LaravelPow\Pow;
 
 class powServiceProvider extends ServiceProvider
 {
@@ -22,8 +22,8 @@ class powServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerViews();
-
         $this->registerMigrations();
+        $this->registerRoutes();
     }
 
     /**
@@ -31,7 +31,7 @@ class powServiceProvider extends ServiceProvider
      */
     public function registerViews()
     {
-        $this->loadViewsFrom(__DIR__ . '/../views', 'pow');
+        $this->loadViewsFrom(__DIR__ . '/views', 'pow');
 
         $this->publishes([
             __DIR__ . '/../views' => resource_path('views/vendor/pow'),
@@ -59,6 +59,28 @@ class powServiceProvider extends ServiceProvider
     public function registerMigrations()
     {
         $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+    }
+
+
+    /**
+     * Register routes
+     */
+    public function registerRoutes()
+    {
+        $route = Route::prefix('pow');
+
+        $routesDomain = \Config::get('pow.route_domain');
+        $middleware = \Config::Get('pow.route_middleware');
+
+        if($routesDomain) {
+            $route = $route->domain($routesDomain);
+        }
+
+        if($middleware) {
+            $route->middleware($middleware);
+        }
+
+        $route->group(__DIR__.'/routes.php');
     }
 
     /**
