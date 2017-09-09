@@ -37,7 +37,7 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         'handle',
         'name',
         'description',
-        'total_value',
+        'total_price',
         'created_user_id',
         'created_at',
         'updated_at'
@@ -57,9 +57,9 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         return $this->id;
     }
 
-    public function getTotalValue()
+    public function getTotalPrice()
     {
-        return $this->total_value;
+        return $this->total_price;
     }
 
     public function getName()

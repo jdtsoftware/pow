@@ -36,7 +36,14 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
-
+        'wallet_id',
+        'order_status_id',
+        'payment_gateway_id',
+        'total_price',
+        'po_number',
+        'payment_gateway_reference',
+        'payment_gateway_blob',
+        'created_user_id',
     ];
 
     protected $hidden = [

@@ -26,11 +26,11 @@ class Wallet extends Migration
 
         Schema::create('order', function(Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('organisation_id');
+            $table->unsignedInteger('wallet_id');
             $table->unsignedInteger('order_status_id');
             $table->unsignedInteger('payment_gateway_id');
 
-            $table->decimal('total_value', 19,4);
+            $table->decimal('total_price', 19,4);
 
             $table->string('po_number')->nullable();
             $table->string('payment_gateway_reference');
@@ -39,7 +39,7 @@ class Wallet extends Migration
 
             $this->timestampsAndSoftDeletes($table);
 
-            $table->foreign('organisation_id')->references('id')->on('organisation');
+            $table->foreign('wallet_id')->references('id')->on('wallet');
             $table->foreign('order_status_id')->references('id')->on('order_status');
             $table->foreign('payment_gateway_id')->references('id')->on('payment_gateway');
         });
@@ -49,7 +49,7 @@ class Wallet extends Migration
             $table->string('handle');
             $table->string('name');
             $table->text('description');
-            $table->decimal('total_value', 19,4);
+            $table->decimal('total_price', 19,4);
             $table->unsignedInteger('created_user_id');
 
             $this->timestampsAndSoftDeletes($table);
@@ -73,10 +73,12 @@ class Wallet extends Migration
             $table->increments('id');
             $table->unsignedInteger('order_id');
             $table->unsignedInteger('product_id');
+            $table->unsignedInteger('quantity');
             $table->mediumInteger('tokens_total');
             $table->mediumInteger('tokens_spent');
 
-            $table->decimal('value', 19,4);
+            $table->decimal('unit_price', 19,4);
+            $table->decimal('total_price', 19,4);
 
             $this->timestampsAndSoftDeletes($table);
 

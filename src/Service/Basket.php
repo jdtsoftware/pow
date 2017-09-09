@@ -23,7 +23,7 @@ class Basket implements iBasket
         if(empty($qty)) {
             unset($this->basket[$product->getId()]);
         } else {
-            $this->totalPrice += $product->getTotalValue() * $qty;
+            $this->totalPrice += $product->getTotalPrice() * $qty;
             $this->basket[$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
