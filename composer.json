@@ -11,7 +11,8 @@
     "require": {
         "illuminate/contracts": "^5.4",
         "illuminate/database": "^5.4",
-        "illuminate/mail": "^5.4.17"
+        "illuminate/mail": "^5.4.17",
+        "omnipay/stripe": "~2.0"
     },
     "autoload": {
         "psr-4": {

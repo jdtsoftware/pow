@@ -14,6 +14,12 @@ class Wallet extends Migration
     public function up()
     {
         $this->createLookupTable('wallet_token_type', true, true);
+
+        Schema::table('wallet_token_type', function(Blueprint $table) {
+            //so we can support tokens and monetary values
+            $table->string('symbol')->after('id');
+        });
+
         $this->createLookupTable('wallet_transaction_type', true);
         $this->createLookupTable('order_status', true);
         $this->createLookupTable('payment_gateway', true);

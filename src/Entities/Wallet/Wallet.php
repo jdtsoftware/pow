@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Modules\Address\Entities;
-
+namespace JDT\Pow\Entities;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
