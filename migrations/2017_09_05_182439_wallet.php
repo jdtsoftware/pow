@@ -24,25 +24,7 @@ class Wallet extends Migration
         $this->createLookupTable('order_status', true);
         $this->createLookupTable('payment_gateway', true);
 
-        Schema::create('order', function(Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('wallet_id');
-            $table->unsignedInteger('order_status_id');
-            $table->unsignedInteger('payment_gateway_id');
 
-            $table->decimal('total_price', 19,4);
-
-            $table->string('po_number')->nullable();
-            $table->string('payment_gateway_reference');
-            $table->text('payment_gateway_blob'); //to split out to key->value table?
-            $table->unsignedInteger('created_user_id');
-
-            $this->timestampsAndSoftDeletes($table);
-
-            $table->foreign('wallet_id')->references('id')->on('wallet');
-            $table->foreign('order_status_id')->references('id')->on('order_status');
-            $table->foreign('payment_gateway_id')->references('id')->on('payment_gateway');
-        });
 
         Schema::create('product', function(Blueprint $table) {
             $table->increments('id');
@@ -69,6 +51,44 @@ class Wallet extends Migration
             $table->foreign('wallet_token_type_id')->references('id')->on('wallet_token_type');
         });
 
+        Schema::create('product_adjustment_price', function(Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('product_id');
+            $table->string('criteria');
+            $table->string('adjustment');
+
+            $this->timestampsAndSoftDeletes($table);
+
+            $table->foreign('product_id')->references('id')->on('product');
+        });
+
+        Schema::create('wallet', function(Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedSmallInteger('overdraft');
+
+            $this->timestampsAndSoftDeletes($table);
+        });
+
+        Schema::create('order', function(Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('wallet_id');
+            $table->unsignedInteger('order_status_id');
+            $table->unsignedInteger('payment_gateway_id');
+
+            $table->decimal('total_price', 19,4);
+
+            $table->string('po_number')->nullable();
+            $table->string('payment_gateway_reference');
+            $table->text('payment_gateway_blob'); //to split out to key->value table?
+            $table->unsignedInteger('created_user_id');
+
+            $this->timestampsAndSoftDeletes($table);
+
+            $table->foreign('wallet_id')->references('id')->on('wallet');
+            $table->foreign('order_status_id')->references('id')->on('order_status');
+            $table->foreign('payment_gateway_id')->references('id')->on('payment_gateway');
+        });
+
         Schema::create('order_item', function(Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('order_id');
@@ -84,22 +104,6 @@ class Wallet extends Migration
 
             $table->foreign('order_id')->references('id')->on('order');
             $table->foreign('product_id')->references('id')->on('product');
-        });
-
-        Schema::create('wallet', function(Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedSmallInteger('overdraft');
-
-            $this->timestampsAndSoftDeletes($table);
-        });
-
-        Schema::create('wallet_organisation_linker', function(Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('wallet_id');
-            $table->unsignedInteger('organisation_id');
-            $this->timestampsAndSoftDeletes($table);
-
-            $table->foreign('organisation_id')->references('id')->on('organisation');
         });
 
         Schema::create('wallet_token', function(Blueprint $table) {
@@ -151,6 +155,7 @@ class Wallet extends Migration
             DROP TABLE IF EXISTS wallet_organisation_linker;
             DROP TABLE IF EXISTS wallet;
             DROP TABLE IF EXISTS order_item;
+            DROP TABLE IF EXISTS product_adjustment_price;
             DROP TABLE IF EXISTS product_token;
             DROP TABLE IF EXISTS product;
             DROP TABLE IF EXISTS `order`;
