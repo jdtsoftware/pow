@@ -7,6 +7,13 @@ return [
         'secret_key' => 'sk_test_emymmJlZEmEs0sobaxM2WSYR',
     ],
 
+    'vat' => '20.00',
+
+    //see http://php.net/manual/en/function.money-format.php
+    'locale' => 'en_GB.UTF-8',
+    'money_format' => '%.2n',
+    //see http://php.net/manual/en/function.money-format.php
+
     'route_domain' => config('jdt.admin_domain'),
     'route_middleware' => 'web',
 

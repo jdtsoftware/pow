@@ -26,7 +26,8 @@ class BasketController extends BaseController
         }
 
         $basket = $pow->basket()->getBasket();
-        return view('pow::basket.index', ['basket' => $basket]);
+        $totals = $pow->basket()->getTotalPrices();
+        return view('pow::basket.index', ['basket' => $basket, 'totals' => $totals]);
     }
 
     /**

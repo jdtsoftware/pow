@@ -118,6 +118,9 @@
             color: #43484D;
             font-weight: 300;
         }
+        .quantity form {
+            display: inline;
+        }
 
         button[class*=btn-qty] {
             width: 30px;
@@ -190,7 +193,7 @@
         Basket
     </div>
 
-    {% for item in basket %}
+    {% for item in basket.products %}
     <div class="item">
         <div class="description">
             <span>{{ item.product.name }}</span>
@@ -198,16 +201,30 @@
         </div>
 
         <div class="quantity">
-            <button class="plus-btn-qty" type="button" name="button">
-                +
-            </button>
+            <form method="POST" action="{{ route('basket-add-product') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="product_id" value="{{ item.product.id }}" />
+                <input type="hidden" name="qty" value="{{ item.qty+1 }}" />
+                <button class="plus-btn-qty" type="submit" name="button">
+                    +
+                </button>
+            </form>
+
             <input type="text" name="name" value="{{ item.qty }}">
-            <button class="minus-btn-qty" type="button" name="button">
-                -
-            </button>
+
+            <form method="POST" action="{{ item.qty == 1 ? route('basket-remove-product') : route('basket-add-product') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="product_id" value="{{ item.product.id }}" />
+                <input type="hidden" name="qty" value="{{ item.qty-1 }}" />
+                <button class="minus-btn-qty" type="submit" name="button">
+                    -
+                </button>
+            </form>
+
+
         </div>
 
-        <div class="total-price">${{ item.total_price }}</div>
+        <div class="total-price">{{ item.total_price }}</div>
 
         <div class="remove-button">
             <form method="POST" action="{{ route('basket-remove-product') }}">
@@ -221,9 +238,9 @@
     {% endfor %}
 
     <div class="basket-price">
-        <p>Sub Total: £{{ basket.getTotalPrice() }}</p>
-        <p>VAT: £X</p>
-        <p>Total: £{{ basket.getTotalPrice() }}</p>
+        <p>Sub Total: {{ totals.sub_total_price }}</p>
+        <p>VAT: {{ totals.vat_price }}</p>
+        <p>Total: {{ totals.total_price }}</p>
     </div>
     <div class="actions m-2">
         <form method="POST" class="float-right">

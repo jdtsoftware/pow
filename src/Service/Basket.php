@@ -15,19 +15,27 @@ class Basket implements iBasket
 {
     const DEFAULT_INSTANCE = 'default';
 
-    protected $basket;
+    protected $session;
     protected $instance;
 
     private $models;
     private $classes;
 
+    private $basket;
+
     public function __construct(SessionManager $session, Dispatcher $events)
     {
-        $this->basket = $session;
+        $this->session = $session;
         $this->events = $events;
 
         $this->models = \Config::get('pow.models');
         $this->classes = \Config::get('pow.classes');
+
+        $this->vat = \Config::get('pow.vat');
+        $this->locale = \Config::get('pow.locale');
+        $this->money_format = \Config::get('pow.money_format');
+
+        setlocale(LC_MONETARY, $this->locale);
 
         $this->instance(self::DEFAULT_INSTANCE);
     }
@@ -52,19 +60,22 @@ class Basket implements iBasket
      */
     public function addProduct(iProductEntity $product, int $qty = 1)
     {
-        if(empty($qty)) {
-            unset($this->basket[$product->getId()]);
-        } else {
-            $basket = $this->basket->get($this->instance);
+        if($qty > 0) {
+            $this->basket = $this->session->get($this->instance);
 
-            $basket[$product->id] = [
+            $this->basket['products'][$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
-                'unit_price' => $product->getTotalPrice(),
-                'total_price' => $product->getTotalPrice($qty)
+                'unit_price' => $this->format($product->getTotalPrice()),
+                'total_price' => $this->format($product->getTotalPrice($qty))
             ];
-
-            $this->basket->put($this->instance, $basket);
+            
+            $this->session->put($this->instance, $this->basket);
+            $this->events->fire('basket.added', $product);
+        } else {
+            $this->basket = $this->session->get($this->instance);
+            unset($this->basket[$product->getId()]);
+            $this->session->put($this->instance, $this->basket);
             $this->events->fire('basket.added', $product);
         }
 
@@ -73,9 +84,9 @@ class Basket implements iBasket
 
     public function removeProduct(iProductEntity $product)
     {
-        $basket = $this->basket->get($this->instance);
-        unset($basket[$product->getId()]);
-        $this->basket->put($this->instance, $basket);
+        $this->basket = $this->session->get($this->instance);
+        unset($this->basket['products'][$product->getId()]);
+        $this->session->put($this->instance, $this->basket);
         $this->events->fire('basket.added', $product);
 
         return $this;
@@ -83,13 +94,13 @@ class Basket implements iBasket
 
     public function clearBasket()
     {
-        $this->basket->put($this->instance, null);
+        $this->session->put($this->instance, null);
         return $this;
     }
 
     public function getBasket()
     {
-        return $this->basket->get($this->instance);
+        return $this->session->get($this->instance);
     }
 
     public function checkout()
@@ -97,22 +108,49 @@ class Basket implements iBasket
         return $this->classes['order']::create($this);
     }
 
-    public function getTotalPrice()
+    public function getVATCharge(int $totalPrice)
     {
-        $basket = $this->basket->get($this->instance);
-
-        $totalPrice = 0;
-        foreach($basket as $item)
-        {
-            $item['product']['total_price'] = $item['product']['unit_price'] * $item['qty'];
-            $this->totalPrice += $item['product']['total_price'];
+        if(empty($this->vat) || empty($totalPrice)) {
+            return 0;
         }
 
-        return $totalPrice;
+        return ($this->vat / 100) * $totalPrice;
+    }
+
+    public function getTotalPrices()
+    {
+        $this->basket = $this->session->get($this->instance);
+        if(empty($this->basket['products'])) {
+            return 0;
+        }
+
+        $totalPrice = 0;
+        $basketTotalPrice = 0;
+        foreach($this->basket['products'] as $product) {
+
+            $totalPrice = $product['product']->getTotalPrice($product['qty']);
+            $product['total_price'] = $this->format($totalPrice);
+
+            $basketTotalPrice += $totalPrice;
+        }
+
+        $this->basket['totals']['sub_total_price'] = $this->format($basketTotalPrice);
+        $this->basket['totals']['vat_price'] = $this->format($this->getVATCharge($basketTotalPrice));
+        $this->basket['totals']['total_price'] = $this->format($totalPrice+$this->getVATCharge($basketTotalPrice));
+
+        $this->session->put($this->instance, $this->basket);
+
+        return $this->basket['totals'];
     }
 
     public function isEmpty()
     {
-        return empty($this->getBasket());
+        $basket = $this->getBasket();
+        return empty($basket['products']);
+    }
+
+    public function format($number)
+    {
+        return money_format($this->money_format, $number);
     }
 }
