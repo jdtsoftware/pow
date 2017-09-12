@@ -19,4 +19,9 @@ class Product implements iProduct
     {
         return $this->models['product']::find($productId);
     }
+
+    public function list($page, $perPage = 15)
+    {
+        return $this->models['product']::simplePaginate($perPage);
+    }
 }

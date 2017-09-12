@@ -1,6 +1,12 @@
 <?php
 
 return [
+    'payment_gateway' => 'stripe',
+    'stripe_options' => [
+        'publishable_key' => 'pk_test_nrA07aKBATY8fEMJ2yDwOldr',
+        'secret_key' => 'sk_test_emymmJlZEmEs0sobaxM2WSYR',
+    ],
+
     'route_domain' => config('jdt.admin_domain'),
     'route_middleware' => 'web',
 
@@ -15,10 +21,5 @@ return [
         'order' => \JDT\Pow\Service\Order::class,
         'wallet' => \JDT\Pow\Service\Wallet::class,
         'basket' => \JDT\Pow\Service\Basket::class,
-    ],
-    'closures' => [
-        'wallet_owner' => function() {
-            return Auth::user()->organisations()->first();
-        },
     ]
 ];

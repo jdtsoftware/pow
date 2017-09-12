@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500);
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            margin: 0;
+            background-color: #7EC855;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .shopping-cart {
+            width: 750px;
+            margin: 80px auto;
+            background: #FFFFFF;
+            box-shadow: 1px 2px 3px 0px rgba(0,0,0,0.10);
+            border-radius: 6px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            height: 60px;
+            border-bottom: 1px solid #E1E8EE;
+            padding: 20px 30px;
+            color: #5E6977;
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .basket-price {
+            border-bottom: 1px solid #E1E8EE;
+            font-size: 14px;
+            color: #43484D;
+            font-weight: 400;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .basket-price p {
+            padding: 0px 10px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .item {
+            padding: 20px 30px;
+            height: 100px;
+            display: flex;
+            border-bottom:  1px solid #E1E8EE;
+        }
+
+        .is-active {
+            animation-name: animate;
+            animation-duration: .8s;
+            animation-iteration-count: 1;
+            animation-timing-function: steps(28);
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes animate {
+            0%   { background-position: left;  }
+            50%  { background-position: right; }
+            100% { background-position: right; }
+        }
+
+        /* Product Description */
+        .description {
+            padding-top: 10px;
+            margin-right: 20px;
+            width: 300px;
+        }
+
+        .description span {
+            display: block;
+            font-size: 14px;
+            color: #43484D;
+            font-weight: 400;
+        }
+
+        .description span:first-child {
+            margin-bottom: 5px;
+        }
+        .description span:last-child {
+            font-weight: 300;
+            margin-top: 8px;
+            color: #86939E;
+        }
+
+        /* Product Quantity */
+        .quantity {
+            padding-top: 20px;
+            margin-right: 60px;
+        }
+        .quantity input {
+            -webkit-appearance: none;
+            border: none;
+            text-align: center;
+            width: 32px;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+
+        button[class*=btn-qty] {
+            width: 30px;
+            height: 30px;
+            background-color: #E1E8EE;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        .remove-btn-qty {
+            width: 80px !important;
+        }
+        button:focus,
+        input:focus {
+            outline:0;
+        }
+
+        /* Total Price */
+        .total-price {
+            width: 83px;
+            padding-top: 27px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+
+        .remove-button {
+            padding-top: 24px;
+            margin-left: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .shopping-cart {
+                width: 100%;
+                height: auto;
+                overflow: hidden;
+            }
+            .item {
+                height: auto;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .image img {
+                width: 50%;
+            }
+            .image,
+            .quantity,
+            .description {
+                width: 100%;
+                text-align: center;
+                margin: 6px 0;
+            }
+            .buttons {
+                margin-right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="shopping-cart">
+    <a href="{{ route('products') }}" class="ml-2 mt-2">< Back to products</a>
+    <!-- Title -->
+    <div class="title">
+        Basket
+    </div>
+
+    {% for item in basket %}
+    <div class="item">
+        <div class="description">
+            <span>{{ item.product.name }}</span>
+            <span>{{ item.product.description|truncate(50) }}</span>
+        </div>
+
+        <div class="quantity">
+            <button class="plus-btn-qty" type="button" name="button">
+                +
+            </button>
+            <input type="text" name="name" value="{{ item.qty }}">
+            <button class="minus-btn-qty" type="button" name="button">
+                -
+            </button>
+        </div>
+
+        <div class="total-price">${{ item.total_price }}</div>
+
+        <div class="remove-button">
+            <form method="POST" action="{{ route('basket-remove-product') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="product_id" value="{{ item.product.id }}" />
+                <button class="remove-btn-qty" type="submit">Remove</button>
+            </form>
+        </div>
+
+    </div>
+    {% endfor %}
+
+    <div class="basket-price">
+        <p>Sub Total: £{{ basket.getTotalPrice() }}</p>
+        <p>VAT: £X</p>
+        <p>Total: £{{ basket.getTotalPrice() }}</p>
+    </div>
+    <div class="actions m-2">
+        <form method="POST" class="float-right">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="btn btn-success">Pay Now</button>
+        </form>
+
+        <form method="POST" action="{{ route('basket-clear') }}" class="float-left">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+            <button type="submit" class="btn btn-danger">Clear Basket</button>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('.minus-btn').on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var $input = $this.closest('div').find('input');
+        var value = parseInt($input.val());
+
+        if (value > 1) {
+            value = value - 1;
+        } else {
+            value = 0;
+        }
+
+        $input.val(value);
+
+    });
+
+    $('.plus-btn').on('click', function(e) {
+        e.preventDefault();
+        var $this = $(this);
+        var $input = $this.closest('div').find('input');
+        var value = parseInt($input.val());
+
+        if (value < 100) {
+            value = value + 1;
+        } else {
+            value =100;
+        }
+
+        $input.val(value);
+    });
+
+    $('.like-btn').on('click', function() {
+        $(this).toggleClass('is-active');
+    });
+</script>
+</body>
+</html>

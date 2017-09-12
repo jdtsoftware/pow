@@ -51,6 +51,19 @@ class Wallet extends Migration
             $table->foreign('wallet_token_type_id')->references('id')->on('wallet_token_type');
         });
 
+        Schema::create('product_config', function(Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('product_id');
+            $table->string('key');
+            $table->string('value');
+
+            $this->timestampsAndSoftDeletes($table);
+
+            $table->foreign('product_id')->references('id')->on('product');
+
+            $table->unique(['product_id','key']);
+        });
+
         Schema::create('product_adjustment_price', function(Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('product_id');
@@ -75,7 +88,8 @@ class Wallet extends Migration
             $table->unsignedInteger('order_status_id');
             $table->unsignedInteger('payment_gateway_id');
 
-            $table->decimal('total_price', 19,4);
+            $table->decimal('original_total_price', 19,4);
+            $table->decimal('adjusted_total_price', 19,4);
 
             $table->string('po_number')->nullable();
             $table->string('payment_gateway_reference');
@@ -97,8 +111,11 @@ class Wallet extends Migration
             $table->mediumInteger('tokens_total');
             $table->mediumInteger('tokens_spent');
 
-            $table->decimal('unit_price', 19,4);
-            $table->decimal('total_price', 19,4);
+            $table->decimal('original_unit_price', 19,4);
+            $table->decimal('adjusted_unit_price', 19,4);
+
+            $table->decimal('original_total_price', 19,4);
+            $table->decimal('adjusted_total_price', 19,4);
 
             $this->timestampsAndSoftDeletes($table);
 
@@ -140,6 +157,16 @@ class Wallet extends Migration
             $table->foreign('order_item_id')->references('id')->on('order_item');
             $table->foreign('created_user_id')->references('id')->on('user');
         });
+
+        //@todo move this out
+        Schema::create('wallet_organisation_linker', function(Blueprint $table) {
+            $table->increments('id');
+            $table->unsignedInteger('wallet_id');
+            $table->unsignedInteger('organisation_id');
+            $this->timestampsAndSoftDeletes($table);
+
+            $table->foreign('organisation_id')->references('id')->on('organisation');
+        });
     }
 
     /**
@@ -153,12 +180,13 @@ class Wallet extends Migration
             DROP TABLE IF EXISTS wallet_transaction;
             DROP TABLE IF EXISTS wallet_token;
             DROP TABLE IF EXISTS wallet_organisation_linker;
-            DROP TABLE IF EXISTS wallet;
             DROP TABLE IF EXISTS order_item;
             DROP TABLE IF EXISTS product_adjustment_price;
             DROP TABLE IF EXISTS product_token;
+            DROP TABLE IF EXISTS product_config;
             DROP TABLE IF EXISTS product;
             DROP TABLE IF EXISTS `order`;
+            DROP TABLE IF EXISTS wallet;
             DROP TABLE IF EXISTS wallet_token_type;
             DROP TABLE IF EXISTS wallet_transaction_type;
             DROP TABLE IF EXISTS order_status;

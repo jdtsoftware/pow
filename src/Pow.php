@@ -2,6 +2,8 @@
 
 namespace JDT\Pow;
 
+use Illuminate\Events\Dispatcher;
+use Illuminate\Session\SessionManager;
 use JDT\Pow\Entities\WalletTokenType;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\Basket as iBasket;
@@ -14,12 +16,16 @@ use JDT\Pow\Interfaces\Product as iProduct;
 class Pow
 {
     private $classes;
+    protected static $walletOwner;
 
     /**
      * Pow constructor.
      */
-    public function __construct()
+    public function __construct(SessionManager $session, Dispatcher $events)
     {
+        $this->session = $session;
+        $this->events = $events;
+
         $this->models = \Config::get('pow.models');
         $this->classes = \Config::get('pow.classes');
         $this->closures = \Config::get('pow.closures');
@@ -30,7 +36,7 @@ class Pow
      */
     public function basket() : iBasket
     {
-        return new $this->classes['basket'];
+        return new $this->classes['basket']($this->session, $this->events);
     }
 
     /**
@@ -41,15 +47,31 @@ class Pow
         return new $this->classes['product'];
     }
 
+    public function order()
+    {
+        return new $this->classes['order'];
+    }
+
+    public function checkout()
+    {
+        return $this->order()
+            ->create($this->basket())
+            ->checkout();
+    }
+
     /**
      * @param iWalletOwner|null $walletOwner
      * @return iWallet
      */
     public function wallet(iWalletOwner $walletOwner = null) : iWallet
     {
-        $walletOwner = $walletOwner ?: (is_callable($this->closures['wallet_owner']) ? $this->closures['wallet_owner']() : null );
+        $walletOwner = $walletOwner ?? self::$walletOwner;
+        if(is_callable($walletOwner)) {
+            $walletOwner = $walletOwner();
+        }
+
         if(is_null($walletOwner)) {
-            throw new \RuntimeException('Cannot find default wallet - please provide one or set pow.closures.wallet_owner');
+            throw new \RuntimeException('Cannot find default wallet - please provide or set one');
         }
 
         return new $this->classes['wallet']($walletOwner);
@@ -80,5 +102,13 @@ class Pow
         return $this->models['wallet']::create([
             'overdraft' => (int) $overdraft
         ]);
+    }
+
+    /**
+     * @param \Closure $closure
+     */
+    public static function setWalletOwner(\Closure $closure)
+    {
+        self::$walletOwner = $closure;
     }
 }

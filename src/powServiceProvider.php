@@ -2,6 +2,8 @@
 
 namespace JDT\Pow;
 
+use Illuminate\Events\Dispatcher;
+use Illuminate\Session\SessionManager;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -92,7 +94,7 @@ class powServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
         $this->app->bind('pow', function ($app) {
-            return new Pow();
+            return new Pow($app['session'], $app['events']);
         });
     }
 }
