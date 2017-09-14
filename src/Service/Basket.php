@@ -82,6 +82,10 @@ class Basket implements iBasket
         return $this;
     }
 
+    /**
+     * @param iProductEntity $product
+     * @return $this
+     */
     public function removeProduct(iProductEntity $product)
     {
         $this->basket = $this->session->get($this->instance);
@@ -92,22 +96,35 @@ class Basket implements iBasket
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function clearBasket()
     {
         $this->session->put($this->instance, null);
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getBasket()
     {
         return $this->session->get($this->instance);
     }
 
+    /**
+     * @todo finish
+     */
     public function checkout()
     {
         return $this->classes['order']::create($this);
     }
 
+    /**
+     * @param int $totalPrice
+     * @return float|int
+     */
     public function getVATCharge(int $totalPrice)
     {
         if(empty($this->vat) || empty($totalPrice)) {
@@ -117,6 +134,9 @@ class Basket implements iBasket
         return ($this->vat / 100) * $totalPrice;
     }
 
+    /**
+     * @return int
+     */
     public function getTotalPrices()
     {
         $this->basket = $this->session->get($this->instance);
@@ -143,12 +163,19 @@ class Basket implements iBasket
         return $this->basket['totals'];
     }
 
+    /**
+     * @return bool
+     */
     public function isEmpty()
     {
         $basket = $this->getBasket();
         return empty($basket['products']);
     }
 
+    /**
+     * @param $number
+     * @return string
+     */
     public function format($number)
     {
         return money_format($this->money_format, $number);
