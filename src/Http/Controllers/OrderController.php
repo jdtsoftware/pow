@@ -23,11 +23,14 @@ class OrderController extends BaseController
         $pow = app('pow');
         $order = $pow->createOrderFromBasket();
 
-
+        return redirect()->route('order-view', ['uuid' => $order->getUuid()]);
     }
 
-    public function viewAction()
+    public function viewAction($uuid)
     {
+        $pow = app('pow');
+        $order = $pow->order()->findByUuid($uuid);
+
 
         return view('pow::order.stripe-pay', [
             'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),

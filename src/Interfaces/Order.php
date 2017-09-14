@@ -8,5 +8,6 @@ use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 interface Order {
     public function findById(int $id) : iOrderEntity;
+    public function findByUuid($uuid) : iOrderEntity;
     public function createFromBasket(iWallet $wallet, iBasket $basket) : iOrderEntity;
 }

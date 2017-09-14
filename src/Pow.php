@@ -17,13 +17,16 @@ use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
  */
 class Pow
 {
+    protected $walletOwner;
+
+    protected static $walletOwnerClosure;
+
     private $classes;
-    protected static $walletOwner;
 
     /**
      * Pow constructor.
      */
-    public function __construct(SessionManager $session, Dispatcher $events)
+    public function __construct(SessionManager $session, Dispatcher $events, $walletOwner = null)
     {
         $this->session = $session;
         $this->events = $events;
@@ -31,6 +34,15 @@ class Pow
         $this->models = \Config::get('pow.models');
         $this->classes = \Config::get('pow.classes');
         $this->closures = \Config::get('pow.closures');
+
+        $this->walletOwner = $walletOwner ?? self::$walletOwnerClosure;
+        if(is_callable($walletOwner)) {
+            $this->walletOwner = $walletOwner();
+        }
+
+        if(is_null($this->walletOwner)) {
+            throw new \RuntimeException('Cannot find default wallet - please provide or set one');
+        }
     }
 
     /**
@@ -72,15 +84,7 @@ class Pow
      */
     public function wallet(iWalletOwner $walletOwner = null) : iWallet
     {
-        $walletOwner = $walletOwner ?? self::$walletOwner;
-        if(is_callable($walletOwner)) {
-            $walletOwner = $walletOwner();
-        }
-
-        if(is_null($walletOwner)) {
-            throw new \RuntimeException('Cannot find default wallet - please provide or set one');
-        }
-
+        $walletOwner = $walletOwner ?? $this->walletOwner;
         return new $this->classes['wallet']($walletOwner);
     }
 
@@ -114,8 +118,8 @@ class Pow
     /**
      * @param \Closure $closure
      */
-    public static function setWalletOwner(\Closure $closure)
+    public static function setWalletOwnerClosure(\Closure $closure)
     {
-        self::$walletOwner = $closure;
+        self::$walletOwnerClosure = $closure;
     }
 }

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace JDT\Pow\Entities\Wallet;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\Geocoder\Geocoder;
-
+use \JDT\Pow\Interfaces\Entities\Wallet as iWalletEntity;
 /**
  * Class Wallet.
  */
-class Wallet extends Model
+class Wallet extends Model implements iWalletEntity
 {
     use SoftDeletes;
 
@@ -36,6 +35,7 @@ class Wallet extends Model
      * @var array
      */
     protected $fillable = [
+        'uuid',
         'overdraft',
         'created_at',
         'updated_at'
@@ -47,7 +47,28 @@ class Wallet extends Model
         'deleted_at',
     ];
 
-    protected $with = [
-    ];
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
+     * @return float
+     */
+    public function getOverdraft()
+    {
+        return $this->overdraft;
+    }
 
 }

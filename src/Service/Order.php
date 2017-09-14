@@ -6,6 +6,7 @@ use \JDT\Pow\Interfaces\Basket as iBasket;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
 use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class Pow.
@@ -30,6 +31,15 @@ class Order implements iOrder
     }
 
     /**
+     * @param $uuid
+     * @return iOrderEntity
+     */
+    public function findByUuid($uuid) : iOrderEntity
+    {
+        return $this->models['order']::where('uuid', $uuid)->first();
+    }
+
+    /**
      * @param iWallet $wallet
      * @param iBasket $basket
      * @return iOrderEntity
@@ -43,9 +53,11 @@ class Order implements iOrder
         }
 
         $order = $this->models['order']::create([
+            'uuid' => Uuid::uuid4()->toString(),
             'wallet_id' => $wallet->getId(),
             'order_status_id' => 1,
-            'total_price' => $basket->getTotalPrice(),
+            'original_total_price' => $basket->getTotalPrice(),
+            'adjusted_total_price' => $basket->getTotalPrice(),
             'created_user_id' => 1,
         ]);
 

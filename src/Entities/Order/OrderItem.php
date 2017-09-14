@@ -38,10 +38,13 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'quantity',
         'tokens_total',
         'tokens_spent',
-        'unit_price',
-        'total_price',
+        'original_unit_price',
+        'adjusted_unit_price',
+        'original_total_price',
+        'adjusted_total_price',
         'created_at',
         'updated_at'
     ];

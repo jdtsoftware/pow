@@ -94,6 +94,9 @@ class powServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
         $this->app->bind('pow', function ($app) {
+            Pow::setWalletOwnerClosure(function() {
+                return \Auth::user()->organisations()->first();
+            });
             return new Pow($app['session'], $app['events']);
         });
     }

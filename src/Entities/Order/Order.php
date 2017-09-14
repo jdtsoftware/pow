@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
+use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 /**
  * Class Order.
  */
-class Order extends Model
+class Order extends Model implements iOrderEntity
 {
     use SoftDeletes;
 
@@ -37,10 +38,12 @@ class Order extends Model
      * @var array
      */
     protected $fillable = [
+        'uuid',
         'wallet_id',
         'order_status_id',
         'payment_gateway_id',
-        'total_price',
+        'original_total_price',
+        'adjusted_total_price',
         'po_number',
         'payment_gateway_reference',
         'payment_gateway_blob',
@@ -62,6 +65,14 @@ class Order extends Model
     }
 
     /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        return $this->uuid;
+    }
+
+    /**
      * @param iProductEntity $product
      * @param int $qty
      * @return iOrderItemEntity
@@ -79,9 +90,11 @@ class Order extends Model
             'product_id' => $product->getId(),
             'tokens_total' => 0,
             'tokens_spent' => 0,
-            'qty' => $qty,
-            'unit_price' => $product->getTotalPrice(),
-            'total_price' => $product->getTotalPrice($qty),
+            'quantity' => $qty,
+            'original_unit_price' => $product->getTotalPrice(),
+            'adjusted_unit_price' => $product->getTotalPrice(),
+            'original_total_price' => $product->getTotalPrice($qty),
+            'adjusted_total_price' => $product->getTotalPrice($qty),
         ]);
 
         return $orderItem;

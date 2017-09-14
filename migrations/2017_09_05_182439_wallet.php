@@ -77,13 +77,16 @@ class Wallet extends Migration
 
         Schema::create('wallet', function(Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->unsignedSmallInteger('overdraft');
 
             $this->timestampsAndSoftDeletes($table);
+            $table->unique('uuid');
         });
 
         Schema::create('order', function(Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->unsignedInteger('wallet_id');
             $table->unsignedInteger('order_status_id');
             $table->unsignedInteger('payment_gateway_id');
@@ -101,6 +104,8 @@ class Wallet extends Migration
             $table->foreign('wallet_id')->references('id')->on('wallet');
             $table->foreign('order_status_id')->references('id')->on('order_status');
             $table->foreign('payment_gateway_id')->references('id')->on('payment_gateway');
+
+            $table->unique('uuid');
         });
 
         Schema::create('order_item', function(Blueprint $table) {
@@ -137,6 +142,7 @@ class Wallet extends Migration
 
         Schema::create('wallet_transaction', function(Blueprint $table) {
             $table->increments('id');
+            $table->uuid('uuid');
             $table->unsignedInteger('wallet_id');
             $table->unsignedInteger('wallet_token_id');
             $table->unsignedInteger('wallet_transaction_type_id');
@@ -148,7 +154,7 @@ class Wallet extends Migration
             // == https://laravel.com/docs/5.4/eloquent-relationships#polymorphic-relations ==
             $table->unsignedInteger('created_user_id');
 
-
+            $table->unique('uuid');
             $this->timestampsAndSoftDeletes($table);
 
             $table->foreign('wallet_id')->references('id')->on('wallet');
