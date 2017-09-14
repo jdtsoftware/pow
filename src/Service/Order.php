@@ -4,11 +4,13 @@ namespace JDT\Pow\Service;
 
 use \JDT\Pow\Interfaces\Basket as iBasket;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
+use \JDT\Pow\Interfaces\Order as iOrder;
+use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 /**
  * Class Pow.
  */
-class Order
+class Order implements iOrder
 {
     protected $models;
     protected $order;
@@ -18,12 +20,22 @@ class Order
         $this->models = \Config::get('pow.models');
     }
 
-    public function findById(int $orderId)
+    /**
+     * @param int $orderId
+     * @return mixed
+     */
+    public function findById(int $orderId) : iOrderEntity
     {
         return $this->models['order']::find($orderId);
     }
 
-    public function createFromBasket(iWallet $wallet, iBasket $basket)
+    /**
+     * @param iWallet $wallet
+     * @param iBasket $basket
+     * @return iOrderEntity
+     * @throws \Exception
+     */
+    public function createFromBasket(iWallet $wallet, iBasket $basket) : iOrderEntity
     {
         $basketItems = $basket->getBasket();
         if(empty($basketItems['products'])) {

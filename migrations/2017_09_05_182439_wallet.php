@@ -167,6 +167,14 @@ class Wallet extends Migration
 
             $table->foreign('organisation_id')->references('id')->on('organisation');
         });
+
+        DB::table('order_status')->insert(
+            ['handle' => 'draft',   'name' => 'Awaiting Payment'],
+            ['handle' => 'pending', 'name' => 'Awaiting Payment'],
+            ['handle' => 'paid',    'name' => 'Paid'],
+            ['handle' => 'complete','name' => 'Complete'],
+            ['handle' => 'refund',  'name' => 'Refunded']
+        );
     }
 
     /**

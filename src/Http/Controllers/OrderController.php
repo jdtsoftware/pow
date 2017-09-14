@@ -21,7 +21,7 @@ class OrderController extends BaseController
     public function createAction()
     {
         $pow = app('pow');
-        $order = $pow->checkout();
+        $order = $pow->createOrderFromBasket();
 
 
     }

@@ -9,6 +9,8 @@ use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\Basket as iBasket;
 use JDT\Pow\Interfaces\Wallet as iWallet;
 use JDT\Pow\Interfaces\Product as iProduct;
+use JDT\Pow\Interfaces\Order as iOrder;
+use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 /**
  * Class Pow.
@@ -47,16 +49,21 @@ class Pow
         return new $this->classes['product'];
     }
 
-    public function order()
+    /**
+     * @return mixed
+     */
+    public function order() : iOrder
     {
         return new $this->classes['order'];
     }
 
-    public function createOrderFromBasket()
+    /**
+     * @param iWallet|null $wallet
+     * @return iOrderEntity
+     */
+    public function createOrderFromBasket(iWallet $wallet = null) : iOrderEntity
     {
-        return $this->order()
-            ->create($this->basket())
-            ->checkout();
+        return $this->order()->createFromBasket($this->wallet($wallet), $this->basket());
     }
 
     /**

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace JDT\Pow\Entities;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\Geocoder\Geocoder;
-use JDT\Pow\Interfaces\Entities\Product;
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
+use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 
 /**
  * Class Order.
@@ -53,14 +53,20 @@ class Order extends Model
         'deleted_at',
     ];
 
-    protected $with = [
-    ];
+    /**
+     * @return integer
+     */
+    public function getId() : int
+    {
+        return $this->id;
+    }
 
     /**
-     * @param $product
+     * @param iProductEntity $product
      * @param int $qty
+     * @return iOrderItemEntity
      */
-    public function addLineItem(Product $product, int $qty = 1)
+    public function addLineItem(iProductEntity $product, int $qty = 1) : iOrderItemEntity
     {
         $qty = (int) $qty;
         if($qty <= 0) { //lets be safe.
@@ -68,8 +74,8 @@ class Order extends Model
         }
 
         $models = \Config::get('pow.models');
-        $models['order_item']::create([
-            'order_id' => $this->id,
+        $orderItem = $models['order_item']::create([
+            'order_id' => $this->getId(),
             'product_id' => $product->getId(),
             'tokens_total' => 0,
             'tokens_spent' => 0,
@@ -77,5 +83,7 @@ class Order extends Model
             'unit_price' => $product->getTotalPrice(),
             'total_price' => $product->getTotalPrice($qty),
         ]);
+
+        return $orderItem;
     }
 }
