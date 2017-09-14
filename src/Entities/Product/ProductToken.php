@@ -17,7 +17,7 @@ class ProductToken extends Model
      *
      * @var string
      */
-    protected $table = 'order';
+    protected $table = 'product_token';
 
     /**
      * The attributes that should be mutated to dates.

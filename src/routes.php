@@ -14,8 +14,10 @@ Route::post('/basket/remove', 'JDT\Pow\Http\Controllers\BasketController@removeP
     ->name('basket-remove-product');
 Route::post('/basket/clear', 'JDT\Pow\Http\Controllers\BasketController@clearAction')
     ->name('basket-clear');
-Route::get('/basket/checkout', 'JDT\Pow\Http\Controllers\BasketController@checkoutAction')
-    ->name('basket-checkout');
-Route::post('/basket/pay', 'JDT\Pow\Http\Controllers\BasketController@payAction')
-    ->name('basket-pay');
 
+Route::post('/order/create', 'JDT\Pow\Http\Controllers\OrderController@createAction')
+    ->name('order-create');
+Route::get('/order/{uuid}', 'JDT\Pow\Http\Controllers\OrderController@viewAction')
+    ->name('order-view');
+Route::post('/order/{uuid}/pay', 'JDT\Pow\Http\Controllers\OrderController@payAction')
+    ->name('order-pay');

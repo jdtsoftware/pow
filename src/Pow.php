@@ -52,7 +52,7 @@ class Pow
         return new $this->classes['order'];
     }
 
-    public function checkout()
+    public function createOrderFromBasket()
     {
         return $this->order()
             ->create($this->basket())

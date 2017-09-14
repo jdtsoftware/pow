@@ -20,9 +20,6 @@
         }
     },
     "extra": {
-        "branch-alias": {
-            "dev-master": "2.3-dev"
-        },
         "laravel": {
             "providers": [
                 "JDT\\Pow\\powServiceProvider"

@@ -52,6 +52,12 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     protected $with = [
     ];
 
+    public function tokens()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product_token'], 'product_id', 'id');
+    }
+
     public function getId()
     {
         return $this->id;

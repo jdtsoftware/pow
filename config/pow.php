@@ -20,6 +20,7 @@ return [
     'models' => [
         'product' => JDT\Pow\Entities\Product\Product::class,
         'order' => JDT\Pow\Entities\Order\Order::class,
+        'order_item' => JDT\Pow\Entities\Order\OrderItem::class,
         'wallet' => JDT\Pow\Entities\Wallet\Wallet::class,
         'wallet_token_type' => \JDT\Pow\Entities\Wallet\WalletTokenType::class,
     ],

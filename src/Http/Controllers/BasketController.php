@@ -77,23 +77,4 @@ class BasketController extends BaseController
         return redirect()->route('basket');
     }
 
-    /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function checkoutAction()
-    {
-        $pow = app('pow');
-        $order = $pow->checkout();
-
-        return view('pow::basket.stripe-pay', [
-            'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
-            'total_price' => $order->adjusted_total_price,
-        ]);
-    }
-
-    public function payAction()
-    {
-
-    }
-
 }
