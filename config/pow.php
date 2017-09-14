@@ -18,10 +18,10 @@ return [
     'route_middleware' => 'web',
 
     'models' => [
-        'product' => JDT\Pow\Entities\Product::class,
-        'order' => JDT\Pow\Entities\Order::class,
-        'wallet' => JDT\Pow\Entities\Wallet::class,
-        'wallet_token_type' => \JDT\Pow\Entities\WalletTokenType::class,
+        'product' => JDT\Pow\Entities\Product\Product::class,
+        'order' => JDT\Pow\Entities\Order\Order::class,
+        'wallet' => JDT\Pow\Entities\Wallet\Wallet::class,
+        'wallet_token_type' => \JDT\Pow\Entities\Wallet\WalletTokenType::class,
     ],
     'classes' => [
         'product' => \JDT\Pow\Service\Product::class,

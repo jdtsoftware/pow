@@ -1,6 +1,6 @@
 <?php
 
-namespace JDT\Pow\Entities;
+namespace JDT\Pow\Entities\Product;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;

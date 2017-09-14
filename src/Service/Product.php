@@ -2,7 +2,7 @@
 
 namespace JDT\Pow\Service;
 
-use JDT\Pow\Entities\Product as iProductEntity;
+use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Product as iProduct;
 
 /**

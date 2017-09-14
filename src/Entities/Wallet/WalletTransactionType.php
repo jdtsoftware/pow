@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace JDT\Pow\Entities;
+namespace JDT\Pow\Entities\Wallet;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
