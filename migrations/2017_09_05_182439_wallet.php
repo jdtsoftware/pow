@@ -95,8 +95,8 @@ class Wallet extends Migration
             $table->decimal('adjusted_total_price', 19,4);
 
             $table->string('po_number')->nullable();
-            $table->string('payment_gateway_reference');
-            $table->text('payment_gateway_blob'); //to split out to key->value table?
+            $table->string('payment_gateway_reference')->nullable();
+            $table->text('payment_gateway_blob')->nullable(); //to split out to key->value table?
             $table->unsignedInteger('created_user_id');
 
             $this->timestampsAndSoftDeletes($table);

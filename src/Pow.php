@@ -35,10 +35,12 @@ class Pow
         $this->classes = \Config::get('pow.classes');
         $this->closures = \Config::get('pow.closures');
 
-        $this->walletOwner = $walletOwner ?? self::$walletOwnerClosure;
+        $walletOwner = $walletOwner ?? self::$walletOwnerClosure;
         if(is_callable($walletOwner)) {
-            $this->walletOwner = $walletOwner();
+            $walletOwner = $walletOwner();
         }
+
+        $this->walletOwner = $walletOwner;
 
         if(is_null($this->walletOwner)) {
             throw new \RuntimeException('Cannot find default wallet - please provide or set one');

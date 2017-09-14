@@ -2,11 +2,13 @@
 
 namespace JDT\Pow\Http\Controllers;
 
+use Illuminate\Support\Facades\Input;
 use JDT\Api\Payload;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use JDT\Api\Contracts\ApiEndpoint;
 use Illuminate\Routing\Controller as BaseController;
+use Omnipay\Omnipay;
 
 /**
  * Class OrderController
@@ -31,18 +33,51 @@ class OrderController extends BaseController
         $pow = app('pow');
         $order = $pow->order()->findByUuid($uuid);
 
-
         return view('pow::order.stripe-pay', [
             'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
-            'total_price' => $order->adjusted_total_price,
+            'order' => $order,
         ]);
 
     }
 
-    public function payAction()
+    /**
+     * @todo move to order service
+     *
+     * @param $uuid
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function payAction($uuid)
     {
+        $pow = app('pow');
+        $order = $pow->order()->findByUuid($uuid);
 
+        $gateway = Omnipay::create('Stripe');
+        $gateway->setApiKey(\Config::get('pow.stripe_options.secret_key'));
+        $response = $gateway->purchase([
+            'currency'      => \Config::get('pow.stripe_options.currency'),
+            'source'        => Input::get('stripeToken'),
+            'amount'        => $order->getTotalPrice(),
+        ])->send();
 
+        if($response->isSuccessful()) {
+            $pow->basket()->clearBasket();
+            $order->update([
+                'payment_gateway_reference' => $response->getTransactionReference(),
+                'payment_gateway_blob' => json_encode($response)
+            ]);
+            return redirect()->route('order-complete', [$order->getUuid()]);
+        } elseif($order->payment_gateway_reference) {
+            return redirect()->route('order-complete', [$order->getUuid()]);
+        } else {
+            var_dump($response->getCard());
+            die('order failed');
+        }
+
+    }
+
+    public function completeAction()
+    {
+        return view('pow::order.complete');
     }
 
 }

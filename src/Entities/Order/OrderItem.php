@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace JDT\Pow\Entities\Order;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
-use App\Services\Geocoder\Geocoder;
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 
 /**
  * Class OrderItem.
  */
-class OrderItem extends Model
+class OrderItem extends Model implements iOrderItemEntity
 {
     use SoftDeletes;
 
@@ -55,7 +55,8 @@ class OrderItem extends Model
         'deleted_at',
     ];
 
-    protected $with = [
-    ];
-
+    public function getId()
+    {
+        return $this->id;
+    }
 }

@@ -32,10 +32,6 @@ class Basket implements iBasket
         $this->classes = \Config::get('pow.classes');
 
         $this->vat = \Config::get('pow.vat');
-        $this->locale = \Config::get('pow.locale');
-        $this->money_format = \Config::get('pow.money_format');
-
-        setlocale(LC_MONETARY, $this->locale);
 
         $this->instance(self::DEFAULT_INSTANCE);
     }
@@ -66,8 +62,8 @@ class Basket implements iBasket
             $this->basket['products'][$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
-                'unit_price' => $this->format($product->getTotalPrice()),
-                'total_price' => $this->format($product->getTotalPrice($qty))
+                'unit_price' => $product->getTotalPrice(),
+                'total_price' => $product->getTotalPrice($qty)
             ];
             
             $this->session->put($this->instance, $this->basket);
@@ -149,18 +145,29 @@ class Basket implements iBasket
         foreach($this->basket['products'] as $product) {
 
             $totalPrice = $product['product']->getTotalPrice($product['qty']);
-            $product['total_price'] = $this->format($totalPrice);
+            $product['total_price'] = $totalPrice;
 
             $basketTotalPrice += $totalPrice;
         }
 
-        $this->basket['totals']['sub_total_price'] = $this->format($basketTotalPrice);
-        $this->basket['totals']['vat_price'] = $this->format($this->getVATCharge($basketTotalPrice));
-        $this->basket['totals']['total_price'] = $this->format($totalPrice+$this->getVATCharge($basketTotalPrice));
+        $this->basket['totals']['sub_total_price'] = $basketTotalPrice;
+        $this->basket['totals']['vat_price'] = $this->getVATCharge($basketTotalPrice);
+        $this->basket['totals']['total_price'] = $totalPrice+$this->getVATCharge($basketTotalPrice);
+
+        $this->basket['totals']['total_price'] = $totalPrice+$this->getVATCharge($basketTotalPrice);
 
         $this->session->put($this->instance, $this->basket);
 
         return $this->basket['totals'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotalPrice()
+    {
+        $prices = $this->getTotalPrices();
+        return $prices['total_price'] ?? 0;
     }
 
     /**
@@ -170,14 +177,5 @@ class Basket implements iBasket
     {
         $basket = $this->getBasket();
         return empty($basket['products']);
-    }
-
-    /**
-     * @param $number
-     * @return string
-     */
-    public function format($number)
-    {
-        return money_format($this->money_format, $number);
     }
 }

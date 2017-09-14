@@ -224,7 +224,7 @@
 
         </div>
 
-        <div class="total-price">{{ item.total_price }}</div>
+        <div class="total-price">{{ item.total_price|price }}</div>
 
         <div class="remove-button">
             <form method="POST" action="{{ route('basket-remove-product') }}">
@@ -238,12 +238,12 @@
     {% endfor %}
 
     <div class="basket-price">
-        <p>Sub Total: {{ totals.sub_total_price }}</p>
-        <p>VAT: {{ totals.vat_price }}</p>
-        <p>Total: {{ totals.total_price }}</p>
+        <p>Sub Total: {{ totals.sub_total_price|price }}</p>
+        <p>VAT: {{ totals.vat_price|price }}</p>
+        <p>Total: {{ totals.total_price|price }}</p>
     </div>
     <div class="actions m-2">
-        <form method="POST" class="float-right">
+        <form method="POST" action="{{ route('order-create') }}" class="float-right">
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
             <button type="submit" class="btn btn-success">Pay Now</button>
         </form>

@@ -2,6 +2,9 @@
 
 namespace JDT\Pow\Interfaces\Entities;
 
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
+use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
+
 interface Order {
 
     public function getId();

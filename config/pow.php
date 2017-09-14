@@ -5,6 +5,7 @@ return [
     'stripe_options' => [
         'publishable_key' => 'pk_test_nrA07aKBATY8fEMJ2yDwOldr',
         'secret_key' => 'sk_test_emymmJlZEmEs0sobaxM2WSYR',
+        'currency' => 'GBP',
     ],
 
     'vat' => '20.00',

@@ -56,8 +56,9 @@ class Order implements iOrder
             'uuid' => Uuid::uuid4()->toString(),
             'wallet_id' => $wallet->getId(),
             'order_status_id' => 1,
-            'original_total_price' => $basket->getTotalPrice(),
-            'adjusted_total_price' => $basket->getTotalPrice(),
+            'payment_gateway_id' => 1,
+            'original_total_price' => $basket->getTotalPrice(true),
+            'adjusted_total_price' => $basket->getTotalPrice(true),
             'created_user_id' => 1,
         ]);
 

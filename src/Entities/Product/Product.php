@@ -63,13 +63,14 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         return $this->id;
     }
 
-    public function getTotalPrice($qty = 0)
+    public function getTotalPrice($qty = 0, $display = false)
     {
+        $totalPrice = $this->total_price;
         if($qty > 0) {
-            return $this->total_price * $qty;
+            $totalPrice = $this->total_price * $qty;
         }
 
-        return $this->total_price;
+        return $totalPrice;
     }
 
     public function getName()

@@ -92,7 +92,8 @@
     <div class="modal-dialog modal-notify modal-success" role="document">
         <!--Content-->
         <div class="modal-content">
-            <form id="payment-form">
+            <form id="payment-form" method="POST" action="{{ route('order-pay', [order.getUuid()]) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                 <!--Header-->
                 <div class="modal-header">
                     <h2>Pay</h2>
@@ -123,7 +124,7 @@
 
                 <!--Footer-->
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary-modal">Pay $25 <i class="fa fa-diamond ml-1"></i></button>
+                    <button type="submit" class="btn btn-primary-modal">Pay {{ order.getTotalPrice()|price }} <i class="fa fa-diamond ml-1"></i></button>
                     <button type="submit" class="btn btn-outline-secondary-modal waves-effect" data-dismiss="modal">No, thanks</button>
                 </div>
             </form>

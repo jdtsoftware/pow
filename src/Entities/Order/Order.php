@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-namespace JDT\Pow\Entities;
+namespace JDT\Pow\Entities\Order;
+
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
@@ -73,6 +74,15 @@ class Order extends Model implements iOrderEntity
     }
 
     /**
+     * @param bool $display
+     * @return mixed|string
+     */
+    public function getTotalPrice($display = false)
+    {
+        return $display ? $this->format($this->adjusted_total_price) : $this->adjusted_total_price;
+    }
+
+    /**
      * @param iProductEntity $product
      * @param int $qty
      * @return iOrderItemEntity
@@ -99,4 +109,6 @@ class Order extends Model implements iOrderEntity
 
         return $orderItem;
     }
+
+
 }

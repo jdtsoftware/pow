@@ -15,6 +15,16 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
         $this->wallet = $this->models['wallet']::find($walletOwner->getWalletId());
     }
 
+    public function getId()
+    {
+        return $this->wallet->getId();
+    }
+
+    public function getUuid()
+    {
+        return $this->wallet->getUuid();
+    }
+
     public function balance($type)
     {
         return $this->wallet->token($type)->balance;

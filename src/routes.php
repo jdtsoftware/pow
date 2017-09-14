@@ -21,3 +21,5 @@ Route::get('/order/{uuid}', 'JDT\Pow\Http\Controllers\OrderController@viewAction
     ->name('order-view');
 Route::post('/order/{uuid}/pay', 'JDT\Pow\Http\Controllers\OrderController@payAction')
     ->name('order-pay');
+Route::get('/order/{uuid}/complete', 'JDT\Pow\Http\Controllers\OrderController@completeAction')
+    ->name('order-complete');
