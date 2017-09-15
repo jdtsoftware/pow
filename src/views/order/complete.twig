@@ -3,6 +3,12 @@
 
 </head>
 <body>
-    Order complete !
+    <h1>Order complete !</h1>
+    {% for item in order.items %}
+        <p>{{ item.product.getName() }} :: {{ item.getTotalPrice()|price }}</p>
+    {% endfor %}
+
+    <p>VAT Charge: {{ order.getVATCharge()|price }}</p>
+    <p>You have paid {{ order.getTotalPrice()|price }}</p>
 </body>
 </html>

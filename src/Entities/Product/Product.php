@@ -82,4 +82,14 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     {
         return $this->description;
     }
+
+    public function getVATCharge($totalPrice)
+    {
+        $vat = \Config::get('pow.vat');
+        if(empty($vat) || empty($totalPrice)) {
+            return 0;
+        }
+
+        return ($vat / 100) * $totalPrice;
+    }
 }

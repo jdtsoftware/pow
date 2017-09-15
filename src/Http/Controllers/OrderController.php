@@ -56,28 +56,39 @@ class OrderController extends BaseController
         $response = $gateway->purchase([
             'currency'      => \Config::get('pow.stripe_options.currency'),
             'source'        => Input::get('stripeToken'),
-            'amount'        => $order->getTotalPrice(),
+            'amount'        => round($order->getTotalPrice(), 2),
         ])->send();
 
+        $pow->basket()->clearBasket();
+        $order->update([
+            'payment_gateway_reference' => $response->getTransactionReference(),
+            'payment_gateway_blob' => json_encode($response->getData())
+        ]);
+
         if($response->isSuccessful()) {
-            $pow->basket()->clearBasket();
-            $order->update([
-                'payment_gateway_reference' => $response->getTransactionReference(),
-                'payment_gateway_blob' => json_encode($response)
-            ]);
-            return redirect()->route('order-complete', [$order->getUuid()]);
-        } elseif($order->payment_gateway_reference) {
+            $wallet = $pow->wallet();
+            foreach($order->items as $orderItem) {
+                $product = $orderItem->product;
+
+                //$wallet->credit($tokens, $type, $linker);
+            }
+
             return redirect()->route('order-complete', [$order->getUuid()]);
         } else {
-            var_dump($response->getCard());
-            die('order failed');
+            return view('pow::order.stripe-pay', [
+                'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
+                'order' => $order,
+                'error' => $response->getMessage()
+            ]);
         }
 
     }
 
-    public function completeAction()
+    public function completeAction($uuid)
     {
-        return view('pow::order.complete');
+        $pow = app('pow');
+        $order = $pow->order()->findByUuid($uuid);
+        return view('pow::order.complete', ['order' => $order]);
     }
 
 }

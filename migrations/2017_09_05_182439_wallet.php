@@ -91,7 +91,10 @@ class Wallet extends Migration
             $table->unsignedInteger('order_status_id');
             $table->unsignedInteger('payment_gateway_id');
 
+            $table->integer('vat_percentage')->default(0);
+            $table->decimal('original_vat_price', 19,4);
             $table->decimal('original_total_price', 19,4);
+            $table->decimal('adjusted_vat_price', 19,4);
             $table->decimal('adjusted_total_price', 19,4);
 
             $table->string('po_number')->nullable();
@@ -122,6 +125,10 @@ class Wallet extends Migration
             $table->decimal('original_total_price', 19,4);
             $table->decimal('adjusted_total_price', 19,4);
 
+            $table->integer('vat_percentage')->default(0);
+            $table->decimal('original_vat_price', 19,4);
+            $table->decimal('adjusted_vat_price', 19,4);
+
             $this->timestampsAndSoftDeletes($table);
 
             $table->foreign('order_id')->references('id')->on('order');
@@ -150,7 +157,7 @@ class Wallet extends Migration
             $table->unsignedInteger('order_item_id');
             // == https://laravel.com/docs/5.4/eloquent-relationships#polymorphic-relations ==
             $table->unsignedInteger('transaction_linker_id');
-            $table->unsignedInteger('transaction_linker_type');
+            $table->string('transaction_linker_type');
             // == https://laravel.com/docs/5.4/eloquent-relationships#polymorphic-relations ==
             $table->unsignedInteger('created_user_id');
 
@@ -174,13 +181,13 @@ class Wallet extends Migration
             $table->foreign('organisation_id')->references('id')->on('organisation');
         });
 
-        DB::table('order_status')->insert(
+        DB::table('order_status')->insert([
             ['handle' => 'draft',   'name' => 'Awaiting Payment'],
             ['handle' => 'pending', 'name' => 'Awaiting Payment'],
             ['handle' => 'paid',    'name' => 'Paid'],
             ['handle' => 'complete','name' => 'Complete'],
             ['handle' => 'refund',  'name' => 'Refunded']
-        );
+        ]);
     }
 
     /**

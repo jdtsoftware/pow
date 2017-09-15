@@ -59,6 +59,9 @@ class Order implements iOrder
             'payment_gateway_id' => 1,
             'original_total_price' => $basket->getTotalPrice(true),
             'adjusted_total_price' => $basket->getTotalPrice(true),
+            'vat_percentage' => \Config::get('pow.vat'),
+            'original_vat_price' => $basket->getVatPrice(),
+            'adjusted_vat_price' => $basket->getVatPrice(),
             'created_user_id' => 1,
         ]);
 

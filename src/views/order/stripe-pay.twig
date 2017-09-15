@@ -1,140 +1,48 @@
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart - Pay</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+
     <style>
-        /* The Modal (background) */
-        .modal {
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-        }
-
-        /* Modal Content/Box */
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; /* 15% from the top and centered */
-            padding: 5px;
-            border: 1px solid #888;
-            width: 25%; /* Could be more or less, depending on screen size */
-        }
-
-        .modal h2 { margin: 10px 0; }
-
-        /* The Close Button */
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .modal .label span {
-            position: relative;
-            display: block;
-            margin-bottom: 10px;
-            padding: 0;
-            font-size: 1em;
-            line-height: 1.2em;
-            height: 1.2em;
-            font-family: sans-serif;
-        }
-
-        .modal .field-name {
-            background-color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            border: 1px solid transparent;
-            box-shadow: 0 1px 3px 0 #e6ebf1;
-            -webkit-transition: box-shadow 150ms ease;
-            transition: box-shadow 150ms ease;
-
-            display: block;
-            font-family: sans-serif;
-            margin: 0;
-            width: 100%;
-            font-size: 1em;
-            line-height: 1.2em;
-            height: 1.2em;
-
-        }
-
-        .modal .field-name:focus {
-            box-shadow: 0 1px 3px 0 #cfd7df;
-        }
-
-        .modal .group { margin: 20px 5px; }
-
-        .modal-footer {
-            text-align: center;
-        }
-
-        .modal-footer button { margin: 0 15px;}
+        #payment-form { }
+        .CardField-number input, .CardField-number .CardField-number-fakeNumber { padding: 50px; }
     </style>
 </head>
 <body>
 
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="col-4">
+        <form id="payment-form" method="POST" action="{{ route('order-pay', [order.getUuid()]) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+            <h2>Pay</h2>
 
-<!-- Central Modal Medium Success -->
-<div class="modal fade show" id="centralModalSuccess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display:block;">
-    <div class="modal-dialog modal-notify modal-success" role="document">
-        <!--Content-->
-        <div class="modal-content">
-            <form id="payment-form" method="POST" action="{{ route('order-pay', [order.getUuid()]) }}">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                <!--Header-->
-                <div class="modal-header">
-                    <h2>Pay</h2>
-                </div>
+            <label for="card-element">
+                Credit or debit card
+            </label>
+            <div id="card-element" class="">
+                <!-- a Stripe Element will be inserted here. -->
+            </div>
 
-                <!--Body-->
-                <div class="modal-body">
+            <!--Footer-->
+            <div class="actions mt-4">
+                <button type="submit" class="btn btn-primary">Pay {{ order.getTotalPrice()|price }}</button>
+                <button type="submit" class="btn btn-secondary" data-dismiss="modal">No, thanks</button>
+            </div>
 
-                        <div class="group">
-                            <label class="label">
-                                <span>Name</span>
-                                <input name="cardholder-name" class="field-name" placeholder="Jane Doe" />
-                            </label>
-                        </div>
-                        <div class="group">
-                            <label>
-                                <span>Card</span>
-                                <div id="card-element" class="field"></div>
-                            </label>
-                        </div>
-
-                        <div class="outcome">
-                            <div class="error" role="alert"></div>
-                        </div>
-
-
-                </div>
-
-                <!--Footer-->
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary-modal">Pay {{ order.getTotalPrice()|price }} <i class="fa fa-diamond ml-1"></i></button>
-                    <button type="submit" class="btn btn-outline-secondary-modal waves-effect" data-dismiss="modal">No, thanks</button>
-                </div>
-            </form>
+            <div class="mt-4" id="card-errors">
+                <div class="{{ error ? 'alert alert-danger' : '' }}" role="alert">{{ error }}</div>
+            </div>
+        </form>
         </div>
-        <!--/.Content-->
     </div>
 </div>
-<!-- Central Modal Medium Success-->
 
-<script src="https://js.stripe.com/v3/"></script>
 <script>
     // Create a Stripe client
     var stripe = Stripe('{{ publishable_key }}');
@@ -142,27 +50,8 @@
     // Create an instance of Elements
     var elements = stripe.elements();
 
-    // Custom styling can be passed to options when creating an Element.
-    // (Note that this demo uses a wider set of styles than the guide below.)
-    var style = {
-        base: {
-            color: '#32325d',
-            lineHeight: '24px',
-            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-            fontSmoothing: 'antialiased',
-            fontSize: '16px',
-            '::placeholder': {
-                color: '#aab7c4'
-            }
-        },
-        invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
-        }
-    };
-
     // Create an instance of the card Element
-    var card = elements.create('card', {style: style});
+    var card = elements.create('card');
 
     // Add an instance of the card Element into the `card-element` <div>
     card.mount('#card-element');

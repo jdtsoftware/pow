@@ -45,6 +45,9 @@ class OrderItem extends Model implements iOrderItemEntity
         'adjusted_unit_price',
         'original_total_price',
         'adjusted_total_price',
+        'vat_percentage',
+        'original_vat_price',
+        'adjusted_vat_price',
         'created_at',
         'updated_at'
     ];
@@ -55,8 +58,28 @@ class OrderItem extends Model implements iOrderItemEntity
         'deleted_at',
     ];
 
+    /**
+     * @return integer
+     */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalPrice()
+    {
+        return $this->adjusted_total_price;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function product()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product'], 'id', 'product_id');
     }
 }

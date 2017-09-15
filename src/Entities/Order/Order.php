@@ -42,9 +42,12 @@ class Order extends Model implements iOrderEntity
         'uuid',
         'wallet_id',
         'order_status_id',
+        'vat_percentage',
         'payment_gateway_id',
         'original_total_price',
         'adjusted_total_price',
+        'original_vat_price',
+        'adjusted_vat_price',
         'po_number',
         'payment_gateway_reference',
         'payment_gateway_blob',
@@ -74,12 +77,27 @@ class Order extends Model implements iOrderEntity
     }
 
     /**
-     * @param bool $display
-     * @return mixed|string
+     * @return mixed
      */
-    public function getTotalPrice($display = false)
+    public function getVATRate()
     {
-        return $display ? $this->format($this->adjusted_total_price) : $this->adjusted_total_price;
+        return $this->vat_percentage;
+    }
+
+    /**
+     * @return float|int
+     */
+    public function getVATCharge()
+    {
+        return $this->adjusted_vat_price;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalPrice()
+    {
+        return $this->adjusted_total_price;
     }
 
     /**
@@ -105,10 +123,20 @@ class Order extends Model implements iOrderEntity
             'adjusted_unit_price' => $product->getTotalPrice(),
             'original_total_price' => $product->getTotalPrice($qty),
             'adjusted_total_price' => $product->getTotalPrice($qty),
+            'var_percentage' => \Config::get('pow.vat'),
+            'original_vat_price' => $product->getVATCharge($product->getTotalPrice($qty)),
+            'adjusted_vat_price' => $product->getVATCharge($product->getTotalPrice($qty)),
         ]);
 
         return $orderItem;
     }
+
+    public function items()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['order_item'], 'order_id', 'id');
+    }
+
 
 
 }

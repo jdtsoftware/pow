@@ -69,17 +69,18 @@ class powServiceProvider extends ServiceProvider
      */
     public function registerRoutes()
     {
-        $route = Route::prefix('pow');
-
+        $route = Route::prefix(\Config::get('pow.route_prefix'));
         $routesDomain = \Config::get('pow.route_domain');
-        $middleware = \Config::Get('pow.route_middleware');
+        $middlewares = \Config::Get('pow.route_middleware');
 
         if($routesDomain) {
             $route = $route->domain($routesDomain);
         }
 
-        if($middleware) {
-            $route->middleware($middleware);
+        if($middlewares) {
+            foreach($middlewares as $middleware) {
+                $route->middleware($middleware);
+            }
         }
 
         $route->group(__DIR__.'/routes.php');

@@ -121,7 +121,7 @@ class Basket implements iBasket
      * @param int $totalPrice
      * @return float|int
      */
-    public function getVATCharge(int $totalPrice)
+    public function getVATCharge($totalPrice)
     {
         if(empty($this->vat) || empty($totalPrice)) {
             return 0;
@@ -168,6 +168,15 @@ class Basket implements iBasket
     {
         $prices = $this->getTotalPrices();
         return $prices['total_price'] ?? 0;
+    }
+
+    /**
+     * @return int
+     */
+    public function getVatPrice()
+    {
+        $prices = $this->getTotalPrices();
+        return $prices['vat_price'] ?? 0;
     }
 
     /**

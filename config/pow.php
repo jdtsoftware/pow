@@ -15,8 +15,9 @@ return [
     'money_format' => '%.2n',
     //see http://php.net/manual/en/function.money-format.php
 
-    'route_domain' => config('jdt.admin_domain'),
-    'route_middleware' => 'web',
+    'route_prefix' => 'pow',
+    'route_domain' => config('jdt.domain'),
+    'route_middleware' => ['auth', 'web'],
 
     'models' => [
         'product' => JDT\Pow\Entities\Product\Product::class,

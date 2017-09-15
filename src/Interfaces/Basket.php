@@ -8,4 +8,5 @@ interface Basket {
     public function getBasket();
     public function getTotalPrices();
     public function getTotalPrice();
+    public function getVatPrice();
 }
