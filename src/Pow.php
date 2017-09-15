@@ -5,6 +5,7 @@ namespace JDT\Pow;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
 use JDT\Pow\Entities\WalletTokenType;
+use JDT\Pow\Interfaces\Gateway;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\Basket as iBasket;
 use JDT\Pow\Interfaces\Wallet as iWallet;
@@ -34,6 +35,7 @@ class Pow
         $this->models = \Config::get('pow.models');
         $this->classes = \Config::get('pow.classes');
         $this->closures = \Config::get('pow.closures');
+        $this->gateways = \Config::get('pow.gateways');
 
         $walletOwner = $walletOwner ?? self::$walletOwnerClosure;
         if(is_callable($walletOwner)) {
@@ -44,6 +46,12 @@ class Pow
 
         if(is_null($this->walletOwner)) {
             throw new \RuntimeException('Cannot find default wallet - please provide or set one');
+        }
+
+        switch(\Config::get('pow.payment_gateway')) {
+            case 'stripe':
+                    $this->paymentGateway = new $this->gateways['stripe'];
+                break;
         }
     }
 
@@ -68,7 +76,7 @@ class Pow
      */
     public function order() : iOrder
     {
-        return new $this->classes['order'];
+        return new $this->classes['order']($this->paymentGateway);
     }
 
     /**
@@ -78,6 +86,32 @@ class Pow
     public function createOrderFromBasket(iWallet $wallet = null) : iOrderEntity
     {
         return $this->order()->createFromBasket($this->wallet($wallet), $this->basket());
+    }
+
+    /**
+     * @param $order
+     * @param $input
+     * @param iWallet|null $wallet
+     * @return Gateway
+     */
+    public function payForOrder($order, $input, iWallet $wallet = null) : Gateway
+    {
+        $response = $this->order()->pay($order, $input);
+
+        if ($response->isSuccessful()) {
+            $wallet = $wallet ?? $this->wallet();
+            foreach ($order->items as $orderItem) {
+                $product = $orderItem->product;
+                $wallet->credit(
+                    \Auth::user(),
+                    $product->token->tokens,
+                    $product->token->type,
+                    $order,
+                    $orderItem);
+            }
+        }
+
+        return $response;
     }
 
     /**

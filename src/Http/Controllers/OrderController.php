@@ -50,35 +50,12 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         $order = $pow->order()->findByUuid($uuid);
+        $response = $pow->payForOrder($order, Input::get());
 
-        $gateway = Omnipay::create('Stripe');
-        $gateway->setApiKey(\Config::get('pow.stripe_options.secret_key'));
-        /*$response = $gateway->purchase([
-            'currency'      => \Config::get('pow.stripe_options.currency'),
-            'source'        => Input::get('stripeToken'),
-            'amount'        => round($order->getTotalPrice(), 2),
-        ])->send();
-
-        $pow->basket()->clearBasket();
-        $order->update([
-            'payment_gateway_reference' => $response->getTransactionReference(),
-            'payment_gateway_blob' => json_encode($response->getData())
-        ]);*/
-
-        if(/*$response->isSuccessful() || */1==1) {
-            $wallet = $pow->wallet();
-            foreach($order->items as $orderItem) {
-                $product = $orderItem->product;
-                $wallet->credit(
-                    \Auth::user(),
-                    $product->token->tokens,
-                    $product->token->type,
-                    $order,
-                    $orderItem);
-            }
-
+        if($response->isSuccessful()) {
             return redirect()->route('order-complete', [$order->getUuid()]);
         } else {
+            //@todo not hard code strip specific things
             return view('pow::order.stripe-pay', [
                 'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
                 'order' => $order,

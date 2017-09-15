@@ -3,6 +3,7 @@
 namespace JDT\Pow\Service;
 
 use \JDT\Pow\Interfaces\Basket as iBasket;
+use JDT\Pow\Interfaces\Gateway;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
 use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
@@ -16,9 +17,10 @@ class Order implements iOrder
     protected $models;
     protected $order;
 
-    public function __construct()
+    public function __construct(Gateway $paymentGateway)
     {
         $this->models = \Config::get('pow.models');
+        $this->paymentGateway = $paymentGateway;
     }
 
     /**
@@ -72,5 +74,16 @@ class Order implements iOrder
         return $order;
     }
 
+    public function pay(iOrderEntity $order, $paymentData = []) : Gateway
+    {
+        $response = $this->paymentGateway->pay($order->getTotalPrice(), $paymentData);
+
+        $order->update([
+            'payment_gateway_reference' => $response->getReference(),
+            'payment_gateway_blob' => json_encode($response->getData())
+        ]);
+
+        return $response;
+    }
 
 }

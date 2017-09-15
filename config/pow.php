@@ -33,5 +33,8 @@ return [
         'order' => \JDT\Pow\Service\Order::class,
         'wallet' => \JDT\Pow\Service\Wallet::class,
         'basket' => \JDT\Pow\Service\Basket::class,
+    ],
+    'gateways' => [
+        'stripe' => \JDT\Pow\Service\Gateway\Stripe::class,
     ]
 ];
