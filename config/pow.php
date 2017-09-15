@@ -21,9 +21,11 @@ return [
 
     'models' => [
         'product' => JDT\Pow\Entities\Product\Product::class,
+        'product_token' => JDT\Pow\Entities\Product\ProductToken::class,
         'order' => JDT\Pow\Entities\Order\Order::class,
         'order_item' => JDT\Pow\Entities\Order\OrderItem::class,
         'wallet' => JDT\Pow\Entities\Wallet\Wallet::class,
+        'wallet_token' => JDT\Pow\Entities\Wallet\WalletToken::class,
         'wallet_token_type' => \JDT\Pow\Entities\Wallet\WalletTokenType::class,
     ],
     'classes' => [

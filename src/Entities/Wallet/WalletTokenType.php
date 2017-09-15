@@ -10,7 +10,7 @@ use App\Services\Geocoder\Geocoder;
 /**
  * Class Wallet.
  */
-class WalletTokenType extends Model
+class WalletTokenType extends Model implements \JDT\Pow\Interfaces\Entities\WalletTokenType
 {
     use SoftDeletes;
 
@@ -45,7 +45,12 @@ class WalletTokenType extends Model
         'deleted_at',
     ];
 
-    protected $with = [
-    ];
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
 }

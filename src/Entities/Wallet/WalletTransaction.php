@@ -19,7 +19,7 @@ class WalletTransaction extends Model
      *
      * @var string
      */
-    protected $table = 'wallet';
+    protected $table = 'wallet_transaction';
 
     /**
      * The attributes that should be mutated to dates.
@@ -36,16 +36,21 @@ class WalletTransaction extends Model
      * @var array
      */
     protected $fillable = [
-
+        'uuid',
+        'wallet_id',
+        'wallet_token_id',
+        'wallet_transaction_type_id',
+        'tokens',
+        'order_item_id',
+        'transaction_linker_id',
+        'transaction_linker_type',
+        'created_user_id',
     ];
 
     protected $hidden = [
         'created_at',
         'updated_at',
         'deleted_at',
-    ];
-
-    protected $with = [
     ];
 
 }

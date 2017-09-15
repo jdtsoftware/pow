@@ -6,6 +6,7 @@ namespace JDT\Pow\Entities\Wallet;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use \JDT\Pow\Interfaces\Entities\Wallet as iWalletEntity;
+
 /**
  * Class Wallet.
  */
@@ -46,6 +47,17 @@ class Wallet extends Model implements iWalletEntity
         'updated_at',
         'deleted_at',
     ];
+
+    public function token($type)
+    {
+        $models = \Config::get('pow.models');
+        if($type) {
+            return $this->hasOne($models['wallet_token'], 'wallet_id', 'id')
+                ->where('wallet_token_type_id', $type->getId());
+        }
+
+        return $this->hasMany($models['wallet_token'], 'wallet_id', 'id');
+    }
 
     /**
      * @return integer

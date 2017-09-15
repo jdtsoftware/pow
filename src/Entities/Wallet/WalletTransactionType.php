@@ -44,8 +44,4 @@ class WalletTransactionType extends Model
         'updated_at',
         'deleted_at',
     ];
-
-    protected $with = [
-    ];
-
 }

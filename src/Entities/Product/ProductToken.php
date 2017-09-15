@@ -35,7 +35,8 @@ class ProductToken extends Model
      */
     protected $fillable = [
         'product_id',
-        'wallet_token_type_id'
+        'wallet_token_type_id',
+        'tokens'
     ];
 
     protected $hidden = [
@@ -47,4 +48,9 @@ class ProductToken extends Model
     protected $with = [
     ];
 
+    public function type()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['wallet_token_type'], 'id', 'wallet_token_type_id');
+    }
 }

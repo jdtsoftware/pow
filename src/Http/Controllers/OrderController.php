@@ -53,7 +53,7 @@ class OrderController extends BaseController
 
         $gateway = Omnipay::create('Stripe');
         $gateway->setApiKey(\Config::get('pow.stripe_options.secret_key'));
-        $response = $gateway->purchase([
+        /*$response = $gateway->purchase([
             'currency'      => \Config::get('pow.stripe_options.currency'),
             'source'        => Input::get('stripeToken'),
             'amount'        => round($order->getTotalPrice(), 2),
@@ -63,14 +63,18 @@ class OrderController extends BaseController
         $order->update([
             'payment_gateway_reference' => $response->getTransactionReference(),
             'payment_gateway_blob' => json_encode($response->getData())
-        ]);
+        ]);*/
 
-        if($response->isSuccessful()) {
+        if(/*$response->isSuccessful() || */1==1) {
             $wallet = $pow->wallet();
             foreach($order->items as $orderItem) {
                 $product = $orderItem->product;
-
-                //$wallet->credit($tokens, $type, $linker);
+                $wallet->credit(
+                    \Auth::user(),
+                    $product->token->tokens,
+                    $product->token->type,
+                    $order,
+                    $orderItem);
             }
 
             return redirect()->route('order-complete', [$order->getUuid()]);

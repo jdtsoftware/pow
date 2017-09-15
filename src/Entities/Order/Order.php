@@ -6,6 +6,7 @@ namespace JDT\Pow\Entities\Order;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use JDT\Pow\Interfaces\IdentifiableId;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
@@ -13,7 +14,7 @@ use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 /**
  * Class Order.
  */
-class Order extends Model implements iOrderEntity
+class Order extends Model implements iOrderEntity, IdentifiableId
 {
     use SoftDeletes;
 

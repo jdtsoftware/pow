@@ -49,10 +49,7 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         'deleted_at',
     ];
 
-    protected $with = [
-    ];
-
-    public function tokens()
+    public function token()
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['product_token'], 'product_id', 'id');
