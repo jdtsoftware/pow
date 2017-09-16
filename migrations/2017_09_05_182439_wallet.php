@@ -32,7 +32,7 @@ class Wallet extends Migration
             $table->string('name');
             $table->text('description');
             $table->decimal('total_price', 19,4);
-            $table->unsignedInteger('created_user_id');
+            $table->unsignedInteger('created_user_id')->nullable();
 
             $this->timestampsAndSoftDeletes($table);
 
