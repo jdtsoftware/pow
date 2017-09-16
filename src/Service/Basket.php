@@ -110,14 +110,6 @@ class Basket implements iBasket
     }
 
     /**
-     * @todo finish
-     */
-    public function checkout()
-    {
-        return $this->classes['order']::create($this);
-    }
-
-    /**
      * @param int $totalPrice
      * @return float|int
      */

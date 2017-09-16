@@ -6,6 +6,7 @@ interface Basket {
 
     public function addProduct(\JDT\Pow\Interfaces\Entities\Product $product);
     public function getBasket();
+    public function clearBasket();
     public function getTotalPrices();
     public function getTotalPrice();
     public function getVatPrice();

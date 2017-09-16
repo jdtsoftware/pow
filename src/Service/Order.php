@@ -96,6 +96,8 @@ class Order implements iOrder
             $order->addLineItem($item['product'], $item['qty'] ?? 1);
         }
 
+        $basket->clearBasket();
+
         return $order;
     }
 
