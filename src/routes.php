@@ -23,3 +23,6 @@ Route::post('/order/{uuid}/pay', 'JDT\Pow\Http\Controllers\OrderController@payAc
     ->name('order-pay');
 Route::get('/order/{uuid}/complete', 'JDT\Pow\Http\Controllers\OrderController@completeAction')
     ->name('order-complete');
+
+Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@insufficientBalanceAction')
+    ->name('insufficient-balance');

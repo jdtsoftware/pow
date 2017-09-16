@@ -72,4 +72,8 @@ class OrderController extends BaseController
         return view('pow::order.complete', ['order' => $order]);
     }
 
+    public function insufficientBalanceAction()
+    {
+        return view('pow::order.insufficient-balance');
+    }
 }
