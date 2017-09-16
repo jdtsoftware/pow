@@ -9,7 +9,7 @@ use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 interface Order {
     public function findById(int $id) : iOrderEntity;
     public function findByUuid($uuid) : iOrderEntity;
-    public function createFromBasket(iBasket $basket) : iOrderEntity;
+    public function createFromBasket(iBasket $basket, IdentifiableId $creator) : iOrderEntity;
     public function pay(iOrderEntity $order, $paymentData = []);
     public function findEarliestRedeemableOrderItem();
 }

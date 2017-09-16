@@ -9,6 +9,7 @@ use JDT\Pow\Entities\WalletTokenType;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Gateway;
 use JDT\Pow\Interfaces\IdentifiableId;
+use JDT\Pow\Interfaces\Redeemable;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\Basket as iBasket;
 use JDT\Pow\Interfaces\Wallet as iWallet;
@@ -39,6 +40,8 @@ class Pow
         $this->classes = \Config::get('pow.classes');
         $this->closures = \Config::get('pow.closures');
         $this->gateways = \Config::get('pow.gateways');
+
+        $this->user = \Auth::user();
 
         $walletOwner = $walletOwner ?? self::$walletOwnerClosure;
         if(is_callable($walletOwner)) {
@@ -89,7 +92,7 @@ class Pow
      */
     public function createOrderFromBasket(iWallet $wallet = null) : iOrderEntity
     {
-        return $this->order($wallet)->createFromBasket($this->basket());
+        return $this->order($wallet)->createFromBasket($this->basket(), $this->user);
     }
 
     /**
@@ -106,7 +109,7 @@ class Pow
             $wallet = $wallet ?? $this->wallet();
             foreach ($order->items as $orderItem) {
                 $wallet->credit(
-                    \Auth::user(),
+                    $this->user,
                     $orderItem,
                     $orderItem);
             }
@@ -123,13 +126,13 @@ class Pow
      * @param IdentifiableId $redeemer
      * @param Redeemable $redeemableLinker
      * @param iOrderItemEntity|null $orderItemEntity
-     * @param Wallet|null $wallet
+     * @param iWallet|null $wallet
      * @throws \Exception
      */
-    public function redeemToken(IdentifiableId $redeemer, Redeemable $redeemableLinker, iOrderItemEntity $orderItemEntity = null, Wallet $wallet = null)
+    public function redeemToken(IdentifiableId $redeemer, Redeemable $redeemableLinker, iOrderItemEntity $orderItemEntity = null, iWallet $wallet = null)
     {
-        $tokenCost = (int) $redeemableLinker->getTokenCost();
-        if($tokenCost < 0) {
+        $tokenVaue = (int) $redeemableLinker->getTokenValue();
+        if($tokenVaue < 0) {
             throw new \Exception('Token cost cannot be less than 0');
         }
 
@@ -138,11 +141,11 @@ class Pow
         }
 
         $orderItemEntity->update([
-            'tokens_spent' => $orderItemEntity->tokens_spent + $tokenCost
+            'tokens_spent' => $orderItemEntity->tokens_spent + $tokenVaue
         ]);
 
-        $wallet = $wallet ?? $this->wallet;
-        $wallet->debit($redeemer, $tokenCost, $redeemableLinker->getTokenType(), $redeemableLinker, $orderItem);
+        $wallet = $wallet ?? $this->wallet();
+        $wallet->debit($redeemer, $redeemableLinker, $orderItemEntity);
     }
 
     /**

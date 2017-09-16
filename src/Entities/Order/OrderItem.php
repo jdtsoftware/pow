@@ -110,4 +110,11 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
     {
         return get_class($this->order);
     }
+
+    public static function findEarliestRedeemableOrderItem() : iOrderItemEntity
+    {
+        return OrderItem::whereRaw('tokens_spent < tokens_total')
+            ->orderBy('created_at', 'asc')
+            ->first();
+    }
 }

@@ -3,10 +3,13 @@
 namespace JDT\Pow\Service;
 
 use \JDT\Pow\Interfaces\Basket as iBasket;
+
 use JDT\Pow\Interfaces\Gateway;
+use JDT\Pow\Interfaces\IdentifiableId;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
 use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -42,10 +45,12 @@ class Order implements iOrder
         return $this->models['order']::where('uuid', $uuid)->first();
     }
 
-    public function findEarliestRedeemableOrderItem() : iOrderEntity
+    /**
+     * @return iOrderItemEntity
+     */
+    public function findEarliestRedeemableOrderItem() : iOrderItemEntity
     {
-
-        //$this->models['order_item']::where;
+        return $this->models['order_item']::findEarliestRedeemableOrderItem();
     }
 
     /**
@@ -53,7 +58,7 @@ class Order implements iOrder
      * @return iOrderEntity
      * @throws \Exception
      */
-    public function createFromBasket(iBasket $basket) : iOrderEntity
+    public function createFromBasket(iBasket $basket, IdentifiableId $creator) : iOrderEntity
     {
         $basketItems = $basket->getBasket();
         if(empty($basketItems['products'])) {
@@ -70,7 +75,7 @@ class Order implements iOrder
             'vat_percentage' => \Config::get('pow.vat'),
             'original_vat_price' => $basket->getVatPrice(),
             'adjusted_vat_price' => $basket->getVatPrice(),
-            'created_user_id' => 1,
+            'created_user_id' => $creator->getId(),
         ]);
 
         foreach($basketItems['products'] as $productId => $item) {
