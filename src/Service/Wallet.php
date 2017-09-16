@@ -113,12 +113,12 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
     {
         $tokenValue = (int) $linker->getTokenValue();
         if($tokenValue < 0) {
-            throw new Exception('Token cost cannot be negative, please use credit');
+            throw new \Exception('Token cost cannot be negative, please use credit');
         }
 
         $transactionTypeEntity = $this->transactionType($transactionType);
         if(empty($transactionTypeEntity)) {
-            throw new Exception('Cannot find transaction type: '.$transactionType);
+            throw new \Exception('Cannot find transaction type: '.$transactionType);
         }
 
         return WalletTransaction::create([

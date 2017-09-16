@@ -182,6 +182,11 @@ class Wallet extends Migration
         DB::table('payment_gateway')->insert([
             ['handle' => 'stripe', 'name' => 'Stripe']
         ]);
+
+        DB::table('wallet_transaction_type')->insert([
+            ['handle' => 'credit', 'name' => 'Credit'],
+            ['handle' => 'debit', 'name' => 'Debit']
+        ]);
     }
 
     /**
