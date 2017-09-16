@@ -176,7 +176,8 @@ class Wallet extends Migration
             ['handle' => 'pending', 'name' => 'Awaiting Payment'],
             ['handle' => 'paid',    'name' => 'Paid'],
             ['handle' => 'complete','name' => 'Complete'],
-            ['handle' => 'refund',  'name' => 'Refunded']
+            ['handle' => 'refund',  'name' => 'Refunded'],
+            ['handle' => 'cancelled',  'name' => 'Cancelled'],
         ]);
 
         DB::table('payment_gateway')->insert([
