@@ -245,7 +245,7 @@
     <div class="actions m-2">
         <form method="POST" action="{{ route('order-create') }}" class="float-right">
             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-            <button type="submit" class="btn btn-success">Pay Now</button>
+            <button type="submit" class="btn btn-success">Checkout</button>
         </form>
 
         <form method="POST" action="{{ route('basket-clear') }}" class="float-left">

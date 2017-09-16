@@ -22,7 +22,14 @@ class ProductController extends BaseController
     public function listAction($page = 1)
     {
         $pow = app('pow');
-        return view('pow::product.list', ['products' => $pow->product()->list($page)]);
+
+        return view(
+            'pow::product.list',
+            [
+                'products' => $pow->product()->list($page),
+                'incomplete_orders' => $pow->order()->unfinishedOrders()
+            ]
+        );
     }
 
     /**

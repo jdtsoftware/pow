@@ -119,4 +119,12 @@ class Order implements iOrder
         return $response;
     }
 
+    /**
+     * @return Collection
+     */
+    public function unfinishedOrders()
+    {
+        return $this->models['order']::where('order_status_id', $this->models['order_status']::handleToId('draft'))->get();
+    }
+
 }

@@ -265,6 +265,17 @@
 <body>
 
     <div class="container">
+        {% if(incomplete_orders) %}
+            <div class="col-12 mt-2 alert alert-info">
+                <h3>You have incomplete orders.</h3>
+                <ul>
+                    {% for order in incomplete_orders %}
+                        <li><a href="{{ route('order-view', [order.uuid]) }}">view and pay now</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="clearfix"></div>
         <!-- First product box start here-->
         {% for product in products %}
         <div class="prod-info-main prod-wrap clearfix col-3 m-4 float-left">
@@ -298,6 +309,7 @@
         </div>
         {% endfor %}
         <!-- end product -->
+        <div class="clearfix"></div>
     </div>
 </body>
 </html>
