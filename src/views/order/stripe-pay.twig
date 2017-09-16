@@ -191,7 +191,7 @@
     <a href="{{ route('products') }}" class="ml-2 mt-2">< Back to products</a>
     <!-- Title -->
     <div class="title">
-        Basket
+        Order Checkout <small class="float-right">ref {{ order.getUuid() }}</small>
     </div>
     {% for item in order.items %}
         <div class="item">
@@ -209,7 +209,7 @@
     <div class="basket-price">
         <p>Sub Total: {{ order.getSubTotalPrice()|price }}</p>
         <p>VAT: {{ order.getVATCharge()|price }}</p>
-        <p>Total: {{ order.getTotalPrice()|price }}</p>
+        <p>Total: {{ order.getAdjustedPrice()|price }}</p>
     </div>
 
     <div class="actions m-2">
@@ -220,7 +220,7 @@
             <!-- a Stripe Element will be inserted here. -->
         </div>
 
-        <button type="submit" class="btn btn-success float-right">Pay {{ order.getTotalPrice()|price }}</button>
+        <button type="submit" class="btn btn-success float-right">Pay {{ order.getAdjustedPrice()|price }}</button>
 
             <form method="POST" action="{{ route('basket-clear') }}" class="float-left">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />

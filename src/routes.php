@@ -17,12 +17,12 @@ Route::post('/basket/clear', 'JDT\Pow\Http\Controllers\BasketController@clearAct
 
 Route::post('/order/create', 'JDT\Pow\Http\Controllers\OrderController@createAction')
     ->name('order-create');
-Route::get('/order/{uuid}', 'JDT\Pow\Http\Controllers\OrderController@viewAction')
-    ->name('order-view');
+Route::get('/order/{uuid}', 'JDT\Pow\Http\Controllers\OrderController@checkoutAction')
+    ->name('order-checkout');
 Route::post('/order/{uuid}/pay', 'JDT\Pow\Http\Controllers\OrderController@payAction')
     ->name('order-pay');
-Route::get('/order/{uuid}/complete', 'JDT\Pow\Http\Controllers\OrderController@completeAction')
-    ->name('order-complete');
+Route::get('/order/{uuid}/view', 'JDT\Pow\Http\Controllers\OrderController@viewAction')
+    ->name('order-view');
 
 Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@insufficientBalanceAction')
     ->name('insufficient-balance');

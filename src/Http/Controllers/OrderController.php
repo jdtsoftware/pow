@@ -25,13 +25,20 @@ class OrderController extends BaseController
         $pow = app('pow');
         $order = $pow->createOrderFromBasket();
 
-        return redirect()->route('order-view', ['uuid' => $order->getUuid()]);
+        return redirect()->route('order-checkout', ['uuid' => $order->getUuid()]);
     }
 
-    public function viewAction($uuid)
+    /**
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|\Illuminate\View\View
+     */
+    public function checkoutAction($uuid)
     {
         $pow = app('pow');
         $order = $pow->order()->findByUuid($uuid);
+        if($order->isComplete()) {
+            return redirect()->route('order-view', [$uuid]);
+        }
 
         return view('pow::order.stripe-pay', [
             'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
@@ -53,7 +60,7 @@ class OrderController extends BaseController
         $response = $pow->payForOrder($order, Input::get());
 
         if($response->isSuccessful()) {
-            return redirect()->route('order-complete', [$order->getUuid()]);
+            return redirect()->route('order-view', [$order->getUuid()]);
         } else {
             //@todo not hard code strip specific things
             return view('pow::order.stripe-pay', [
@@ -65,7 +72,7 @@ class OrderController extends BaseController
 
     }
 
-    public function completeAction($uuid)
+    public function viewAction($uuid)
     {
         $pow = app('pow');
         if($pow->order()->validOrder($uuid)) {

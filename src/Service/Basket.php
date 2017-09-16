@@ -62,8 +62,8 @@ class Basket implements iBasket
             $this->basket['products'][$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
-                'unit_price' => $product->getTotalPrice(),
-                'total_price' => $product->getTotalPrice($qty)
+                'unit_price' => $product->getAdjustedPrice(),
+                'total_price' => $product->getAdjustedPrice($qty)
             ];
             
             $this->session->put($this->instance, $this->basket);

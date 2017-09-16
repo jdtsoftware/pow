@@ -10,7 +10,6 @@ use JDT\Pow\Interfaces\IdentifiableId;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
-use JDT\Pow\Interfaces\Redeemable;
 
 /**
  * Class Order.
@@ -79,27 +78,35 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
-     * @return mixed
+     * @return float
      */
-    public function getVATRate()
+    public function getVATRate() : float
     {
-        return $this->vat_percentage;
+        return (float) $this->vat_percentage;
     }
 
     /**
      * @return float|int
      */
-    public function getVATCharge()
+    public function getVATCharge() : float
     {
-        return $this->adjusted_vat_price;
+        return (float) $this->adjusted_vat_price;
+    }
+
+    /**
+     * return float
+     */
+    public function getOriginalPrice() : float
+    {
+        return (float) $this->getAdjustedPrice();
     }
 
     /**
      * @return float
      */
-    public function getTotalPrice()
+    public function getAdjustedPrice() : float
     {
-        return $this->adjusted_total_price;
+        return (float) $this->adjusted_total_price;
     }
 
     /**
@@ -107,7 +114,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
      */
     public function getSubTotalPrice()
     {
-        return $this->getTotalPrice() - $this->getVATCharge();
+        return $this->getAdjustedPrice() - $this->getVATCharge();
     }
 
     /**
@@ -141,10 +148,21 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $orderItem;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function items()
     {
         $models = \Config::get('pow.models');
         return $this->hasMany($models['order_item'], 'order_id', 'id');
+    }
+
+    /**
+     * @return bool
+     */
+    public function isComplete()
+    {
+        return $this->order_status_id == OrderStatus::handleToId('complete');
     }
 
 

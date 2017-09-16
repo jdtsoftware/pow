@@ -108,7 +108,7 @@ class Order implements iOrder
      */
     public function pay(iOrderEntity $order, $paymentData = []) : Gateway
     {
-        $response = $this->paymentGateway->pay($order->getTotalPrice(), $paymentData);
+        $response = $this->paymentGateway->pay($order->getAdjustedPrice(), $paymentData);
 
         $order->update([
             'payment_gateway_reference' => $response->getReference(),

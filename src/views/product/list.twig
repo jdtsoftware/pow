@@ -265,12 +265,12 @@
 <body>
 
     <div class="container">
-        {% if(incomplete_orders) %}
+        {% if(incomplete_orders.isEmpty() == false) %}
             <div class="col-12 mt-2 alert alert-info">
                 <h3>You have incomplete orders.</h3>
                 <ul>
                     {% for order in incomplete_orders %}
-                        <li><a href="{{ route('order-view', [order.uuid]) }}">view and pay now</a></li>
+                        <li><a href="{{ route('order-checkout', [order.uuid]) }}">view and pay now</a></li>
                     {% endfor %}
                 </ul>
             </div>
