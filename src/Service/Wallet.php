@@ -66,7 +66,7 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
         $tokenType = WalletTokenType::where('handle', $type)->first();
         $walletToken = $this->wallet->token($tokenType)->first();
 
-        return (int)  $walletToken->tokens ?? 0;
+        return isset($walletToken) ? (int) $walletToken->tokens : 0;
     }
 
     /**
