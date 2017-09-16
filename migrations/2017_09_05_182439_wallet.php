@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
-use App\Services\Database\Migrations\Migration;
+use Illuminate\Database\Migrations\Migration;
 
 class Wallet extends Migration
 {
@@ -171,22 +171,16 @@ class Wallet extends Migration
             $table->foreign('created_user_id')->references('id')->on('user');
         });
 
-        //@todo move this out
-        Schema::create('wallet_organisation_linker', function(Blueprint $table) {
-            $table->increments('id');
-            $table->unsignedInteger('wallet_id');
-            $table->unsignedInteger('organisation_id');
-            $this->timestampsAndSoftDeletes($table);
-
-            $table->foreign('organisation_id')->references('id')->on('organisation');
-        });
-
         DB::table('order_status')->insert([
             ['handle' => 'draft',   'name' => 'Awaiting Payment'],
             ['handle' => 'pending', 'name' => 'Awaiting Payment'],
             ['handle' => 'paid',    'name' => 'Paid'],
             ['handle' => 'complete','name' => 'Complete'],
             ['handle' => 'refund',  'name' => 'Refunded']
+        ]);
+
+        DB::table('payment_gateway')->insert([
+            ['handle' => 'stripe', 'name' => 'Stripe']
         ]);
     }
 
@@ -213,5 +207,41 @@ class Wallet extends Migration
             DROP TABLE IF EXISTS order_status;
             DROP TABLE IF EXISTS payment_gateway;
          */
+    }
+
+    /**
+     * @param \Illuminate\Database\Schema\Blueprint $table
+     *
+     * @return \Illuminate\Database\Schema\Blueprint
+     */
+    protected function timestampsAndSoftDeletes(Blueprint $table):Blueprint
+    {
+        $this->timestamps($table);
+        $this->softDeletes($table);
+
+        return $table;
+    }
+
+    /**
+     * @param string $tableName
+     * @param bool   $withName
+     * @param bool   $withDesc
+     *
+     * @return \Illuminate\Database\Schema\Blueprint
+     */
+    protected function createLookupTable(string $tableName, $withName = false, $withDesc = false)
+    {
+        return \Schema::create($tableName, function (Blueprint $table) use ($withName, $withDesc) {
+            $table->increments('id');
+            $this->handle($table, true);
+            if ($withName === true) {
+                $table->string('name');
+            }
+            if ($withDesc == true) {
+                $table->text('description');
+            }
+
+            $this->timestampsAndSoftDeletes($table);
+        });
     }
 }
