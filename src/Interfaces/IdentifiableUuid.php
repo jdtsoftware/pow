@@ -2,7 +2,7 @@
 
 namespace JDT\Pow\Interfaces;
 
-interface IdentifiableId {
+interface IdentifiableUuid {
 
     public function getUuid();
 }
