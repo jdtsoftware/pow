@@ -136,7 +136,10 @@ class Basket implements iBasket
         $basketTotalPrice = 0;
         foreach($this->basket['products'] as $product) {
 
-            $totalPrice = $product['product']->getTotalPrice($product['qty']);
+            $originalTotalPrice = $product['product']->getOriginalPrice($product['qty']);
+            $totalPrice = $product['product']->getAdjustedPrice($product['qty']);
+
+            $product['original_price'] = $originalTotalPrice;
             $product['total_price'] = $totalPrice;
 
             $basketTotalPrice += $totalPrice;

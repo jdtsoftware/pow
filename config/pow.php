@@ -22,6 +22,7 @@ return [
     'models' => [
         'product' => JDT\Pow\Entities\Product\Product::class,
         'product_token' => JDT\Pow\Entities\Product\ProductToken::class,
+        'product_adjustment_price' => \JDT\Pow\Entities\Product\ProductAdjustmentPrice::class,
         'order' => JDT\Pow\Entities\Order\Order::class,
         'order_item' => JDT\Pow\Entities\Order\OrderItem::class,
         'order_status' => \JDT\Pow\Entities\Order\OrderStatus::class,

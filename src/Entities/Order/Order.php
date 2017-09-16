@@ -103,6 +103,14 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @return float
+     */
+    public function getSubTotalPrice()
+    {
+        return $this->getTotalPrice() - $this->getVATCharge();
+    }
+
+    /**
      * @param iProductEntity $product
      * @param int $qty
      * @return iOrderItemEntity
@@ -121,13 +129,13 @@ class Order extends Model implements iOrderEntity, IdentifiableId
             'tokens_total' => $product->token->tokens,
             'tokens_spent' => 0,
             'quantity' => $qty,
-            'original_unit_price' => $product->getTotalPrice(),
-            'adjusted_unit_price' => $product->getTotalPrice(),
-            'original_total_price' => $product->getTotalPrice($qty),
-            'adjusted_total_price' => $product->getTotalPrice($qty),
+            'original_unit_price' => $product->getOriginalPrice(),
+            'adjusted_unit_price' => $product->getAdjustedPrice(),
+            'original_total_price' => $product->getOriginalPrice($qty),
+            'adjusted_total_price' => $product->getAdjustedPrice($qty),
             'var_percentage' => \Config::get('pow.vat'),
-            'original_vat_price' => $product->getVATCharge($product->getTotalPrice($qty)),
-            'adjusted_vat_price' => $product->getVATCharge($product->getTotalPrice($qty)),
+            'original_vat_price' => $product->getVATCharge($product->getOriginalPrice($qty)),
+            'adjusted_vat_price' => $product->getVATCharge($product->getAdjustedPrice($qty)),
         ]);
 
         return $orderItem;

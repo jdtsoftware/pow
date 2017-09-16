@@ -8,7 +8,8 @@ interface Product {
 
 
     public function getId();
-    public function getTotalPrice($qty);
+    public function getOriginalPrice($qty = 0) : float;
+    public function getAdjustedPrice($qty = 0) : float;
     public function getVATCharge($totalPrice);
     public function getName();
     public function getDescription();

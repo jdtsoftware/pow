@@ -1,14 +1,219 @@
+<!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart - Order Complete</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
 
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500);
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            margin: 0;
+            background-color: #7EC855;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .shopping-cart {
+            width: 750px;
+            margin: 80px auto;
+            background: #FFFFFF;
+            box-shadow: 1px 2px 3px 0px rgba(0,0,0,0.10);
+            border-radius: 6px;
+
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title {
+            height: 60px;
+            border-bottom: 1px solid #E1E8EE;
+            padding: 20px 30px;
+            color: #5E6977;
+            font-size: 18px;
+            font-weight: 400;
+        }
+
+        .basket-price {
+            border-bottom: 1px solid #E1E8EE;
+            font-size: 14px;
+            color: #43484D;
+            font-weight: 400;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .basket-price p {
+            padding: 0px 10px;
+            text-align: right;
+            margin-right: 10px;
+        }
+
+        .item {
+            padding: 20px 30px;
+            height: 100px;
+            display: flex;
+            border-bottom:  1px solid #E1E8EE;
+        }
+
+        .is-active {
+            animation-name: animate;
+            animation-duration: .8s;
+            animation-iteration-count: 1;
+            animation-timing-function: steps(28);
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes animate {
+            0%   { background-position: left;  }
+            50%  { background-position: right; }
+            100% { background-position: right; }
+        }
+
+        /* Product Description */
+        .description {
+            padding-top: 10px;
+            margin-right: 20px;
+            width: 300px;
+        }
+
+        .description span {
+            display: block;
+            font-size: 14px;
+            color: #43484D;
+            font-weight: 400;
+        }
+
+        .description span:first-child {
+            margin-bottom: 5px;
+        }
+        .description span:last-child {
+            font-weight: 300;
+            margin-top: 8px;
+            color: #86939E;
+        }
+
+        /* Product Quantity */
+        .quantity {
+            padding-top: 20px;
+            margin-right: 60px;
+        }
+        .quantity input {
+            -webkit-appearance: none;
+            border: none;
+            text-align: center;
+            width: 32px;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+        .quantity form {
+            display: inline;
+        }
+
+        button[class*=btn-qty] {
+            width: 30px;
+            height: 30px;
+            background-color: #E1E8EE;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+        .remove-btn-qty {
+            width: 80px !important;
+        }
+        button:focus,
+        input:focus {
+            outline:0;
+        }
+
+        /* Total Price */
+        .total-price {
+            width: 83px;
+            padding-top: 27px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+
+        .remove-button {
+            padding-top: 24px;
+            margin-left: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+
+        /* Responsive */
+        @media (max-width: 800px) {
+            .shopping-cart {
+                width: 100%;
+                height: auto;
+                overflow: hidden;
+            }
+            .item {
+                height: auto;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .image img {
+                width: 50%;
+            }
+            .image,
+            .quantity,
+            .description {
+                width: 100%;
+                text-align: center;
+                margin: 6px 0;
+            }
+            .buttons {
+                margin-right: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Order complete !</h1>
+<div class="shopping-cart">
+    <a href="{{ route('products') }}" class="ml-2 mt-2">< Back to products</a>
+    <!-- Title -->
+    <div class="title">
+        Basket
+    </div>
+
     {% for item in order.items %}
-        <p>{{ item.product.getName() }} :: {{ item.getTotalPrice()|price }}</p>
+        <div class="item">
+            <div class="description">
+                <span>{{ item.product.name }}</span>
+                <span>{{ item.product.description|truncate(50) }}</span>
+            </div>
+            <div class="quantity">
+                {{ item.quantity }} x {{item.adjusted_unit_price|price}}
+            </div>
+            <div class="total-price">{{ item.adjusted_total_price|price }}</div>
+        </div>
     {% endfor %}
 
-    <p>VAT Charge: {{ order.getVATCharge()|price }}</p>
-    <p>You have paid {{ order.getTotalPrice()|price }}</p>
+    <div class="basket-price">
+        <p>Sub Total: {{ order.getSubTotalPrice()|price }}</p>
+        <p>VAT: {{ order.getVATCharge()|price }}</p>
+        <p>Total: {{ order.getTotalPrice()|price }}</p>
+    </div>
+    <div class="actions m-2">
+        <h2 class="text-center">Order complete - you have paid {{ order.getTotalPrice()|price }}</h2>
+    </div>
+</div>
+
 </body>
 </html>

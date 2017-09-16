@@ -49,18 +49,37 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         'deleted_at',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function token()
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['product_token'], 'product_id', 'id');
     }
 
-    public function getId()
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function adjustment()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product_adjustment_price'], 'product_id', 'id');
+    }
+
+    /**
+     * @return integer
+     */
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function getTotalPrice($qty = 0, $display = false)
+    /**
+     * @param int $qty
+     * @return float
+     */
+    public function getOriginalPrice($qty = 0) : float
     {
         $totalPrice = $this->total_price;
         if($qty > 0) {
@@ -70,17 +89,32 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         return $totalPrice;
     }
 
-    public function getName()
+    public function getAdjustedPrice($qty = 0) : float
+    {
+        return $this->getOriginalPrice($qty);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function getDescription()
+    /**
+     * @return string
+     */
+    public function getDescription() : string
     {
         return $this->description;
     }
 
-    public function getVATCharge($totalPrice)
+    /**
+     * @param $totalPrice
+     * @return float
+     */
+    public function getVATCharge($totalPrice) : float
     {
         $vat = \Config::get('pow.vat');
         if(empty($vat) || empty($totalPrice)) {

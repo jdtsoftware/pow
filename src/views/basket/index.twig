@@ -201,16 +201,6 @@
         </div>
 
         <div class="quantity">
-            <form method="POST" action="{{ route('basket-add-product') }}">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                <input type="hidden" name="product_id" value="{{ item.product.id }}" />
-                <input type="hidden" name="qty" value="{{ item.qty+1 }}" />
-                <button class="plus-btn-qty" type="submit" name="button">
-                    +
-                </button>
-            </form>
-
-            <input type="text" name="name" value="{{ item.qty }}">
 
             <form method="POST" action="{{ item.qty == 1 ? route('basket-remove-product') : route('basket-add-product') }}">
                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
@@ -220,6 +210,16 @@
                     -
                 </button>
             </form>
+            <input type="text" name="name" value="{{ item.qty }}">
+            <form method="POST" action="{{ route('basket-add-product') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                <input type="hidden" name="product_id" value="{{ item.product.id }}" />
+                <input type="hidden" name="qty" value="{{ item.qty+1 }}" />
+                <button class="plus-btn-qty" type="submit" name="button">
+                    +
+                </button>
+            </form>
+
 
 
         </div>
