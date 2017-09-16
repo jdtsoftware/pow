@@ -6,6 +6,7 @@ namespace JDT\Pow\Entities\Wallet;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use \JDT\Pow\Interfaces\Entities\Wallet as iWalletEntity;
+use \JDT\Pow\Interfaces\Entities\WalletTokenType as iWalletTokenTypeEntity;
 
 /**
  * Class Wallet.
@@ -83,4 +84,17 @@ class Wallet extends Model implements iWalletEntity
         return $this->overdraft;
     }
 
+    /**
+     * @param iWalletTokenTypeEntity $type
+     * @return WalletToken
+     */
+    public function createToken(iWalletTokenTypeEntity $type) : WalletToken
+    {
+        $models = \Config::get('pow.models');
+        return $models['wallet_token']::create([
+            'wallet_id' => $this->getId(),
+            'wallet_token_type_id' => $type->getId(),
+            'tokens' => 0
+        ]);
+    }
 }

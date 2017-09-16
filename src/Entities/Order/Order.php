@@ -10,6 +10,7 @@ use JDT\Pow\Interfaces\IdentifiableId;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
+use JDT\Pow\Interfaces\Redeemable;
 
 /**
  * Class Order.
@@ -117,7 +118,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         $orderItem = $models['order_item']::create([
             'order_id' => $this->getId(),
             'product_id' => $product->getId(),
-            'tokens_total' => 0,
+            'tokens_total' => $product->token->tokens,
             'tokens_spent' => 0,
             'quantity' => $qty,
             'original_unit_price' => $product->getTotalPrice(),

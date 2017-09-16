@@ -6,11 +6,12 @@ namespace JDT\Pow\Entities\Order;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
+use JDT\Pow\Interfaces\Redeemable;
 
 /**
  * Class OrderItem.
  */
-class OrderItem extends Model implements iOrderItemEntity
+class OrderItem extends Model implements iOrderItemEntity, Redeemable
 {
     use SoftDeletes;
 
@@ -81,5 +82,32 @@ class OrderItem extends Model implements iOrderItemEntity
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['product'], 'id', 'product_id');
+    }
+
+    public function order()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order'], 'id', 'order_id');
+    }
+
+
+    public function getTokenType()
+    {
+        return $this->product->token->type;
+    }
+
+    public function getTokenValue()
+    {
+        return $this->product->token->tokens;
+    }
+
+    public function getLinkerId()
+    {
+        return $this->order->id;
+    }
+
+    public function getLinkerType()
+    {
+        return get_class($this->order);
     }
 }

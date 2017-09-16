@@ -4,8 +4,11 @@ namespace JDT\Pow;
 
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
+use JDT\Pow\Entities\Wallet\Wallet;
 use JDT\Pow\Entities\WalletTokenType;
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Gateway;
+use JDT\Pow\Interfaces\IdentifiableId;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\Basket as iBasket;
 use JDT\Pow\Interfaces\Wallet as iWallet;
@@ -72,11 +75,12 @@ class Pow
     }
 
     /**
-     * @return mixed
+     * @param iWallet|null $wallet
+     * @return iOrder
      */
-    public function order() : iOrder
+    public function order(iWallet $wallet = null) : iOrder
     {
-        return new $this->classes['order']($this->paymentGateway);
+        return new $this->classes['order']($this->paymentGateway, $wallet ?? $this->wallet());
     }
 
     /**
@@ -85,7 +89,7 @@ class Pow
      */
     public function createOrderFromBasket(iWallet $wallet = null) : iOrderEntity
     {
-        return $this->order()->createFromBasket($this->wallet($wallet), $this->basket());
+        return $this->order($wallet)->createFromBasket($this->basket());
     }
 
     /**
@@ -101,17 +105,44 @@ class Pow
         if ($response->isSuccessful()) {
             $wallet = $wallet ?? $this->wallet();
             foreach ($order->items as $orderItem) {
-                $product = $orderItem->product;
                 $wallet->credit(
                     \Auth::user(),
-                    $product->token->tokens,
-                    $product->token->type,
-                    $order,
+                    $orderItem,
                     $orderItem);
             }
+
+            $order->update([
+                'order_status_id' => $this->models['order_status']::handleToId('complete')
+            ]);
         }
 
         return $response;
+    }
+
+    /**
+     * @param IdentifiableId $redeemer
+     * @param Redeemable $redeemableLinker
+     * @param iOrderItemEntity|null $orderItemEntity
+     * @param Wallet|null $wallet
+     * @throws \Exception
+     */
+    public function redeemToken(IdentifiableId $redeemer, Redeemable $redeemableLinker, iOrderItemEntity $orderItemEntity = null, Wallet $wallet = null)
+    {
+        $tokenCost = (int) $redeemableLinker->getTokenCost();
+        if($tokenCost < 0) {
+            throw new \Exception('Token cost cannot be less than 0');
+        }
+
+        if(empty($orderItemEntity)) {
+            $orderItemEntity = $this->order()->findEarliestRedeemableOrderItem();
+        }
+
+        $orderItemEntity->update([
+            'tokens_spent' => $orderItemEntity->tokens_spent + $tokenCost
+        ]);
+
+        $wallet = $wallet ?? $this->wallet;
+        $wallet->debit($redeemer, $tokenCost, $redeemableLinker->getTokenType(), $redeemableLinker, $orderItem);
     }
 
     /**
@@ -122,6 +153,14 @@ class Pow
     {
         $walletOwner = $walletOwner ?? $this->walletOwner;
         return new $this->classes['wallet']($walletOwner);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasWallet() : bool
+    {
+        return $this->wallet()->exists();
     }
 
     /**

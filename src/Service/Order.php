@@ -17,10 +17,11 @@ class Order implements iOrder
     protected $models;
     protected $order;
 
-    public function __construct(Gateway $paymentGateway)
+    public function __construct(Gateway $paymentGateway, iWallet $wallet)
     {
         $this->models = \Config::get('pow.models');
         $this->paymentGateway = $paymentGateway;
+        $this->wallet = $wallet;
     }
 
     /**
@@ -41,13 +42,18 @@ class Order implements iOrder
         return $this->models['order']::where('uuid', $uuid)->first();
     }
 
+    public function findEarliestRedeemableOrderItem() : iOrderEntity
+    {
+
+        //$this->models['order_item']::where;
+    }
+
     /**
-     * @param iWallet $wallet
      * @param iBasket $basket
      * @return iOrderEntity
      * @throws \Exception
      */
-    public function createFromBasket(iWallet $wallet, iBasket $basket) : iOrderEntity
+    public function createFromBasket(iBasket $basket) : iOrderEntity
     {
         $basketItems = $basket->getBasket();
         if(empty($basketItems['products'])) {
@@ -56,8 +62,8 @@ class Order implements iOrder
 
         $order = $this->models['order']::create([
             'uuid' => Uuid::uuid4()->toString(),
-            'wallet_id' => $wallet->getId(),
-            'order_status_id' => 1,
+            'wallet_id' => $this->wallet->getId(),
+            'order_status_id' => $this->models['order_status']::handleToId('draft'),
             'payment_gateway_id' => 1,
             'original_total_price' => $basket->getTotalPrice(true),
             'adjusted_total_price' => $basket->getTotalPrice(true),
@@ -74,13 +80,19 @@ class Order implements iOrder
         return $order;
     }
 
+    /**
+     * @param iOrderEntity $order
+     * @param array $paymentData
+     * @return Gateway
+     */
     public function pay(iOrderEntity $order, $paymentData = []) : Gateway
     {
         $response = $this->paymentGateway->pay($order->getTotalPrice(), $paymentData);
 
         $order->update([
             'payment_gateway_reference' => $response->getReference(),
-            'payment_gateway_blob' => json_encode($response->getData())
+            'payment_gateway_blob' => json_encode($response->getData()),
+            'order_status_id' => $response->isSuccessful() ? $this->models['order_status']::handleToId('paid') : $this->models['order_status']::handleToId('pending')
         ]);
 
         return $response;

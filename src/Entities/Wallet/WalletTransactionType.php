@@ -14,12 +14,15 @@ class WalletTransactionType extends Model
 {
     use SoftDeletes;
 
+    const DEBIT = 'debit';
+    const CREDIT = 'credit';
+
     /**
      * The table associated with the model.
      *
      * @var string
      */
-    protected $table = 'wallet';
+    protected $table = 'wallet_transaction_type';
 
     /**
      * The attributes that should be mutated to dates.

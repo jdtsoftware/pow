@@ -50,4 +50,13 @@ class OrderStatus extends Model
     protected $with = [
     ];
 
+    /**
+     * @param $handle
+     * @return mixed
+     */
+    public static function handleToId($handle)
+    {
+        return self::where('handle', $handle)->first()->id;
+    }
+
 }
