@@ -108,6 +108,7 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
      * @param WalletToken $walletToken
      * @param $transactionType
      * @return WalletTransaction
+     * @throws \Exception
      */
     protected function createTransaction(iIdentifiableId $creator, Redeemable $linker, iOrderItemEntity $orderItem, WalletToken $walletToken, $transactionType) : WalletTransaction
     {
@@ -136,9 +137,9 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
 
     /**
      * @param iWalletTokenTypeEntity $type
-     * @return mixed
+     * @return WalletToken
      */
-    protected function findOrCreateWalletToken(iWalletTokenTypeEntity $type)
+    protected function findOrCreateWalletToken(iWalletTokenTypeEntity $type) : WalletToken
     {
         $walletToken = $this->wallet->token($type)->first();
 
@@ -155,6 +156,6 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
      */
     protected function transactionType($type)
     {
-        return $this->models['wallet_transaction_type']::where('handle', 'debit')->first();
+        return $this->models['wallet_transaction_type']::where('handle', $type)->first();
     }
 }
