@@ -68,8 +68,12 @@ class OrderController extends BaseController
     public function completeAction($uuid)
     {
         $pow = app('pow');
-        $order = $pow->order()->findByUuid($uuid);
-        return view('pow::order.complete', ['order' => $order]);
+        if($pow->order()->validOrder($uuid)) {
+            $order = $pow->order()->findByUuid($uuid);
+            return view('pow::order.complete', ['order' => $order]);
+        } else {
+            return redirect()->route('products');
+        }
     }
 
     public function insufficientBalanceAction()

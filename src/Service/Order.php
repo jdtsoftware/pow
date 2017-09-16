@@ -54,6 +54,20 @@ class Order implements iOrder
     }
 
     /**
+     * @param $uuid
+     * @return bool
+     */
+    public function validOrder($uuid) : bool
+    {
+        try {
+            $this->findByUuid($uuid);
+            return true;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * @param iBasket $basket
      * @return iOrderEntity
      * @throws \Exception
