@@ -46,6 +46,14 @@ class Order implements iOrder
     }
 
     /**
+     * @return mixed
+     */
+    public function list()
+    {
+        return $this->models['order']::where('wallet_id', $this->wallet->getId())->get();
+    }
+
+    /**
      * @return iOrderItemEntity
      */
     public function findEarliestRedeemableOrderItem() : iOrderItemEntity

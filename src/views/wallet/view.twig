@@ -14,7 +14,6 @@
                 <table class="table product-table">
                     <thead>
                     <tr>
-                        <th></th>
                         <th>Wallet</th>
                         <th>Tokens</th>
                     </tr>
@@ -24,6 +23,65 @@
                         <tr>
                             <td>{{ wallet.type.name }}</td>
                             <td>{{ wallet.tokens }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card col-8 m-auto pt-4 mt-4">
+        <div class="card-header deep-orange lighten-1 white-text">
+            Orders
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table product-table">
+                    <thead>
+                    <tr>
+                        <th>Order Ref</th>
+                        <th>Status</th>
+                        <th>Tokens Purchased</th>
+                        <th>Tokens Spent</th>
+                        <th>Cost</th>
+                        <th>Payment Reference</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.uuid }}</td>
+                            <td>{{ order.status.name }}</td>
+                            <td>{{ order.status_id }}</td>
+                            <td>{{ order.status_id }}</td>
+                            <td>{{ order.adjusted_total_price|price }}</td>
+                            <td>
+                                {% if order.status.handle == 'draft' %}
+                                    <a class="btn btn-primary" href="{{ route('order-checkout', [order.uuid]) }}">Pay now</a>
+                                {% else %}
+                                    {{ order.payment_gateway_reference }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="mb-3">
+                            <td colspan="6">
+                            <table class="table product-table">
+                                <tbody>
+                                {% for order_item in order.items %}
+                                    <tr>
+                                        <td class="border-0">{{ order_item.product.name }}</td>
+                                        <td class="border-0">{{ order_item.tokens_total }}</td>
+                                        <td class="border-0">{{ order_item.tokens_spent }}</td>
+                                        <td class="border-0">{{ order_item.adjusted_total_price|price }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                            </td>
                         </tr>
                     {% endfor %}
 

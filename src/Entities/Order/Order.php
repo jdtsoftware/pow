@@ -176,6 +176,12 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $this->hasMany($models['order_item'], 'order_id', 'id');
     }
 
+    public function status()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order_status'], 'id', 'order_status_id');
+    }
+
     /**
      * @return bool
      */

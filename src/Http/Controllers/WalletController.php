@@ -23,7 +23,8 @@ class WalletController extends BaseController
             'pow::wallet.view',
             [
                 'wallet' => $wallet,
-                'wallet_tokens' => $wallet->token()
+                'wallet_tokens' => $wallet->token(),
+                'orders' => $pow->order()->list()
             ]
         );
     }
