@@ -3,7 +3,7 @@
 {% block title %}Wallet{% endblock title %}
 
 {% block content %}
-    <div class="card col-8 m-auto pt-4 mt-4">
+    <div class="card col-8 m-auto pt-4 mt-4 mb-4">
         <div class="card-header deep-orange lighten-1 white-text">
             Wallet
         </div>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="card col-8 m-auto pt-4 mt-4">
+    <div class="card col-8 m-auto pt-4 mt-5">
         <div class="card-header deep-orange lighten-1 white-text">
             Orders
         </div>
@@ -53,34 +53,36 @@
                     </thead>
                     <tbody>
                     {% for order in orders %}
-                        <tr>
-                            <td>{{ order.uuid }}</td>
-                            <td>{{ order.status.name }}</td>
-                            <td>{{ order.status_id }}</td>
-                            <td>{{ order.status_id }}</td>
-                            <td>{{ order.adjusted_total_price|price }}</td>
+                        <tr {% if order.status.handle == 'draft' %}class="table-warning"{% endif %}>
+                            <td><b>{{ order.uuid }}</b></td>
+                            <td><b>{{ order.status.name }}</b></td>
+                            <td></td>
+                            <td></td>
+                            <td><b>{{ order.adjusted_total_price|price }}</b></td>
                             <td>
+                                <b>
                                 {% if order.status.handle == 'draft' %}
                                     <a class="btn btn-primary" href="{{ route('order-checkout', [order.uuid]) }}">Pay now</a>
                                 {% else %}
                                     {{ order.payment_gateway_reference }}
                                 {% endif %}
+                                </b>
                             </td>
                         </tr>
-                        <tr class="mb-3">
-                            <td colspan="6">
-                            <table class="table product-table">
-                                <tbody>
-                                {% for order_item in order.items %}
-                                    <tr>
-                                        <td class="border-0">{{ order_item.product.name }}</td>
-                                        <td class="border-0">{{ order_item.tokens_total }}</td>
-                                        <td class="border-0">{{ order_item.tokens_spent }}</td>
-                                        <td class="border-0">{{ order_item.adjusted_total_price|price }}</td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                        <tr {% if order.status.handle == 'draft' %}class="table-warning"{% endif %}>
+                            <td colspan="6" class="p-0 m-0 pb-3">
+                                <table class="table product-table m-0 p-0">
+                                    <tbody>
+                                    {% for order_item in order.items %}
+                                        <tr>
+                                            <td class="border-0">{{ order_item.product.name }}</td>
+                                            <td class="border-0">{{ order_item.tokens_total }}</td>
+                                            <td class="border-0">{{ order_item.tokens_spent }}</td>
+                                            <td class="border-0">{{ order_item.adjusted_total_price|price }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
                             </td>
                         </tr>
                     {% endfor %}
