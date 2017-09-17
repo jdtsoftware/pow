@@ -26,6 +26,9 @@ class powServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerMigrations();
         $this->registerRoutes();
+
+        \View::composer('pow::wallet.widget', 'JDT\Pow\Composers\WalletComposer');
+
     }
 
     /**
