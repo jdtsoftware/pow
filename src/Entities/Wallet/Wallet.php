@@ -49,7 +49,7 @@ class Wallet extends Model implements iWalletEntity
         'deleted_at',
     ];
 
-    public function token($type)
+    public function token(\JDT\Pow\Interfaces\Entities\WalletTokenType $type = null)
     {
         $models = \Config::get('pow.models');
         if($type) {

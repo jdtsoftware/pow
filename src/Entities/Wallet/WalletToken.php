@@ -58,4 +58,12 @@ class WalletToken extends Model implements \JDT\Pow\Interfaces\Entities\WalletTo
         return $this->id;
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function type()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['wallet_token_type'], 'id', 'wallet_token_type_id');
+    }
 }

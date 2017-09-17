@@ -26,3 +26,6 @@ Route::get('/order/{uuid}/view', 'JDT\Pow\Http\Controllers\OrderController@viewA
 
 Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@insufficientBalanceAction')
     ->name('insufficient-balance');
+
+Route::get('/wallet', 'JDT\Pow\Http\Controllers\WalletController@indexAction')
+    ->name('wallet');

@@ -7,9 +7,13 @@ class WalletComposer {
     public function compose($view)
     {
         $pow = app('pow');
-        $pow->wallet();
 
+        if($pow->hasWallet()) {
+            $wallet = $pow->wallet();
 
+            $view->with('balance', $wallet->balance())
+                ->with('tokens', $wallet->token());
+        }
     }
 
 }

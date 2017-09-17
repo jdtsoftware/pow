@@ -1,19 +1,21 @@
-<a class="nav-link dropdown-toggle" href="#">
-    <i data-count="10" class="fa fa-money notification-icon"></i>
+<a class="nav-link dropdown-toggle" href="#" id="walletMenu"
+       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+
+    <i data-count="{{ balance }}" class="fa fa-money notification-icon"></i>
 </a>
 
-<div class="dropdown-container dropdown-position-bottomright">
-
-    <ul class="dropdown-menu">
-
-        <li class="dropdown-item notification">
-            You have
-             - 50 Job Posting credits
-             - 0 CV Search credits
-        </li>
-    </ul>
-
-    <div class="dropdown-footer text-center">
-        <a href="#" >View Wallet</a>
+<div style="padding: 0px" class="dropdown-menu dropdown-menu-right" aria-labelledby="walletMenu">
+    <div style="display: block; width: 380px;" class="p-3">
+        <span>
+            <h5>You have...</h5>
+            {% for token in tokens %}
+                <p><i class="fa fa-file-o light-blue-text"></i> {{ token.tokens }} {{ token.type.name }} credits</p>
+            {% endfor %}
+        </span>
+        <div class="dropdown-footer">
+            <span class="float-left"><a href="{{ route('wallet') }}" class="btn btn-primary m-0">View Wallet</a></span>
+            <span class="float-right"><a href="{{ route('products') }}" class="btn btn-success m-0">Buy more credits</a></span>
+        </div>
+        <div class="clearfix"></div>
     </div>
 </div>

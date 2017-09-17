@@ -11,6 +11,7 @@ use JDT\Pow\Interfaces\Entities\WalletTokenType as iWalletTokenTypeEntity;
 use JDT\Pow\Interfaces\Redeemable;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\IdentifiableId as iIdentifiableId;
+use Lcobucci\JWT\Token;
 use Ramsey\Uuid\Uuid;
 
 /**
@@ -61,12 +62,27 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
      * @param $type
      * @return int
      */
-    public function balance($type) : int
+    public function balance($type = null) : int
     {
-        $tokenType = WalletTokenType::where('handle', $type)->first();
-        $walletToken = $this->wallet->token($tokenType)->first();
+        $tokenType = null;
+        if($type) {
+            $tokenType = WalletTokenType::where('handle', $type)->first();
+        }
 
-        return isset($walletToken) ? (int) $walletToken->tokens : 0;
+        $balance = 0;
+        foreach($this->wallet->token($tokenType)->get() as $token) {
+            $balance += $token->tokens;
+        }
+
+        return $balance;
+    }
+
+    /**
+     * @return Token
+     */
+    public function token()
+    {
+        return $this->wallet->token;
     }
 
     /**
