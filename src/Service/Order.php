@@ -79,16 +79,17 @@ class Order implements iOrder
             throw new \Exception('Basket is empty - you cannot create an order with an empty basket!');
         }
 
+        $prices = $basket->getTotalPrices();
         $order = $this->models['order']::create([
             'uuid' => Uuid::uuid4()->toString(),
             'wallet_id' => $this->wallet->getId(),
             'order_status_id' => $this->models['order_status']::handleToId('draft'),
             'payment_gateway_id' => 1,
-            'original_total_price' => $basket->getTotalPrice(true),
-            'adjusted_total_price' => $basket->getTotalPrice(true),
+            'original_total_price' => $prices->originalTotalPrice,
+            'adjusted_total_price' => $prices->adjustedTotalPrice,
             'vat_percentage' => \Config::get('pow.vat'),
-            'original_vat_price' => $basket->getVatPrice(),
-            'adjusted_vat_price' => $basket->getVatPrice(),
+            'original_vat_price' => $prices->originalVat,
+            'adjusted_vat_price' => $prices->adjustedVat,
             'created_user_id' => $creator->getId(),
         ]);
 

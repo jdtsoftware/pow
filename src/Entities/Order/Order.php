@@ -88,7 +88,15 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     /**
      * @return float|int
      */
-    public function getVATCharge() : float
+    public function getOriginalVATCharge() : float
+    {
+        return (float) $this->original_vat_price;
+    }
+
+    /**
+     * @return float
+     */
+    public function getAdjustedVATCharge() : float
     {
         return (float) $this->adjusted_vat_price;
     }
@@ -98,7 +106,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
      */
     public function getOriginalPrice() : float
     {
-        return (float) $this->getAdjustedPrice();
+        return (float) $this->original_total_price;
     }
 
     /**
@@ -114,7 +122,18 @@ class Order extends Model implements iOrderEntity, IdentifiableId
      */
     public function getSubTotalPrice()
     {
-        return $this->getAdjustedPrice() - $this->getVATCharge();
+        return $this->getOriginalPrice() - $this->getOriginalVATCharge();
+    }
+
+    /**
+     * @return float
+     */
+    public function getDiscountPrice()
+    {
+        $totalDiscount = ($this->original_total_price - $this->original_vat_price) -
+            ($this->adjusted_total_price - $this->adjusted_vat_price);
+
+        return $totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null;
     }
 
     /**

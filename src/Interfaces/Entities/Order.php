@@ -10,7 +10,8 @@ interface Order {
     public function getId();
     public function getUuid();
     public function getVATRate();
-    public function getVATCharge();
+    public function getOriginalVATCharge();
+    public function getAdjustedVATCharge();
     public function getOriginalPrice();
     public function getAdjustedPrice();
     public function addLineItem(iProductEntity $product, int $qty = 1) : iOrderItemEntity;

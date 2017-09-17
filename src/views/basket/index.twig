@@ -84,8 +84,7 @@
         /* Product Description */
         .description {
             padding-top: 10px;
-            margin-right: 20px;
-            width: 300px;
+            width: 250px;
         }
 
         .description span {
@@ -142,6 +141,14 @@
         .total-price {
             width: 83px;
             padding-top: 27px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
+        /* Total Price */
+        .total-price-discount {
+            width: 140px;
             text-align: center;
             font-size: 16px;
             color: #43484D;
@@ -230,15 +237,20 @@
 
         </div>
 
-        <div class="total-price">
-            {{ item.original_price|price }}
+
+
 
             {% if item.original_price != item.adjusted_price %}
+            <div class="total-price-discount">
+                <span style="text-decoration: line-through;">{{ item.original_price|price }}</span>
                 <div class="discount">
-                    <div class="price">Discounted {{ item.adjusted_price}}</div>
+                    <div class="price">Discounted {{ item.adjusted_price|price}}</div>
                 </div>
+            </div>
+            {% else %}
+                <div class="total-price">{{ item.original_price|price }}</div>
             {% endif %}
-        </div>
+
 
         <div class="remove-button">
             <form method="POST" action="{{ route('basket-remove-product') }}">
@@ -252,10 +264,10 @@
     {% endfor %}
 
     <div class="basket-price">
-        <p>Sub Total: {{ totals.sub_total_price|price }}</p>
-        {% if totals.total_discount %}<p>Discount: {{ totals.total_discount|price }}</p>{% endif %}
-        <p>VAT: {{ totals.vat_price|price }}</p>
-        <p><b>Total: {{ totals.total_price|price }}</b></p>
+        <p>Sub Total: {{ totals.originalSubTotalPrice|price }}</p>
+        {% if totals.discountPrice %}<p>Discount: {{ totals.discountPrice|price }}</p>{% endif %}
+        <p>VAT: {{ totals.adjustedVat|price }}</p>
+        <p><b>Total: {{ totals.adjustedTotalPrice|price }}</b></p>
     </div>
     <div class="actions m-2">
         <form method="POST" action="{{ route('order-create') }}" class="float-right">

@@ -84,8 +84,7 @@
         /* Product Description */
         .description {
             padding-top: 10px;
-            margin-right: 20px;
-            width: 300px;
+            width: 250px;
         }
 
         .description span {
@@ -147,6 +146,13 @@
             color: #43484D;
             font-weight: 300;
         }
+        .total-price-discount {
+            width: 140px;
+            text-align: center;
+            font-size: 16px;
+            color: #43484D;
+            font-weight: 300;
+        }
 
         .remove-button {
             padding-top: 24px;
@@ -202,13 +208,25 @@
             <div class="quantity">
                 {{ item.quantity }} x {{item.adjusted_unit_price|price}}
             </div>
-            <div class="total-price">{{ item.adjusted_total_price|price }}</div>
+
+                {% if item.original_total_price != item.adjusted_total_price %}
+                    <div class="total-price-discount">
+                        <span style="text-decoration: line-through;">{{ item.original_total_price|price }}</span>
+                        <div class="discount">
+                            <div class="price">Discounted {{ item.adjusted_total_price|price}}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                        <div class="total-price">{{ item.original_total_price|price }}</div>
+                {% endif %}
+
         </div>
     {% endfor %}
 
     <div class="basket-price">
         <p>Sub Total: {{ order.getSubTotalPrice()|price }}</p>
-        <p>VAT: {{ order.getVATCharge()|price }}</p>
+        {% if order.getDiscountPrice() %}<p>Discount: {{ order.getDiscountPrice()|price }}</p>{% endif %}
+        <p>VAT: {{ order.getAdjustedVATCharge()|price }}</p>
         <p>Total: {{ order.getAdjustedPrice()|price }}</p>
     </div>
 

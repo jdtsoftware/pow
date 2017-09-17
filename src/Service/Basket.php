@@ -130,16 +130,16 @@ class Basket implements iBasket
     }
 
     /**
-     * @return int
+     * @return BasketPrices
      */
-    public function getTotalPrices()
+    public function getTotalPrices() : BasketPrices
     {
         $this->basket = $this->session->get($this->instance);
         if(empty($this->basket['products'])) {
             return 0;
         }
 
-        $subTotalPrice = 0;
+        $originalSubTotalPrice = 0;
         $totalDiscount = 0;
         foreach($this->basket['products'] as $product) {
 
@@ -147,38 +147,22 @@ class Basket implements iBasket
             $adjustedTotalPrice = $product['product']->getAdjustedPrice($product['qty']);
             $discount = $originalTotalPrice - $adjustedTotalPrice;
 
-            $subTotalPrice += $originalTotalPrice;
+            $originalSubTotalPrice += $originalTotalPrice;
             $totalDiscount += $discount;
         }
 
-        $this->basket['totals']['sub_total_price'] = $subTotalPrice;
-
-        $basketTotalPrice = $subTotalPrice - $totalDiscount;
-        $this->basket['totals']['vat_price'] = $this->getVATCharge($basketTotalPrice);
-        $this->basket['totals']['total_price'] = $basketTotalPrice+$this->getVATCharge($basketTotalPrice);
-        $this->basket['totals']['total_discount'] = $totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null;
+        $prices = new BasketPrices();
+        $prices->setOriginalSubTotalPrice($originalSubTotalPrice)
+            ->setAdjustedSubTotalPrice($prices->originalSubTotalPrice - $totalDiscount)
+            ->setOriginalVat($this->getVATCharge($prices->originalSubTotalPrice))
+            ->setAdjustedVat($this->getVATCharge($prices->adjustedSubTotalPrice))
+            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$this->getVATCharge($prices->originalSubTotalPrice))
+            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$this->getVATCharge($prices->adjustedSubTotalPrice))
+            ->setDiscountPrice($totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null);
 
         $this->session->put($this->instance, $this->basket);
 
-        return $this->basket['totals'];
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotalPrice()
-    {
-        $prices = $this->getTotalPrices();
-        return $prices['total_price'] ?? 0;
-    }
-
-    /**
-     * @return int
-     */
-    public function getVatPrice()
-    {
-        $prices = $this->getTotalPrices();
-        return $prices['vat_price'] ?? 0;
+        return $prices;
     }
 
     /**
