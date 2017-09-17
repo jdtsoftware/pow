@@ -19,6 +19,12 @@ class WalletController extends BaseController
         $pow = app('pow');
         $wallet = $pow->wallet();
 
-        return view('pow::wallet.view', ['wallet' => $wallet]);
+        return view(
+            'pow::wallet.view',
+            [
+                'wallet' => $wallet,
+                'wallet_tokens' => $wallet->token()
+            ]
+        );
     }
 }

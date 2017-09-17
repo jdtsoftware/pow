@@ -1,10 +1,36 @@
 {% extends "admin.layout.layout-clean" %}
 
-{% block title %}Products{% endblock title %}
+{% block title %}Wallet{% endblock title %}
 
 {% block content %}
+    <div class="card col-8 m-auto pt-4 mt-4">
+        <div class="card-header deep-orange lighten-1 white-text">
+            Wallet
+        </div>
+        <div class="card-body">
 
-Your wallet
+            <div class="table-responsive">
 
+                <table class="table product-table">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Wallet</th>
+                        <th>Tokens</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for wallet in wallet_tokens %}
+                        <tr>
+                            <td>{{ wallet.type.name }}</td>
+                            <td>{{ wallet.tokens }}</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 {% endblock content %}
