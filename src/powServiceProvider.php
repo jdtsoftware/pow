@@ -36,7 +36,7 @@ class powServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__ . '/views', 'pow');
 
         $this->publishes([
-            __DIR__ . '/../views' => resource_path('views/vendor/pow'),
+            __DIR__ . '/views' => resource_path('views/vendor/pow'),
         ]);
     }
 
