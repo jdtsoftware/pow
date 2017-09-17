@@ -59,11 +59,18 @@ class Basket implements iBasket
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
 
+            $unitPrice     = $product->getOriginalPrice();
+            $originalPrice = $product->getOriginalPrice($qty);
+            $adjustedPrice = $product->getAdjustedPrice($qty);
+            $discount = $originalPrice - $adjustedPrice;
+
             $this->basket['products'][$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
-                'unit_price' => $product->getAdjustedPrice(),
-                'total_price' => $product->getAdjustedPrice($qty)
+                'unit_price' => $unitPrice,
+                'adjusted_price' => $adjustedPrice,
+                'original_price' => $originalPrice,
+                'discount' => $discount,
             ];
             
             $this->session->put($this->instance, $this->basket);
@@ -132,24 +139,24 @@ class Basket implements iBasket
             return 0;
         }
 
-        $totalPrice = 0;
-        $basketTotalPrice = 0;
+        $subTotalPrice = 0;
+        $totalDiscount = 0;
         foreach($this->basket['products'] as $product) {
 
             $originalTotalPrice = $product['product']->getOriginalPrice($product['qty']);
-            $totalPrice = $product['product']->getAdjustedPrice($product['qty']);
+            $adjustedTotalPrice = $product['product']->getAdjustedPrice($product['qty']);
+            $discount = $originalTotalPrice - $adjustedTotalPrice;
 
-            $product['original_price'] = $originalTotalPrice;
-            $product['total_price'] = $totalPrice;
-
-            $basketTotalPrice += $totalPrice;
+            $subTotalPrice += $originalTotalPrice;
+            $totalDiscount += $discount;
         }
 
-        $this->basket['totals']['sub_total_price'] = $basketTotalPrice;
-        $this->basket['totals']['vat_price'] = $this->getVATCharge($basketTotalPrice);
-        $this->basket['totals']['total_price'] = $totalPrice+$this->getVATCharge($basketTotalPrice);
+        $this->basket['totals']['sub_total_price'] = $subTotalPrice;
 
-        $this->basket['totals']['total_price'] = $totalPrice+$this->getVATCharge($basketTotalPrice);
+        $basketTotalPrice = $subTotalPrice - $totalDiscount;
+        $this->basket['totals']['vat_price'] = $this->getVATCharge($basketTotalPrice);
+        $this->basket['totals']['total_price'] = $basketTotalPrice+$this->getVATCharge($basketTotalPrice);
+        $this->basket['totals']['total_discount'] = $totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null;
 
         $this->session->put($this->instance, $this->basket);
 

@@ -89,9 +89,13 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         return $totalPrice;
     }
 
+    /**
+     * @param int $qty
+     * @return float
+     */
     public function getAdjustedPrice($qty = 0) : float
     {
-        return $this->getOriginalPrice($qty);
+        return $this->adjustment->getAdjustedPrice($this->getOriginalPrice($qty), $qty);
     }
 
     /**

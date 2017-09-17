@@ -27,7 +27,7 @@
         }
 
         .shopping-cart {
-            width: 750px;
+            width: 850px;
             margin: 80px auto;
             background: #FFFFFF;
             box-shadow: 1px 2px 3px 0px rgba(0,0,0,0.10);
@@ -157,6 +157,8 @@
             font-weight: 300;
         }
 
+        .discount { width: 100% }
+
         /* Responsive */
         @media (max-width: 800px) {
             .shopping-cart {
@@ -200,6 +202,10 @@
             <span>{{ item.product.description|truncate(50) }}</span>
         </div>
 
+        <div class="total-price">
+            {{ item.unit_price|price }}
+        </div>
+
         <div class="quantity">
 
             <form method="POST" action="{{ item.qty == 1 ? route('basket-remove-product') : route('basket-add-product') }}">
@@ -224,7 +230,15 @@
 
         </div>
 
-        <div class="total-price">{{ item.total_price|price }}</div>
+        <div class="total-price">
+            {{ item.original_price|price }}
+
+            {% if item.original_price != item.adjusted_price %}
+                <div class="discount">
+                    <div class="price">Discounted {{ item.adjusted_price}}</div>
+                </div>
+            {% endif %}
+        </div>
 
         <div class="remove-button">
             <form method="POST" action="{{ route('basket-remove-product') }}">
@@ -239,8 +253,9 @@
 
     <div class="basket-price">
         <p>Sub Total: {{ totals.sub_total_price|price }}</p>
+        {% if totals.total_discount %}<p>Discount: {{ totals.total_discount|price }}</p>{% endif %}
         <p>VAT: {{ totals.vat_price|price }}</p>
-        <p>Total: {{ totals.total_price|price }}</p>
+        <p><b>Total: {{ totals.total_price|price }}</b></p>
     </div>
     <div class="actions m-2">
         <form method="POST" action="{{ route('order-create') }}" class="float-right">
