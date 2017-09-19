@@ -197,9 +197,9 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     /**
      * @return bool
      */
-    public function isComplete()
+    public function isComplete() : bool
     {
-        return (bool) $this->order_status_id == OrderStatus::handleToId('complete');
+        return $this->order_status_id === OrderStatus::handleToId('complete');
     }
 
 
