@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace JDT\Pow\Entities\Order;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use JDT\Pow\Entities\Wallet\WalletTokenType;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Redeemable;
 
@@ -84,28 +85,42 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
         return $this->hasOne($models['product'], 'id', 'product_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function order()
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['order'], 'id', 'order_id');
     }
 
-
+    /**
+     * @return WalletTokenType
+     */
     public function getTokenType()
     {
         return $this->product->token->type;
     }
 
+    /**
+     * @return integer
+     */
     public function getTokenValue()
     {
         return $this->product->token->tokens;
     }
 
+    /**
+     * @return integer
+     */
     public function getLinkerId()
     {
         return $this->order->id;
     }
 
+    /**
+     * @return string
+     */
     public function getLinkerType()
     {
         return get_class($this->order);
@@ -113,6 +128,7 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
 
     public static function findEarliestRedeemableOrderItem() : iOrderItemEntity
     {
+        //@todo check order status is complete as well 
         return OrderItem::whereRaw('tokens_spent < tokens_total')
             ->orderBy('created_at', 'asc')
             ->first();

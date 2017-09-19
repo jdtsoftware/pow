@@ -1,0 +1,97 @@
+
+<div class="container">
+
+    <section class="card main">
+        <a href="{{ route('manage.products') }}">< Back to products</a>
+        <h3 class="card-header">{{ title }}</h3>
+        <div class="card-block">
+
+            {% if errors.any %}
+                <div class="alert alert-danger">
+                {% for error in errors.all %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+                </div>
+            {% endif %}
+
+            <h4 class="card-title">Details</h4>
+            <form action="{{ product ? route('manage.products.update', [product.id]) : route('manage.products.save') }}" method="POST" class="form-horizontal">
+                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Name</label>
+                    <div class="col-10">
+                        <input type="text" class="form-control" name="name" id="name" placeholder="Product Name" value="{{ name ? name : product.name }}">
+                    </div>
+                </div> <!-- form-group // -->
+
+                <div class="form-group row">
+                    <label for="about" class="col-2 col-form-label">Description</label>
+                    <div class="col-10">
+                        <textarea name="description" class="form-control">{{ description ? description : product.description }}</textarea>
+                    </div>
+                </div> <!-- form-group // -->
+
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Price</label>
+                    <div class="col-10">
+                        <div class="input-group">
+                            <span class="input-group-addon">{{ currency }}</span>
+                            <input type="text" class="form-control" name="price" id="price" placeholder="9.99" value="{{ price ? price : product.total_price }}">
+                        </div>
+                    </div>
+                </div> <!-- form-group // -->
+
+
+
+                <hr>
+
+                <h4 class="card-title">Tokens</h4>
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Tokens</label>
+                    <div class="col-4">
+                        <input type="text" class="form-control" name="tokens" id="tokens" placeholder="" value="{{ tokens ? tokens : product.token.tokens }}">
+                    </div>
+
+                    <label for="name" class="col-2 col-form-label">Token Type</label>
+                    <div class="col-4">
+                        <select name="wallet_token_type_id" class="form-control" id="wallet_token_type_id">
+                            <option value="">- Select a token type - </option>
+                            {% for token_type in token_types %}
+                                <option value="{{ token_type.id }}" {{ wallet_token_type_id == token_type.id or product.token.wallet_token_type_id == token_type.id ? 'selected' : '' }}>{{ token_type.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div> <!-- form-group // -->
+                <hr>
+
+
+                <h4 class="card-title">Discounts</h4>
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Criteria</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" name="criteria" id="criteria" placeholder="" value="{{ criteria ? criteria : (product.adjustment ? product.adjustment.criteria) }}">
+                    </div>
+                </div> <!-- form-group // -->
+
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Adjustment</label>
+                    <div class="col-9">
+                        <input type="text" class="form-control" name="adjustment" id="adjustment" placeholder="" value="{{ adjustment ? adjustment : (product.adjustment ? product.adjustment.adjustment) }}">
+                    </div>
+                </div> <!-- form-group // -->
+
+                <hr>
+
+
+                <div class="form-group row">
+                    <div class="offset-10 col-2">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div> <!-- form-group // -->
+            </form>
+
+        </div><!-- panel-body // -->
+    </section><!-- panel// -->
+
+</div>

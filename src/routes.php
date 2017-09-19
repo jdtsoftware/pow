@@ -29,3 +29,24 @@ Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@ins
 
 Route::get('/wallet', 'JDT\Pow\Http\Controllers\WalletController@indexAction')
     ->name('wallet');
+
+
+
+Route::get('/manage/products', 'JDT\Pow\Http\Controllers\Manage\ProductsController@indexAction')
+    ->name('manage.products');
+
+Route::get('/manage/products/edit/{productId}', 'JDT\Pow\Http\Controllers\Manage\ProductsController@editAction')
+    ->name('manage.products.edit');
+Route::post('/manage/products/edit/{productId}', 'JDT\Pow\Http\Controllers\Manage\ProductsController@updateAction')
+    ->name('manage.products.update');
+
+Route::get('/manage/products/create', 'JDT\Pow\Http\Controllers\Manage\ProductsController@createAction')
+    ->name('manage.products.create');
+Route::post('/manage/products/create/save', 'JDT\Pow\Http\Controllers\Manage\ProductsController@saveAction')
+    ->name('manage.products.save');
+
+
+Route::get('/manage/orders', 'JDT\Pow\Http\Controllers\Manage\OrdersController@indexAction')
+    ->name('manage.orders');
+Route::get('/manage/wallets', 'JDT\Pow\Http\Controllers\Manage\WalletsController@indexAction')
+    ->name('manage.wallets');

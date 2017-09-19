@@ -13,6 +13,8 @@ return [
     //see http://php.net/manual/en/function.money-format.php
     'locale' => 'en_GB.UTF-8',
     'money_format' => '%.2n',
+    'currency_sign' => '£',
+
     //see http://php.net/manual/en/function.money-format.php
 
     'route_prefix' => 'pow',

@@ -4,6 +4,7 @@ namespace JDT\Pow\Entities\Product;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
+use JDT\Pow\Http\Requests\SaveProductRequest;
 
 /**
  * Class Product.
@@ -48,6 +49,27 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         'updated_at',
         'deleted_at',
     ];
+
+    protected static function boot()
+    {
+        $updateHandle = function ($model) {
+            $model->handle = $model->toHandle($model->name);
+        };
+
+        static::creating($updateHandle);
+        static::updating($updateHandle);
+    }
+
+    /**
+     * @param $string
+     * @return string
+     * @todo move to model
+     */
+    public function toHandle($string)
+    {
+        $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+        return preg_replace('/[^A-Za-z0-9\-]/', '', strtolower($string)); // Removes special chars.
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
@@ -120,7 +142,7 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
      * @param $totalPrice
      * @return float
      */
-    public function getVATCharge($totalPrice) : float
+    public function getVATCharge($totalPrice = null) : float
     {
         $vat = \Config::get('pow.vat');
         if(empty($vat) || empty($totalPrice)) {
@@ -128,5 +150,35 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         }
 
         return ($vat / 100) * $totalPrice;
+    }
+
+    public function updateToken(SaveProductRequest $data)
+    {
+        if($this->token) {
+            $this->token->delete();
+        }
+
+        $models = \Config::get('pow.models');
+
+        $models['product_token']::create([
+            'product_id' => $this->id,
+            'wallet_token_type_id' => $data->wallet_token_type_id,
+            'tokens' => $data->tokens
+        ]);
+    }
+
+    public function updateAdjustment(SaveProductRequest $data)
+    {
+        if($this->adjustment) {
+            $this->adjustment->delete();
+        }
+
+        $models = \Config::get('pow.models');
+
+        $models['product_adjustment_price']::create([
+            'product_id' => $this->id,
+            'criteria' => $data->criteria,
+            'adjustment' => $data->adjustment
+        ]);
     }
 }

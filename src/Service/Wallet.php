@@ -2,6 +2,7 @@
 
 namespace JDT\Pow\Service;
 
+use Illuminate\Support\Collection;
 use JDT\Pow\Entities\Wallet\WalletTokenType;
 use JDT\Pow\Entities\Wallet\WalletTransaction;
 use JDT\Pow\Entities\Wallet\WalletTransactionType;
@@ -151,6 +152,15 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
         ]);
     }
 
+
+    /**
+     * @return Collection
+     */
+    public function tokenTypes() : Collection
+    {
+        return $this->models['wallet_token_type']::all();
+    }
+
     /**
      * @param iWalletTokenTypeEntity $type
      * @return WalletToken
@@ -174,4 +184,5 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
     {
         return $this->models['wallet_transaction_type']::where('handle', $type)->first();
     }
+
 }

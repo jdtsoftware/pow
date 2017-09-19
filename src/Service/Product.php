@@ -2,6 +2,7 @@
 
 namespace JDT\Pow\Service;
 
+use JDT\Pow\Http\Requests\SaveProductRequest;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Product as iProduct;
 
@@ -10,6 +11,8 @@ use JDT\Pow\Interfaces\Product as iProduct;
  */
 class Product implements iProduct
 {
+    protected $models;
+
     /**
      * Product constructor.
      */
@@ -36,4 +39,30 @@ class Product implements iProduct
     {
         return $this->models['product']::simplePaginate($perPage);
     }
+
+    /**
+     * @param SaveProductRequest $requestData
+     * @param iProductEntity|null $product
+     * @return iProductEntity
+     */
+    public function updateOrCreate(SaveProductRequest $requestData, iProductEntity $product = null) : iProductEntity
+    {
+        $data = [
+            'name' => $requestData->name,
+            'description' => $requestData->description,
+            'total_price' => $requestData->price,
+        ];
+
+        if(!empty($product)) {
+            $product->update($data);
+        } else {
+            $product = $this->models['product']::create($data);
+        }
+
+        $product->updateToken($requestData);
+        $product->updateAdjustment($requestData);
+
+        return $product;
+    }
+
 }
