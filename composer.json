@@ -12,6 +12,7 @@
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
         "illuminate/mail": "^5.4.17",
+        "symfony/expression-language": "~v3.0",
         "omnipay/stripe": "~2.0"
     },
     "autoload": {
