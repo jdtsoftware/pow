@@ -1,9 +1,45 @@
-{% extends "admin.layout.layout-clean" %}
+<html>
 
-{% block title %}Wallet{% endblock title %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart - Basket</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+    <script src="https://js.stripe.com/v3/"></script>
 
-{% block content %}
-    <div class="card col-8 m-auto pt-4 mt-4 mb-4">
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500);
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            margin: 0;
+            background-color: #7EC855;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .main {
+            width: 750px;
+            margin: 80px auto;
+            background: #FFFFFF;
+            box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.10);
+            border-radius: 6px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="main">
         <div class="card-header deep-orange lighten-1 white-text">
             Wallet
         </div>
@@ -92,5 +128,5 @@
             </div>
         </div>
     </div>
-
-{% endblock content %}
+</body>
+</html>
