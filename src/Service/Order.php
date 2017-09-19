@@ -54,6 +54,16 @@ class Order implements iOrder
     }
 
     /**
+     * @param int $page
+     * @param int $perPage
+     * @return Collection
+     */
+    public function listAll($page = 1, $perPage = 15)
+    {
+        return $this->models['order']::simplePaginate($perPage);
+    }
+
+    /**
      * @return iOrderItemEntity
      */
     public function findEarliestRedeemableOrderItem() : iOrderItemEntity

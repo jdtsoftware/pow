@@ -176,6 +176,9 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $this->hasMany($models['order_item'], 'order_id', 'id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
     public function status()
     {
         $models = \Config::get('pow.models');
@@ -183,11 +186,20 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function wallet()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['wallet'], 'id', 'wallet_id');
+    }
+
+    /**
      * @return bool
      */
     public function isComplete()
     {
-        return $this->order_status_id == OrderStatus::handleToId('complete');
+        return (bool) $this->order_status_id == OrderStatus::handleToId('complete');
     }
 
 

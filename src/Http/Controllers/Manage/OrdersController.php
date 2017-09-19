@@ -10,9 +10,16 @@ use Illuminate\Routing\Controller as BaseController;
  */
 class OrdersController extends BaseController
 {
-    public function indexAction()
+    public function indexAction($page = 1, $perPage = 15)
     {
+        $pow = app('pow');
+        $orders = $pow->order()->listAll($page, $perPage);
 
-        return view('pow::manage.orders.index');
+        return view(
+            'pow::manage.orders.index',
+            [
+                'orders' => $orders,
+            ]
+        );
     }
 }
