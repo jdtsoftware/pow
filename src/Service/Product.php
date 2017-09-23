@@ -61,6 +61,7 @@ class Product implements iProduct
 
         $product->updateToken($requestData);
         $product->updateAdjustment($requestData);
+        $product->updateShop($requestData);
 
         return $product;
     }

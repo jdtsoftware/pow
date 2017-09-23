@@ -90,6 +90,15 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function shop()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['product_shop'], 'product_id', 'id');
+    }
+
+    /**
      * @return integer
      */
     public function getId() : int
@@ -172,9 +181,15 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
 
     /**
      * @param SaveProductRequest $data
+     *
+     * @return bool
      */
     public function updateAdjustment(SaveProductRequest $data)
     {
+        if(empty($data->criteria) && empty($data->adjustment)) {
+            return false;
+        }
+
         if($this->adjustment) {
             $this->adjustment->delete();
         }
@@ -186,5 +201,41 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
             'criteria' => $data->criteria,
             'adjustment' => $data->adjustment
         ]);
+
+        return true;
+    }
+
+    /**
+     * @param SaveProductRequest $data
+     */
+    public function updateShop(SaveProductRequest $data)
+    {
+        $models = \Config::get('pow.models');
+        $shopItems = $this->shop ?? [];
+        $newShopItems = $data->shop ?? [];
+
+        foreach($shopItems as $shopItem) {
+            if(!isset($newShopItems[$shopItem->id])) {
+                $shopItem->delete();
+            }
+        }
+
+        foreach($newShopItems as $newShopItem) {
+            $data = [
+                'product_id' => $this->id,
+                'quantity' => $newShopItem['quantity'],
+                'name' => $newShopItem['name'],
+                'description' => $newShopItem['description'],
+            ];
+
+            if(isset($newShopItem['id'])) {
+                $this->shop()
+                    ->where('id', $newShopItem['id'])
+                    ->update($data);
+            } else {
+                $models['product_shop']::create($data);
+            }
+
+        }
     }
 }
