@@ -152,6 +152,9 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         return ($vat / 100) * $totalPrice;
     }
 
+    /**
+     * @param SaveProductRequest $data
+     */
     public function updateToken(SaveProductRequest $data)
     {
         if($this->token) {
@@ -167,6 +170,9 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         ]);
     }
 
+    /**
+     * @param SaveProductRequest $data
+     */
     public function updateAdjustment(SaveProductRequest $data)
     {
         if($this->adjustment) {

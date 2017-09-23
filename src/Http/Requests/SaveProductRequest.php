@@ -31,6 +31,11 @@ class SaveProductRequest extends FormRequest
             'wallet_token_type_id' => 'integer|exists:wallet_token_type,id',
             'criteria' => 'string',
             'adjustment' => 'string',
+
+            'shop.*.id' => 'nullable|integer|exists:product_shop,id',
+            'shop.*.name' => 'string',
+            'shop.*.description' => 'string',
+            'shop.*.quantity' => 'integer',
         ];
     }
 }

@@ -23,6 +23,7 @@ return [
 
     'models' => [
         'product' => JDT\Pow\Entities\Product\Product::class,
+        'product_shop' => JDT\Pow\Entities\Product\Shop::class,
         'product_token' => JDT\Pow\Entities\Product\ProductToken::class,
         'product_adjustment_price' => \JDT\Pow\Entities\Product\ProductAdjustmentPrice::class,
         'order' => JDT\Pow\Entities\Order\Order::class,
@@ -35,6 +36,7 @@ return [
     ],
     'classes' => [
         'product' => \JDT\Pow\Service\Product::class,
+        'shop' => \JDT\Pow\Service\Shop::class,
         'order' => \JDT\Pow\Service\Order::class,
         'wallet' => \JDT\Pow\Service\Wallet::class,
         'basket' => \JDT\Pow\Service\Basket::class,

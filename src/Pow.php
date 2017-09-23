@@ -15,6 +15,7 @@ use JDT\Pow\Interfaces\Basket as iBasket;
 use JDT\Pow\Interfaces\Wallet as iWallet;
 use JDT\Pow\Interfaces\Product as iProduct;
 use JDT\Pow\Interfaces\Order as iOrder;
+use JDT\Pow\Interfaces\Shop as iShop;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 /**
@@ -58,6 +59,9 @@ class Pow
             case 'stripe':
                     $this->paymentGateway = new $this->gateways['stripe'];
                 break;
+            default:
+                throw new \RuntimeException('Unknown payment gateway - please set one in pow.php');
+                break;
         }
     }
 
@@ -84,6 +88,14 @@ class Pow
     public function order(iWallet $wallet = null) : iOrder
     {
         return new $this->classes['order']($this->paymentGateway, $wallet ?? $this->wallet());
+    }
+
+    /**
+     * @return iShop
+     */
+    public function shop() : iShop
+    {
+        return new $this->classes['shop']();
     }
 
     /**

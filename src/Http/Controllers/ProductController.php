@@ -26,8 +26,7 @@ class ProductController extends BaseController
         return view(
             'pow::product.list',
             [
-                'products' => $pow->product()->list($page),
-                'incomplete_orders' => $pow->order()->unfinishedOrders()
+                'products' => $pow->shop()->list($page),
             ]
         );
     }
