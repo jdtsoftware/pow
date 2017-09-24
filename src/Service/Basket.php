@@ -5,6 +5,7 @@ namespace JDT\Pow\Service;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
 use \JDT\Pow\Interfaces\Entities\Product as iProductEntity;
+use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
 
 /**
@@ -50,21 +51,23 @@ class Basket implements iBasket
     }
 
     /**
-     * @param iProductEntity $product
+     * @param iProductShopEntity $shopProduct
      * @param int $qty
      * @return $this
      */
-    public function addProduct(iProductEntity $product, int $qty = 1, $qtyLocked = false)
+    public function addProduct(iProductShopEntity $shopProduct, int $qty = 1, $qtyLocked = false)
     {
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
+
+            $product = $shopProduct->product;
 
             $unitPrice     = $product->getOriginalPrice();
             $originalPrice = $product->getOriginalPrice($qty);
             $adjustedPrice = $product->getAdjustedPrice($qty);
             $discount = $originalPrice - $adjustedPrice;
 
-            $this->basket['products'][$product->id] = [
+            $this->basket['products'][$shopProduct->getId()] = [
                 'product' => $product,
                 'qty' => $qty,
                 'qty_locked' => $qtyLocked,
@@ -78,24 +81,24 @@ class Basket implements iBasket
             $this->events->fire('basket.added', $product);
         } else {
             $this->basket = $this->session->get($this->instance);
-            unset($this->basket[$product->getId()]);
+            unset($this->basket[$shopProduct->getId()]);
             $this->session->put($this->instance, $this->basket);
-            $this->events->fire('basket.added', $product);
+            $this->events->fire('basket.added', $shopProduct);
         }
 
         return $this;
     }
 
     /**
-     * @param iProductEntity $product
+     * @param iProductShopEntity $shopProduct
      * @return $this
      */
-    public function removeProduct(iProductEntity $product)
+    public function removeProduct(iProductShopEntity $shopProduct)
     {
         $this->basket = $this->session->get($this->instance);
-        unset($this->basket['products'][$product->getId()]);
+        unset($this->basket['products'][$shopProduct->getId()]);
         $this->session->put($this->instance, $this->basket);
-        $this->events->fire('basket.added', $product);
+        $this->events->fire('basket.removed', $shopProduct);
 
         return $this;
     }

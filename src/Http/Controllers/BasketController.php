@@ -46,14 +46,18 @@ class BasketController extends BaseController
         $pow = app('pow');
         $productShopId = (int) $request->input('product_shop_id');
         $productShop = $pow->shop()->findById($productShopId);
-        
+
         if(empty($productShop)) {
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
+        $quantity = $productShop->quantity_lock
+            ? $productShop->quantity :
+            $request->input('qty', 1);
+
         $pow->basket()->addProduct(
-            $productShop->product,
-            $productShop->quantity,
+            $productShop,
+            $quantity,
             $productShop->quantity_lock
         );
 
@@ -67,14 +71,14 @@ class BasketController extends BaseController
     public function removeProductAction(Request $request)
     {
         $pow = app('pow');
-        $productId = (int) $request->input('product_id');
-        $product = $pow->product()->findById($productId);
+        $productShopId = (int) $request->input('product_shop_id');
+        $productShop = $pow->shop()->findById($productShopId);
 
-        if(empty($product)) {
+        if(empty($productShop)) {
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
-        $pow->basket()->removeProduct($product);
+        $pow->basket()->removeProduct($productShop);
 
         return redirect()->route('basket');
     }
