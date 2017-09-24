@@ -7,9 +7,9 @@ use App\Services\Geocoder\Geocoder;
 use JDT\Pow\Http\Requests\SaveProductRequest;
 
 /**
- * Class Shop.
+ * Class OrderForm.
  */
-class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
+class OrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Shop
 {
     use SoftDeletes;
 
@@ -18,7 +18,7 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      *
      * @var string
      */
-    protected $table = 'product_shop';
+    protected $table = 'product_shop_order_form';
 
     /**
      * The attributes that should be mutated to dates.
@@ -36,10 +36,9 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      */
     protected $fillable = [
         'product_id',
-        'quantity',
-        'quantity_lock',
+        'type',
         'name',
-        'description',
+        'hidden',
         'created_at',
         'updated_at'
     ];
@@ -58,6 +57,13 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
     ];
 
     /**
+     * @var array
+     */
+    protected $validTypes = [
+        'text', 'textarea', 'file', 'checkbox'
+    ];
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function product()
@@ -67,11 +73,13 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
     }
 
     /**
-     * @return integer
+     * @param $type
+     * @return bool
      */
-    public function getId() : int
+    public function isValidType($type)
     {
-        return $this->id;
+        return in_array($type, $this->validTypes);
     }
+
 
 }

@@ -29,5 +29,14 @@ class Shop implements iShop
         return $this->models['product_shop']::simplePaginate($perPage);
     }
 
+    /**
+     * @param $productShopId
+     * @return Shop
+     */
+    public function findById($productShopId)
+    {
+        return $this->models['product_shop']::find($productShopId);
+    }
+
 
 }

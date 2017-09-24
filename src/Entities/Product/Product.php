@@ -223,7 +223,8 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
         foreach($newShopItems as $newShopItem) {
             $data = [
                 'product_id' => $this->id,
-                'quantity' => $newShopItem['quantity'],
+                'quantity' => (int) $newShopItem['quantity'],
+                'quantity_lock' => (bool) $newShopItem['quantity_lock'],
                 'name' => $newShopItem['name'],
                 'description' => $newShopItem['description'],
             ];

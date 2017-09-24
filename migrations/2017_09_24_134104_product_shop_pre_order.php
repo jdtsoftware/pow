@@ -15,13 +15,15 @@ class ProductShopPreOrder extends \JDT\Pow\BaseMigration
         Schema::table('product_shop', function(Blueprint $table) {
             //so we can support tokens and monetary values
             $table->boolean('order_approval_required')->after('product_id')->default(0);
-            $table->boolean('fixed_quantity')->after('quantity')->default(0);
+            $table->boolean('quantity_lock')->after('quantity')->default(0);
         });
-        
 
         Schema::create('product_shop_order_form', function(Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('product_id');
+
+            $table->boolean('hidden');
+            $table->string('validation');
             $table->string('type');
             $table->string('name');
 
@@ -41,6 +43,10 @@ class ProductShopPreOrder extends \JDT\Pow\BaseMigration
             $table->foreign('order_id')->references('id')->on('order');
             $table->foreign('product_shop_order_form_id')->references('id')->on('product_shop_order_form');
         });
+
+        DB::table('order_status')->insert([
+            ['handle' => 'pending_approval', 'name' => 'Awaiting Approval'],
+        ]);
     }
 
     /**

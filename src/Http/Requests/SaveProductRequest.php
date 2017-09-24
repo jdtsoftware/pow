@@ -36,6 +36,7 @@ class SaveProductRequest extends FormRequest
             'shop.*.name' => 'string',
             'shop.*.description' => 'string',
             'shop.*.quantity' => 'integer',
+            'shop.*.quantity_lock' => 'boolean',
         ];
     }
 }

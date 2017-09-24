@@ -54,7 +54,7 @@ class Basket implements iBasket
      * @param int $qty
      * @return $this
      */
-    public function addProduct(iProductEntity $product, int $qty = 1)
+    public function addProduct(iProductEntity $product, int $qty = 1, $qtyLocked = false)
     {
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
@@ -67,6 +67,7 @@ class Basket implements iBasket
             $this->basket['products'][$product->id] = [
                 'product' => $product,
                 'qty' => $qty,
+                'qty_locked' => $qtyLocked,
                 'unit_price' => $unitPrice,
                 'adjusted_price' => $adjustedPrice,
                 'original_price' => $originalPrice,

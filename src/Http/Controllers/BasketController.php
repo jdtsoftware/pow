@@ -44,15 +44,18 @@ class BasketController extends BaseController
     public function addProductAction(Request $request)
     {
         $pow = app('pow');
-        $productId = (int) $request->input('product_id');
-        $product = $pow->product()->findById($productId);
-
-        if(empty($product)) {
+        $productShopId = (int) $request->input('product_shop_id');
+        $productShop = $pow->shop()->findById($productShopId);
+        
+        if(empty($productShop)) {
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
-        $qty = (int) $request->input('qty', 1);
-        $pow->basket()->addProduct($product, $qty ?? 1);
+        $pow->basket()->addProduct(
+            $productShop->product,
+            $productShop->quantity,
+            $productShop->quantity_lock
+        );
 
         return redirect()->route('basket');
     }
