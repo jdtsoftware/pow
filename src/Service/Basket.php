@@ -4,7 +4,6 @@ namespace JDT\Pow\Service;
 
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
-use \JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
 
@@ -24,6 +23,11 @@ class Basket implements iBasket
 
     private $basket;
 
+    /**
+     * Basket constructor.
+     * @param SessionManager $session
+     * @param Dispatcher $events
+     */
     public function __construct(SessionManager $session, Dispatcher $events)
     {
         $this->session = $session;
@@ -53,6 +57,8 @@ class Basket implements iBasket
     /**
      * @param iProductShopEntity $shopProduct
      * @param int $qty
+     * @param boolean $qtyLocked
+     *
      * @return $this
      */
     public function addProduct(iProductShopEntity $shopProduct, int $qty = 1, $qtyLocked = false)
