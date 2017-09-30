@@ -205,6 +205,12 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $this->order_status_id === OrderStatus::handleToId('complete');
     }
 
-
+    /**
+     * @return bool
+     */
+    public function isApproved()
+    {
+        return $this->order_status_id !== OrderStatus::handleToId('pending_approval');
+    }
 
 }

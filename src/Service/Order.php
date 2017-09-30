@@ -115,6 +115,12 @@ class Order implements iOrder
 
         foreach($basketItems['products'] as $productId => $item) {
             $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1);
+
+            if($item['product_shop']->order_approval_required) {
+                $order->update([
+                    'order_status_id' => $this->models['order_status']::handleToId('pending_approval')
+                ]);
+            }
         }
 
         $basket->clearBasket();
