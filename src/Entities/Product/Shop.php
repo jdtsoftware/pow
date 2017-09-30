@@ -36,6 +36,7 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      */
     protected $fillable = [
         'product_id',
+        'order_approval_required',
         'quantity',
         'quantity_lock',
         'name',

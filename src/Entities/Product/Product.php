@@ -225,6 +225,7 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
                 'product_id' => $this->id,
                 'quantity' => (int) $newShopItem['quantity'],
                 'quantity_lock' => (bool) $newShopItem['quantity_lock'],
+                'order_approval_required' => (bool) $newShopItem['order_approval_required'],
                 'name' => $newShopItem['name'],
                 'description' => $newShopItem['description'],
             ];
