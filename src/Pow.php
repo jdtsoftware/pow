@@ -87,7 +87,11 @@ class Pow
      */
     public function order(iWallet $wallet = null) : iOrder
     {
-        return new $this->classes['order']($this->paymentGateway, $wallet ?? $this->wallet());
+        return new $this->classes['order'](
+            $this->paymentGateway,
+            $wallet ?? $this->wallet(),
+            $this->events
+        );
     }
 
     /**

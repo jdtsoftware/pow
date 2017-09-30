@@ -89,7 +89,7 @@ class Basket implements iBasket
             $this->basket = $this->session->get($this->instance);
             unset($this->basket[$shopProduct->getId()]);
             $this->session->put($this->instance, $this->basket);
-            $this->events->fire('basket.added', $shopProduct);
+            $this->events->fire('basket.removed', $shopProduct);
         }
 
         return $this;

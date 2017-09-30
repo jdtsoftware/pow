@@ -11,6 +11,7 @@ use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Events\Dispatcher;
 
 /**
  * Class Pow.
@@ -20,11 +21,12 @@ class Order implements iOrder
     protected $models;
     protected $order;
 
-    public function __construct(Gateway $paymentGateway, iWallet $wallet)
+    public function __construct(Gateway $paymentGateway, iWallet $wallet, Dispatcher $events)
     {
         $this->models = \Config::get('pow.models');
         $this->paymentGateway = $paymentGateway;
         $this->wallet = $wallet;
+        $this->events = $events;
     }
 
     /**
@@ -117,6 +119,8 @@ class Order implements iOrder
 
         $basket->clearBasket();
 
+        $this->events->fire('order.created', $order);
+
         return $order;
     }
 
@@ -134,6 +138,8 @@ class Order implements iOrder
             'payment_gateway_blob' => json_encode($response->getData()),
             'order_status_id' => $response->isSuccessful() ? $this->models['order_status']::handleToId('paid') : $this->models['order_status']::handleToId('pending')
         ]);
+
+        $this->events->fire('order.payed', $order);
 
         return $response;
     }
