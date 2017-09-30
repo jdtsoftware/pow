@@ -26,9 +26,9 @@ class powServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerMigrations();
         $this->registerRoutes();
+        $this->registerAssets();
 
         \View::composer('pow::wallet.widget', 'JDT\Pow\Composers\WalletComposer');
-
     }
 
     /**
@@ -87,6 +87,16 @@ class powServiceProvider extends ServiceProvider
         }
 
         $route->group(__DIR__.'/routes.php');
+    }
+
+    /**
+     *
+     */
+    public function registerAssets()
+    {
+        $this->publishes([
+            __DIR__ . '/../assets' => public_path('vendor/pow'),
+        ], 'public');
     }
 
     /**
