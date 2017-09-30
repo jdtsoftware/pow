@@ -75,6 +75,7 @@ class Basket implements iBasket
 
             $this->basket['products'][$shopProduct->getId()] = [
                 'product' => $product,
+                'product_shop' => $shopProduct,
                 'qty' => $qty,
                 'qty_locked' => $qtyLocked,
                 'unit_price' => $unitPrice,

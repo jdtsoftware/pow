@@ -4,6 +4,7 @@ namespace JDT\Pow\Interfaces\Entities;
 
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
+use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 
 interface Order {
 
@@ -14,6 +15,6 @@ interface Order {
     public function getAdjustedVATCharge();
     public function getOriginalPrice();
     public function getAdjustedPrice();
-    public function addLineItem(iProductEntity $product, int $qty = 1) : iOrderItemEntity;
+    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1) : iOrderItemEntity;
     public function items();
 }

@@ -114,7 +114,7 @@ class Order implements iOrder
         ]);
 
         foreach($basketItems['products'] as $productId => $item) {
-            $order->addLineItem($item['product'], $item['qty'] ?? 1);
+            $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1);
         }
 
         $basket->clearBasket();

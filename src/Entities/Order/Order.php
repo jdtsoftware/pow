@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use JDT\Pow\Interfaces\IdentifiableId;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
+use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 
 /**
@@ -138,10 +139,11 @@ class Order extends Model implements iOrderEntity, IdentifiableId
 
     /**
      * @param iProductEntity $product
+     * @param iProductShopEntity $productShop
      * @param int $qty
      * @return iOrderItemEntity
      */
-    public function addLineItem(iProductEntity $product, int $qty = 1) : iOrderItemEntity
+    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1) : iOrderItemEntity
     {
         $qty = (int) $qty;
         if($qty <= 0) { //lets be safe.
@@ -152,6 +154,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         $orderItem = $models['order_item']::create([
             'order_id' => $this->getId(),
             'product_id' => $product->getId(),
+            'product_shop_id' => $productShop->getId(),
             'tokens_total' => $product->token->tokens,
             'tokens_spent' => 0,
             'quantity' => $qty,

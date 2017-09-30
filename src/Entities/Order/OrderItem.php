@@ -40,6 +40,7 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_shop_id',
         'quantity',
         'tokens_total',
         'tokens_spent',
@@ -81,8 +82,21 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
      */
     public function product()
     {
+        if($this->product_shop) {
+            return $this->product_shop();
+        }
+
         $models = \Config::get('pow.models');
         return $this->hasOne($models['product'], 'id', 'product_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function product_shop()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product_shop'], 'id', 'product_shop_id');
     }
 
     /**
