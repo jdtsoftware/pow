@@ -56,13 +56,22 @@ class Order implements iOrder
     }
 
     /**
-     * @param int $page
      * @param int $perPage
+     * @param string $status
      * @return Collection
      */
-    public function listAll($page = 1, $perPage = 15)
+    public function listAll($perPage = 15, $status = null)
     {
-        return $this->models['order']::simplePaginate($perPage);
+        $order = new $this->models['order'];
+
+        if($status) {
+            $order = $order->where(
+                'order_status_id',
+                $this->models['order_status']::handleToId($status)
+            );
+        }
+
+        return $order->simplePaginate($perPage);
     }
 
     /**
@@ -158,4 +167,21 @@ class Order implements iOrder
         return $this->models['order']::where('order_status_id', $this->models['order_status']::handleToId('draft'))->get();
     }
 
+    /**
+     * @param $uuid
+     * @return iOrderEntity|null
+     */
+    public function approveOrder($uuid)
+    {
+        $order = $this->findByUuid($uuid);
+        if($order) {
+            $order->update([
+                'order_status_id' => $this->models['order_status']::handleToId('pending')
+            ]);
+
+            return $order;
+        }
+
+        return null;
+    }
 }

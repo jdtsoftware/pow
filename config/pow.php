@@ -22,6 +22,7 @@ return [
     'route_middleware' => '',
 
     'models' => [
+        'user' => 'Change_Me_To_Your_User_Model',
         'product' => JDT\Pow\Entities\Product\Product::class,
         'product_shop' => JDT\Pow\Entities\Product\Shop::class,
         'product_token' => JDT\Pow\Entities\Product\ProductToken::class,

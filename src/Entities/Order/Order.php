@@ -213,4 +213,13 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $this->order_status_id !== OrderStatus::handleToId('pending_approval');
     }
 
+    /**
+     * @return mixed
+     */
+    public function creator()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['user'], 'id', 'created_user_id');
+    }
+
 }
