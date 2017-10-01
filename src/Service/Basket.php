@@ -83,7 +83,26 @@ class Basket implements iBasket
                 'original_price' => $originalPrice,
                 'discount' => $discount,
             ];
-            
+
+            if($product->orderForm) {
+                $validation = [];
+                foreach($product->orderForm as $input) {
+                    $inputName = 'input['.$input->getId().']';
+
+                    $form[$input->getId()] = [
+                        'name' => $inputName,
+                        'label' => $input->getName(),
+                        'type' => $input->getType(),
+                        'hidden' => $input->isHidden(),
+                        'validation' => $input->getValidation(),
+                    ];
+                    $validation[$inputName] = $input->getValidation();
+                }
+
+                $this->basket['order_forms'][$shopProduct->getId()]['form'] = $form;
+                $this->basket['order_forms'][$shopProduct->getId()]['validation'] = $validation;
+            }
+
             $this->session->put($this->instance, $this->basket);
             $this->events->fire('basket.added', $product);
         } else {
@@ -95,6 +114,58 @@ class Basket implements iBasket
 
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function hasOrderForms() : bool
+    {
+        $basket = $this->session->get($this->instance);
+        return !empty($basket['order_forms']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderForms() : array
+    {
+        $basket = $this->session->get($this->instance);
+        return !empty($basket['order_forms']) ? $basket['order_forms'] : [];
+    }
+
+    /**
+     * @param $request
+     * @param $productShopId
+     * @return bool
+     */
+    public function updateOrderForm($request, $productShopId)
+    {
+        $this->basket = $this->session->get($this->instance);
+
+        $orderForms = $this->getOrderForms();
+        $form = $orderForms[$productShopId]['form'];
+        $validation = $orderForms[$productShopId]['validation'];
+
+        $formData = [];
+
+        foreach($form as $inputId => $input) {
+            $formData[$input['name']] = ($input['type'] == 'file')
+                ? $request->file($input['name'])
+                : $request->get($input['name']);
+        }
+
+        if(\Validator::make($formData, $validation)->valid()) {
+            $this->basket['order_forms'][$productShopId]['data'] = $formData;
+
+            dd($formData);
+            return true;
+        }
+
+
+
+        return false;
+    }
+
 
     /**
      * @param iProductShopEntity $shopProduct

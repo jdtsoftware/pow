@@ -5,11 +5,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
 use JDT\Pow\Http\Requests\SaveProductRequest;
+use JDT\Pow\Interfaces\IdentifiableId;
 
 /**
  * Class OrderForm.
  */
-class OrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Shop
+class ProductOrderForm extends Model implements \JDT\Pow\Interfaces\Entities\ProductOrderForm, IdentifiableId
 {
     use SoftDeletes;
 
@@ -36,6 +37,8 @@ class OrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      */
     protected $fillable = [
         'product_id',
+        'hidden',
+        'validation',
         'type',
         'name',
         'hidden',
@@ -81,5 +84,43 @@ class OrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Shop
         return in_array($type, $this->validTypes);
     }
 
+    /**
+     * @return int
+     */
+    public function getId() : int
+    {
+        return $this->id;
+    }
 
+    /**
+     * @return string
+     */
+    public function getType() : string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValidation() : string
+    {
+        return $this->validation;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isHidden() : bool
+    {
+        return (bool) false;
+    }
 }

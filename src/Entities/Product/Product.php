@@ -99,6 +99,15 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function orderForm()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['product_order_form'], 'product_id', 'id');
+    }
+
+    /**
      * @return integer
      */
     public function getId() : int

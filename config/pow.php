@@ -21,12 +21,15 @@ return [
     'route_domain' => '',
     'route_middleware' => '',
 
+    'temp_storage' => 'local',
+
     'models' => [
         'user' => 'Change_Me_To_Your_User_Model',
         'product' => JDT\Pow\Entities\Product\Product::class,
         'product_shop' => JDT\Pow\Entities\Product\Shop::class,
         'product_token' => JDT\Pow\Entities\Product\ProductToken::class,
         'product_adjustment_price' => \JDT\Pow\Entities\Product\ProductAdjustmentPrice::class,
+        'product_order_form' => \JDT\Pow\Entities\Product\ProductOrderForm::class,
         'order' => JDT\Pow\Entities\Order\Order::class,
         'order_item' => JDT\Pow\Entities\Order\OrderItem::class,
         'order_status' => \JDT\Pow\Entities\Order\OrderStatus::class,

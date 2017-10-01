@@ -14,6 +14,10 @@ Route::post('/basket/remove', 'JDT\Pow\Http\Controllers\BasketController@removeP
     ->name('basket-remove-product');
 Route::post('/basket/clear', 'JDT\Pow\Http\Controllers\BasketController@clearAction')
     ->name('basket-clear');
+Route::post('/basket/order-form/{productId}/update', 'JDT\Pow\Http\Controllers\BasketController@updateOrderFormAction')
+    ->name('basket-update-order-form');
+Route::post('/basket/order-form/{productId}/{inputId}/upload-file', 'JDT\Pow\Http\Controllers\BasketController@receiveFileAction')
+    ->name('basket-update-order-form-file');
 
 Route::post('/order/create', 'JDT\Pow\Http\Controllers\OrderController@createAction')
     ->name('order-create');
