@@ -170,6 +170,18 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $orderItem;
     }
 
+    public function addFormItem($productshopOrderFormId, $value)
+    {
+        $models = \Config::get('pow.models');
+        $orderFormItem = $models['order_form']::create([
+            'order_id' => $this->getId(),
+            'product_shop_order_form_id' => $productshopOrderFormId,
+            'value' => $value
+        ]);
+
+        return $orderFormItem;
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */

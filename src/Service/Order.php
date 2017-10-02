@@ -104,6 +104,7 @@ class Order implements iOrder
     public function createFromBasket(iBasket $basket, IdentifiableId $creator) : iOrderEntity
     {
         $basketItems = $basket->getBasket();
+
         if(empty($basketItems['products'])) {
             throw new \Exception('Basket is empty - you cannot create an order with an empty basket!');
         }
@@ -129,6 +130,15 @@ class Order implements iOrder
                 $order->update([
                     'order_status_id' => $this->models['order_status']::handleToId('pending_approval')
                 ]);
+            }
+        }
+
+        if(!empty($basketItems['order_forms'])) {
+            foreach($basketItems['order_forms'] as $productShopId => $orderForm) {
+                foreach($orderForm['data'] as $inputName => $value) {
+                    $productshopOrderFormId = last(explode('_', $inputName));
+                    $order->addFormItem($productshopOrderFormId, $value);
+                }
             }
         }
 

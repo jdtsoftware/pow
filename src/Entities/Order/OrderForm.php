@@ -1,0 +1,140 @@
+<?php
+
+declare(strict_types=1);
+
+namespace JDT\Pow\Entities\Order;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
+use JDT\Pow\Entities\Wallet\WalletTokenType;
+use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
+use JDT\Pow\Interfaces\Redeemable;
+
+/**
+ * Class OrderForm.
+ */
+class OrderForm extends Model implements iOrderItemEntity, Redeemable
+{
+    use SoftDeletes;
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'order_form';
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'deleted_at',
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'order_id',
+        'product_shop_order_form_id',
+        'value',
+        'created_at',
+        'updated_at'
+    ];
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    /**
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalPrice()
+    {
+        return $this->adjusted_total_price;
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function product()
+    {
+        if($this->product_shop) {
+            return $this->product_shop();
+        }
+
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product'], 'id', 'product_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function product_shop()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['product_shop'], 'id', 'product_shop_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function order()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order'], 'id', 'order_id');
+    }
+
+    /**
+     * @return WalletTokenType
+     */
+    public function getTokenType()
+    {
+        return $this->product->token->type;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTokenValue()
+    {
+        return $this->product->token->tokens;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getLinkerId()
+    {
+        return $this->order->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLinkerType()
+    {
+        return get_class($this->order);
+    }
+
+    public static function findEarliestRedeemableOrderItem() : iOrderItemEntity
+    {
+        //@todo check order status is complete as well 
+        return OrderItem::whereRaw('tokens_spent < tokens_total')
+            ->orderBy('created_at', 'asc')
+            ->first();
+    }
+}

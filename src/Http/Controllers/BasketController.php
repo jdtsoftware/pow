@@ -27,18 +27,13 @@ class BasketController extends BaseController
 
         $orderForms = $pow->basket()->getOrderForms();
 
-        $messages = [
-            'required' => 'This field is required',
-            'date' => 'Enter a valid date',
-        ];
-
         $orderFormValidation = [];
         foreach($orderForms as $productId => $orderFormInputs) {
             if(empty($orderFormInputs['validation'])) {
                 continue;
             }
 
-            $orderFormValidation[$productId] = \JsValidator::make($orderFormInputs['validation'], $messages);
+            $orderFormValidation[$productId] = \JsValidator::make($orderFormInputs['validation'], $orderFormInputs['messages']);
         }
 
         return view(
@@ -145,24 +140,25 @@ class BasketController extends BaseController
         $pow = app('pow');
         $orderForms = $pow->basket()->getOrderForms();
 
-        if(isset($orderForms[$productShopId]['form'][$inputId]) && isset($files['input'][$inputId])) {
+        if(isset($orderForms[$productShopId]['form'][$inputId])) {
             $input = $orderForms[$productShopId]['form'][$inputId];
-            $file = $files['input'][$inputId];
 
-            $validation = [$input['name'] => $input['validation']];
+            if(isset($files[$input['name']])) {
+                $file = $files[$input['name']];
 
-            $validator = \Validator::make($request->file(), $validation);
-            if ($validator->valid()) {
+                $validation = [$input['name'] => $input['validation']];
 
-                $hashed = \Storage::disk(\Config::get('pow.temp_storage'))->putFile('', $file);
-                return response()->json(['id' => $hashed], 200);
-            } else {
-                return response()->json($validator->getMessageBag(), 422);
+                $validator = \Validator::make($request->file(), $validation, $input['messages'])->validate();
+
+                if (empty($validator)) {
+                    $hashed = \Storage::disk(\Config::get('pow.temp_storage'))->putFile('', $file);
+                    return response()->json(['id' => $hashed], 200);
+                } else {
+                    return response()->json($validator, 422);
+                }
             }
-
         }
 
-
-
+        return response()->json(['error'], 422);
     }
 }

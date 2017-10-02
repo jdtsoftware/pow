@@ -85,9 +85,16 @@ class Basket implements iBasket
             ];
 
             if($product->orderForm) {
+                $messages = [
+                    'required' => 'This field is required',
+                    'date' => 'Enter a valid date',
+                    'image' => 'The file must be an image (jpeg, png, bmp, gif, or svg)',
+                    'url' => 'Please enter a valid URL. (http://www.google.com)'
+                ];
+
                 $validation = [];
                 foreach($product->orderForm as $input) {
-                    $inputName = 'input['.$input->getId().']';
+                    $inputName = 'input_'.$input->getId();
 
                     $form[$input->getId()] = [
                         'name' => $inputName,
@@ -95,12 +102,21 @@ class Basket implements iBasket
                         'type' => $input->getType(),
                         'hidden' => $input->isHidden(),
                         'validation' => $input->getValidation(),
+                        'messages' => $messages
                     ];
                     $validation[$inputName] = $input->getValidation();
+
+                    if($input->getType() == 'file') {
+                        $uploadedName = 'file_'.$input->getId();
+
+                        $form[$input->getId()]['uploaded_name'] = $uploadedName;
+                        $validation[$uploadedName] = 'string';
+                    }
                 }
 
                 $this->basket['order_forms'][$shopProduct->getId()]['form'] = $form;
                 $this->basket['order_forms'][$shopProduct->getId()]['validation'] = $validation;
+                $this->basket['order_forms'][$shopProduct->getId()]['messages'] = $messages;
             }
 
             $this->session->put($this->instance, $this->basket);
@@ -149,19 +165,20 @@ class Basket implements iBasket
         $formData = [];
 
         foreach($form as $inputId => $input) {
-            $formData[$input['name']] = ($input['type'] == 'file')
-                ? $request->file($input['name'])
-                : $request->get($input['name']);
+
+            $inputName = $input['name'];
+            if($input['type'] == 'file') {
+                $inputName = $input['uploaded_name'];
+            }
+
+            $formData[$inputName] = $request->get($inputName);
         }
 
         if(\Validator::make($formData, $validation)->valid()) {
             $this->basket['order_forms'][$productShopId]['data'] = $formData;
-
-            dd($formData);
+            $this->session->put($this->instance, $this->basket);
             return true;
         }
-
-
 
         return false;
     }
