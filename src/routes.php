@@ -54,6 +54,9 @@ Route::get('/manage/orders/{status?}', 'JDT\Pow\Http\Controllers\Manage\OrdersCo
     ->name('manage.orders');
 Route::post('/manage/orders/approve', 'JDT\Pow\Http\Controllers\Manage\OrdersController@approveOrderAction')
     ->name('manage.orders.approve');
+Route::get('/manage/orders/{orderId}/{fileHash}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@downloadOrderFormFileAction')
+    ->name('manage.orders.download');
+
 
 Route::get('/manage/wallets', 'JDT\Pow\Http\Controllers\Manage\WalletsController@indexAction')
     ->name('manage.wallets');

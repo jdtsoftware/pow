@@ -17,7 +17,6 @@ class OrdersController extends BaseController
         $pow = app('pow');
         $orders = $pow->order()->listAll($perPage, $status);
 
-
         return view(
             'pow::manage.orders.index',
             [
@@ -42,5 +41,14 @@ class OrdersController extends BaseController
         }
 
         return redirect()->route('manage.orders', ['status' => $status]);
+    }
+
+    public function downloadOrderFormFileAction($uuid, $hash)
+    {
+        $pow = app('pow');
+        $order = $pow->order()->findByUuid($uuid);
+
+        $filePath = \Storage::disk(\Config::get('pow.temp_storage'))->path($hash);
+        return response()->download($filePath);
     }
 }

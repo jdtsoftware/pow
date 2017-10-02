@@ -210,6 +210,15 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function form()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['order_form'], 'order_id', 'id');
+    }
+
+    /**
      * @return bool
      */
     public function isComplete() : bool
