@@ -4,6 +4,7 @@ namespace JDT\Pow\Service;
 
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
+use Illuminate\Support\Collection;
 use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
 
@@ -84,7 +85,7 @@ class Basket implements iBasket
                 'discount' => $discount,
             ];
 
-            if($product->orderForm) {
+            if($product->orderForm instanceof Collection && $product->orderForm->count() > 0    ) {
                 $messages = [
                     'required' => 'This field is required',
                     'date' => 'Enter a valid date',

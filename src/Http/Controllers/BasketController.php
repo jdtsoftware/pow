@@ -25,15 +25,19 @@ class BasketController extends BaseController
         $basket = $pow->basket()->getBasket();
         $totals = $pow->basket()->getTotalPrices();
 
-        $orderForms = $pow->basket()->getOrderForms();
+        $orderForms = null;
+        $orderFormValidation = null;
+        if($pow->basket()->hasOrderForms()) {
+            $orderForms = $pow->basket()->getOrderForms();
 
-        $orderFormValidation = [];
-        foreach($orderForms as $productId => $orderFormInputs) {
-            if(empty($orderFormInputs['validation'])) {
-                continue;
+            $orderFormValidation = [];
+            foreach ($orderForms as $productId => $orderFormInputs) {
+                if (empty($orderFormInputs['validation'])) {
+                    continue;
+                }
+
+                $orderFormValidation[$productId] = \JsValidator::make($orderFormInputs['validation'], $orderFormInputs['messages']);
             }
-
-            $orderFormValidation[$productId] = \JsValidator::make($orderFormInputs['validation'], $orderFormInputs['messages']);
         }
 
         return view(

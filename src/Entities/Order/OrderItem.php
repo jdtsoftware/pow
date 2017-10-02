@@ -113,7 +113,7 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
      */
     public function getTokenType()
     {
-        return $this->product->token ? $this->product->token->type : null;
+        return isset($this->product->token->type) ? $this->product->token->type : null;
     }
 
     /**
@@ -121,7 +121,7 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
      */
     public function getTokenValue()
     {
-        return $this->product->token ? $this->product->token->tokens : 0;
+        return isset($this->product->token->tokens) ? $this->product->token->tokens : 0;
     }
 
     /**

@@ -1,6 +1,7 @@
 <?php
 
 namespace JDT\Pow\Entities\Product;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
@@ -73,6 +74,14 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
     public function getId() : int
     {
         return $this->id;
+    }
+
+    /**
+     * @return HasOne
+     */
+    public function token()
+    {
+        return $this->product->token();
     }
 
 }
