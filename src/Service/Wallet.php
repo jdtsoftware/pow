@@ -101,9 +101,11 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
      */
     public function credit(iIdentifiableId $creator, Redeemable $linker, iOrderItemEntity $orderItem) : void
     {
-        $walletToken = $this->findOrCreateWalletToken($linker->getTokenType());
-        $transaction = $this->createTransaction($creator, $linker, $orderItem, $walletToken, WalletTransactionType::CREDIT);
-        $walletToken->update(['tokens' => $walletToken->tokens + $transaction->tokens]);
+        if($orderItem->hasTokens()) {
+            $walletToken = $this->findOrCreateWalletToken($linker->getTokenType());
+            $transaction = $this->createTransaction($creator, $linker, $orderItem, $walletToken, WalletTransactionType::CREDIT);
+            $walletToken->update(['tokens' => $walletToken->tokens + $transaction->tokens]);
+        }
     }
 
     /**
