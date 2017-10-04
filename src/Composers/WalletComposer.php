@@ -11,7 +11,9 @@ class WalletComposer {
         if($pow->hasWallet()) {
             $wallet = $pow->wallet();
 
-            $view->with('balance', $wallet->balance())
+            $view
+                ->with('has_wallet', $pow->hasWallet())
+                ->with('balance', $wallet->balance())
                 ->with('tokens', $wallet->token());
         }
     }
