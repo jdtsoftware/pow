@@ -8,9 +8,9 @@ use App\Services\Geocoder\Geocoder;
 use JDT\Pow\Http\Requests\SaveProductRequest;
 
 /**
- * Class Shop.
+ * Class Config.
  */
-class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
+class Config extends Model
 {
     use SoftDeletes;
 
@@ -19,7 +19,7 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      *
      * @var string
      */
-    protected $table = 'product_shop';
+    protected $table = 'product_config';
 
     /**
      * The attributes that should be mutated to dates.
@@ -37,13 +37,8 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
      */
     protected $fillable = [
         'product_id',
-        'order_approval_required',
-        'quantity',
-        'quantity_lock',
-        'name',
-        'description',
-        'created_at',
-        'updated_at'
+        'key',
+        'value',
     ];
 
     protected $hidden = [
@@ -53,22 +48,6 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
     ];
 
     /**
-     * @var array
-     */
-    protected $with = [
-        'product'
-    ];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function product()
-    {
-        $models = \Config::get('pow.models');
-        return $this->hasOne($models['product'], 'id', 'product_id');
-    }
-
-    /**
      * @return integer
      */
     public function getId() : int
@@ -76,19 +55,4 @@ class Shop extends Model implements \JDT\Pow\Interfaces\Entities\Shop
         return $this->id;
     }
 
-    /**
-     * @return HasOne
-     */
-    public function token()
-    {
-        return $this->product->token();
-    }
-
-    /**
-     * @return mixed
-     */
-    public function config($key = null)
-    {
-        return $this->product->config($key);
-    }
 }

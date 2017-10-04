@@ -108,6 +108,21 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function config($key = null)
+    {
+        $models = \Config::get('pow.models');
+        if(isset($key)) {
+            $config = $models['product_config']::where('key', $key)->first();
+            return $config->value ?? null;
+        }
+
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['product_config'], 'product_id', 'id');
+    }
+
+    /**
      * @return integer
      */
     public function getId() : int
@@ -179,13 +194,15 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
             $this->token->delete();
         }
 
-        $models = \Config::get('pow.models');
+        if($data->wallet_token_type_id && $data->tokens) {
+            $models = \Config::get('pow.models');
 
-        $models['product_token']::create([
-            'product_id' => $this->id,
-            'wallet_token_type_id' => $data->wallet_token_type_id,
-            'tokens' => $data->tokens
-        ]);
+            $models['product_token']::create([
+                'product_id' => $this->id,
+                'wallet_token_type_id' => $data->wallet_token_type_id,
+                'tokens' => $data->tokens
+            ]);
+        }
     }
 
     /**

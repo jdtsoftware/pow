@@ -109,6 +109,28 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function form()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['order_item_form'], 'order_item_id', 'id')
+            ->join('product_shop_order_form', 'order_item_form.product_shop_order_form_id', '=', 'product_shop_order_form.id');
+    }
+
+    public function addFormItem($productshopOrderFormId, $value)
+    {
+        $models = \Config::get('pow.models');
+        $orderFormItem = $models['order_item_form']::create([
+            'order_item_id' => $this->getId(),
+            'product_shop_order_form_id' => $productshopOrderFormId,
+            'value' => $value
+        ]);
+
+        return $orderFormItem;
+    }
+
+    /**
      * @return WalletTokenType
      */
     public function getTokenType()

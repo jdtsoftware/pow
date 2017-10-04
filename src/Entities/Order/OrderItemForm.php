@@ -10,9 +10,9 @@ use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\Redeemable;
 
 /**
- * Class OrderForm.
+ * Class OrderItemForm.
  */
-class OrderForm extends Model
+class OrderItemForm extends Model
 {
     use SoftDeletes;
 
@@ -21,7 +21,7 @@ class OrderForm extends Model
      *
      * @var string
      */
-    protected $table = 'order_form';
+    protected $table = 'order_item_form';
 
     /**
      * The attributes that should be mutated to dates.
@@ -38,7 +38,7 @@ class OrderForm extends Model
      * @var array
      */
     protected $fillable = [
-        'order_id',
+        'order_item_id',
         'product_shop_order_form_id',
         'value',
         'created_at',
@@ -51,13 +51,17 @@ class OrderForm extends Model
         'deleted_at',
     ];
 
+    protected $with = [
+        'input'
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function order()
+    public function item()
     {
         $models = \Config::get('pow.models');
-        return $this->hasOne($models['order'], 'id', 'order_id');
+        return $this->hasOne($models['order_item'], 'id', 'order_id');
     }
 
     public function input()

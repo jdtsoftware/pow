@@ -14,7 +14,7 @@ use Ramsey\Uuid\Uuid;
 use Illuminate\Events\Dispatcher;
 
 /**
- * Class Pow.
+ * Class Order.
  */
 class Order implements iOrder
 {
@@ -123,8 +123,16 @@ class Order implements iOrder
             'created_user_id' => $creator->getId(),
         ]);
 
-        foreach($basketItems['products'] as $productId => $item) {
-            $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1);
+        foreach($basketItems['products'] as $productShopId => $item) {
+            $orderItem = $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1);
+
+            if(!empty($basketItems['order_forms'][$productShopId]['data'])) {
+                $orderFormData = $basketItems['order_forms'][$productShopId]['data'];
+                foreach($orderFormData as $inputName => $value) {
+                    $productshopOrderFormId = last(explode('_', $inputName));
+                    $orderItem->addFormItem($productshopOrderFormId, $value);
+                }
+            }
 
             if($item['product_shop']->order_approval_required) {
                 $order->update([
@@ -133,14 +141,7 @@ class Order implements iOrder
             }
         }
 
-        if(!empty($basketItems['order_forms'])) {
-            foreach($basketItems['order_forms'] as $productShopId => $orderForm) {
-                foreach($orderForm['data'] as $inputName => $value) {
-                    $productshopOrderFormId = last(explode('_', $inputName));
-                    $order->addFormItem($productshopOrderFormId, $value);
-                }
-            }
-        }
+
 
         $basket->clearBasket();
 
@@ -164,7 +165,7 @@ class Order implements iOrder
             'order_status_id' => $response->isSuccessful() ? $this->models['order_status']::handleToId('paid') : $this->models['order_status']::handleToId('pending')
         ]);
 
-        $this->events->fire('order.payed', $order);
+        $this->events->fire('order.paid', $order);
 
         return $response;
     }
@@ -188,6 +189,8 @@ class Order implements iOrder
             $order->update([
                 'order_status_id' => $this->models['order_status']::handleToId('pending')
             ]);
+
+            $this->events->fire('order.approved', $order);
 
             return $order;
         }

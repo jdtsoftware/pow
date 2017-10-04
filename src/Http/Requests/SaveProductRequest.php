@@ -28,7 +28,7 @@ class SaveProductRequest extends FormRequest
             'description' => 'string',
             'price' => 'numeric',
             'tokens' => 'integer',
-            'wallet_token_type_id' => 'integer|exists:wallet_token_type,id',
+            'wallet_token_type_id' => 'nullable|integer|exists:wallet_token_type,id',
             'criteria' => 'nullable|string',
             'adjustment' => 'nullable|string',
 

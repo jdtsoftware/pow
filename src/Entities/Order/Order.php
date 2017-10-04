@@ -155,7 +155,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
             'order_id' => $this->getId(),
             'product_id' => $product->getId(),
             'product_shop_id' => $productShop->getId(),
-            'tokens_total' => $product->token->tokens,
+            'tokens_total' => $product->token->tokens ?? 0,
             'tokens_spent' => 0,
             'quantity' => $qty,
             'original_unit_price' => $product->getOriginalPrice(),
@@ -170,17 +170,6 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         return $orderItem;
     }
 
-    public function addFormItem($productshopOrderFormId, $value)
-    {
-        $models = \Config::get('pow.models');
-        $orderFormItem = $models['order_form']::create([
-            'order_id' => $this->getId(),
-            'product_shop_order_form_id' => $productshopOrderFormId,
-            'value' => $value
-        ]);
-
-        return $orderFormItem;
-    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -207,15 +196,6 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['wallet'], 'id', 'wallet_id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function form()
-    {
-        $models = \Config::get('pow.models');
-        return $this->hasMany($models['order_form'], 'order_id', 'id');
     }
 
     /**
