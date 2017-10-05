@@ -64,6 +64,7 @@ class Pow
                 throw new \RuntimeException('Unknown payment gateway - please set one in pow.php');
                 break;
         }
+
     }
 
     /**
@@ -196,7 +197,7 @@ class Pow
         }
 
         if(empty($orderItemEntity)) {
-            $orderItemEntity = $this->order()->findEarliestRedeemableOrderItem();
+            $orderItemEntity = $this->order()->findEarliestRedeemableOrderItem($redeemableLinker->getTokenType()->getHandle());
         }
 
         $orderItemEntity->update([

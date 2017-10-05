@@ -53,4 +53,18 @@ class WalletTokenType extends Model implements \JDT\Pow\Interfaces\Entities\Wall
         return $this->id;
     }
 
+    public function getHandle()
+    {
+        return $this->handle;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getDescription()
+    {
+        return $this->description;
+    }
 }

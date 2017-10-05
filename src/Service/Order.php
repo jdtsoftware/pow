@@ -75,11 +75,12 @@ class Order implements iOrder
     }
 
     /**
+     * @param $tokenTypeHandle
      * @return iOrderItemEntity
      */
-    public function findEarliestRedeemableOrderItem() : iOrderItemEntity
+    public function findEarliestRedeemableOrderItem($tokenTypeHandle) : iOrderItemEntity
     {
-        return $this->models['order_item']::findEarliestRedeemableOrderItem();
+        return $this->models['order_item']::findEarliestRedeemableOrderItem($this->wallet->getId(), $tokenTypeHandle);
     }
 
     /**
