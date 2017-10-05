@@ -98,6 +98,7 @@ class Order implements iOrder
 
     /**
      * @param iBasket $basket
+     * @param IdentifiableId $creator
      * @return iOrderEntity
      * @throws \Exception
      */
@@ -198,15 +199,23 @@ class Order implements iOrder
         return null;
     }
 
-    public function refundOrder($uuid, $amount)
+    /**
+     * @param iOrderEntity $order
+     * @param null $amount
+     * @return Gateway
+     */
+    public function refund(iOrderEntity $order, $amount = null)
     {
-        $order = $this->findByUuid($uuid);
-        if($order) {
-
-            $paymentData = ['token' => $order->payment_gateway_reference];
-            $response = $this->paymentGateway->pay($amount, $paymentData);
-dd($response);
-            $this->events->fire('order.refunded', $order);
+        if($amount > $order->getAdjustedPrice() || empty($amount)) {
+            $amount = $order->getAdjustedPrice();
         }
+
+        $paymentData = ['token' => $order->payment_gateway_reference];
+        $response = $this->paymentGateway->refund($amount, $paymentData);
+
+        $this->events->fire('order.refunded', $order);
+
+        return $response;
+
     }
 }

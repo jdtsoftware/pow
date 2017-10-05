@@ -80,13 +80,18 @@ class OrdersController extends BaseController
 
     /**
      * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function refundAction(Request $request)
     {
+        $status = $request->input('status');
         $orderUuid = $request->input('uuid');
+        $reason = $request->input('reason');
         $amount = $request->input('amount');
 
         $pow = app('pow');
-        $order = $pow->order()->refundOrder($orderUuid, $amount);
+        $response = $pow->refundOrder($orderUuid, $reason, $amount);
+
+        return redirect()->route('manage.orders', ['status' => $status]);
     }
 }

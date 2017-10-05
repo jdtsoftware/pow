@@ -35,6 +35,7 @@ return [
         'order_item' => JDT\Pow\Entities\Order\OrderItem::class,
         'order_status' => \JDT\Pow\Entities\Order\OrderStatus::class,
         'order_item_form' => \JDT\Pow\Entities\Order\OrderItemForm::class,
+        'order_item_refund' => \JDT\Pow\Entities\Order\OrderItemRefund::class,
         'wallet' => JDT\Pow\Entities\Wallet\Wallet::class,
         'wallet_token' => JDT\Pow\Entities\Wallet\WalletToken::class,
         'wallet_token_type' => \JDT\Pow\Entities\Wallet\WalletTokenType::class,

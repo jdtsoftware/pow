@@ -45,11 +45,12 @@ class Stripe implements iGateway
      */
     public function refund(float $totalPrice, array $paymentData = []) : iGateway
     {
-        $this->gateway->refund([
-            'currency' => \Config::get('pow.stripe_options.currency'),
-            'source' => $paymentData['token'],
+        $transaction = $this->gateway->refund([
+            'transactionReference' => $paymentData['token'],
             'amount' => round($totalPrice, 2),
         ]);
+
+        $this->response = $transaction->send();
 
         return $this;
     }

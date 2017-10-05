@@ -54,6 +54,8 @@ Route::get('/manage/orders/{status?}', 'JDT\Pow\Http\Controllers\Manage\OrdersCo
     ->name('manage.orders');
 Route::get('/manage/orders/view/{orderId}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
     ->name('manage.orders.view');
+Route::post('/manage/orders/refund', 'JDT\Pow\Http\Controllers\Manage\OrdersController@refundAction')
+    ->name('manage.orders.refund');
 Route::post('/manage/orders/approve', 'JDT\Pow\Http\Controllers\Manage\OrdersController@approveOrderAction')
     ->name('manage.orders.approve');
 Route::get('/manage/orders/{orderId}/{fileHash}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@downloadOrderFormFileAction')

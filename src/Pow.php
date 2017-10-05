@@ -17,6 +17,7 @@ use JDT\Pow\Interfaces\Product as iProduct;
 use JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Shop as iShop;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Class Pow.
@@ -133,6 +134,48 @@ class Pow
             $order->update([
                 'order_status_id' => $this->models['order_status']::handleToId('complete')
             ]);
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param string $uuid
+     * @param $reason
+     * @param null $amount
+     * @return mixed
+     */
+    public function refundOrder($uuid, $reason, $amount = null)
+    {
+        $order = $this->order()->findByUuid($uuid);
+        if(!$order) {
+            return null;
+        }
+
+        if($amount > $order->getAdjustedPrice() || empty($amount)) {
+            $amount = $order->getAdjustedPrice();
+        }
+
+        $response = $this->order()->refund($order, $reason, $amount);
+        if ($response->isSuccessful()) {
+
+            $order->update([
+                'order_status_id' => $this->models['order_status']::handleToId('refund')
+            ]);
+            foreach($order->items as $item) {
+                $this->models['order_item_refund']::create([
+                    'uuid' => Uuid::uuid4()->toString(),
+                    'order_id' => $order->getId(),
+                    'order_item_id' => $item->getId(),
+                    'total_amount' => (-1 * abs($amount)),
+                    'total_vat' => '0',
+                    'tokens_adjustment' => $item->tokens_total,
+                    'reason' => $reason,
+                    'payment_gateway_reference' => $response->getReference(),
+                    'payment_gateway_blob' => json_encode($response->getData()),
+                    'created_user_id' => $this->user->getId()
+                ]);
+            }
         }
 
         return $response;
