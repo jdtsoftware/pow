@@ -197,4 +197,16 @@ class Order implements iOrder
 
         return null;
     }
+
+    public function refundOrder($uuid, $amount)
+    {
+        $order = $this->findByUuid($uuid);
+        if($order) {
+
+            $paymentData = ['token' => $order->payment_gateway_reference];
+            $response = $this->paymentGateway->pay($amount, $paymentData);
+dd($response);
+            $this->events->fire('order.refunded', $order);
+        }
+    }
 }

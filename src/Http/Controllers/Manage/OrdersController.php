@@ -27,6 +27,27 @@ class OrdersController extends BaseController
         );
     }
 
+    /**
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function viewAction($uuid)
+    {
+        $pow = app('pow');
+        $order = $pow->order()->findByUuid($uuid);
+
+        return view(
+            'pow::manage.orders.view',
+            [
+                'order' => $order
+            ]
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function approveOrderAction(Request $request)
     {
         $orderUuid = $request->input('uuid');
@@ -43,6 +64,11 @@ class OrdersController extends BaseController
         return redirect()->route('manage.orders', ['status' => $status]);
     }
 
+    /**
+     * @param $uuid
+     * @param $hash
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function downloadOrderFormFileAction($uuid, $hash)
     {
         $pow = app('pow');
@@ -50,5 +76,17 @@ class OrdersController extends BaseController
 
         $filePath = \Storage::disk(\Config::get('pow.temp_storage'))->path($hash);
         return response()->download($filePath);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function refundAction(Request $request)
+    {
+        $orderUuid = $request->input('uuid');
+        $amount = $request->input('amount');
+
+        $pow = app('pow');
+        $order = $pow->order()->refundOrder($orderUuid, $amount);
     }
 }

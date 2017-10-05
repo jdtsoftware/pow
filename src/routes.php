@@ -52,10 +52,13 @@ Route::post('/manage/products/create/save', 'JDT\Pow\Http\Controllers\Manage\Pro
 
 Route::get('/manage/orders/{status?}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@indexAction')
     ->name('manage.orders');
+Route::get('/manage/orders/view/{orderId}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
+    ->name('manage.orders.view');
 Route::post('/manage/orders/approve', 'JDT\Pow\Http\Controllers\Manage\OrdersController@approveOrderAction')
     ->name('manage.orders.approve');
 Route::get('/manage/orders/{orderId}/{fileHash}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@downloadOrderFormFileAction')
     ->name('manage.orders.download');
+
 
 
 Route::get('/manage/wallets', 'JDT\Pow\Http\Controllers\Manage\WalletsController@indexAction')

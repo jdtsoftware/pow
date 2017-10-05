@@ -22,6 +22,11 @@ class Stripe implements iGateway
         $this->gateway->setApiKey(\Config::get('pow.stripe_options.secret_key'));
     }
 
+    /**
+     * @param float $totalPrice
+     * @param array $paymentData
+     * @return iGateway
+     */
     public function pay(float $totalPrice, array $paymentData = []) : iGateway
     {
         $this->response = $this->gateway->purchase([
@@ -33,22 +38,49 @@ class Stripe implements iGateway
         return $this;
     }
 
+    /**
+     * @param float $totalPrice
+     * @param array $paymentData
+     * @return iGateway
+     */
+    public function refund(float $totalPrice, array $paymentData = []) : iGateway
+    {
+        $this->gateway->refund([
+            'currency' => \Config::get('pow.stripe_options.currency'),
+            'source' => $paymentData['token'],
+            'amount' => round($totalPrice, 2),
+        ]);
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
     public function isSuccessful()
     {
-        return true;
         return $this->response ? $this->response->isSuccessful() : null;
     }
 
+    /**
+     * @return null
+     */
     public function getReference()
     {
         return $this->response ? $this->response->getTransactionReference() : null;
     }
 
+    /**
+     * @return string
+     */
     public function getMessage()
     {
         return $this->response ? $this->response->getMessage() : null;
     }
 
+    /**
+     * @return string
+     */
     public function getData()
     {
         return $this->response ? $this->response->getData() : null;
