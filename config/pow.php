@@ -39,7 +39,8 @@ return [
         'wallet' => JDT\Pow\Entities\Wallet\Wallet::class,
         'wallet_token' => JDT\Pow\Entities\Wallet\WalletToken::class,
         'wallet_token_type' => \JDT\Pow\Entities\Wallet\WalletTokenType::class,
-        'wallet_transaction_type' => \JDT\Pow\Entities\Wallet\WalletTransactionType::class,
+        'wallet_token_type_config' => \JDT\Pow\Entities\Wallet\WalletTokenTypeConfig::class,
+        'wallet_transaction_type' => \JDT\Pow\Entities\Wallet\WalletTransactionType::class
     ],
     'classes' => [
         'product' => \JDT\Pow\Service\Product::class,

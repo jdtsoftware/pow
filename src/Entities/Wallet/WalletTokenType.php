@@ -53,18 +53,44 @@ class WalletTokenType extends Model implements \JDT\Pow\Interfaces\Entities\Wall
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
     public function getHandle()
     {
         return $this->handle;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * @return string
+     */
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @param null $key
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|null
+     */
+    public function config($key = null)
+    {
+        $models = \Config::get('pow.models');
+        if(isset($key)) {
+            $config = $models['wallet_token_type_config']::where('wallet_token_type_id', $this->getId())
+                ->where('key', $key)->first();
+            return $config->value ?? null;
+        }
+
+        $models = \Config::get('pow.models');
+        return $this->hasMany($models['wallet_token_type_config'], 'wallet_token_type_id', 'id');
     }
 }

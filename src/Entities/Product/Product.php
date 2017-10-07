@@ -110,13 +110,15 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @param null $key
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany|null
      */
     public function config($key = null)
     {
         $models = \Config::get('pow.models');
         if(isset($key)) {
-            $config = $models['product_config']::where('key', $key)->first();
+            $config = $models['product_config']::where('product_id', $this->getId())
+                ->where('key', $key)->first();
             return $config->value ?? null;
         }
 
