@@ -12,6 +12,6 @@ interface Order {
     public function validOrder($uuid) : bool;
     public function createFromBasket(iBasket $basket, IdentifiableId $creator) : iOrderEntity;
     public function pay(iOrderEntity $order, $paymentData = []);
-    public function findEarliestRedeemableOrderItem();
+    public function findEarliestRedeemableOrderItem($tokenTypeHandle);
     public function unfinishedOrders();
 }

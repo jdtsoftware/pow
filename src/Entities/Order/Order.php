@@ -79,6 +79,46 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @return bool
+     */
+    public function hasSpentTokens()
+    {
+        foreach($this->items as $item) {
+            if($item->tokens_spent > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return int
+     */
+    public function tokensSpent()
+    {
+        $tokens = 0;
+        foreach($this->items as $item) {
+            $tokens += $item->tokens_spent;
+        }
+
+        return $tokens;
+    }
+
+    /**
+     * @return int
+     */
+    public function tokensTotal()
+    {
+        $tokens = 0;
+        foreach($this->items as $item) {
+            $tokens += $item->tokens_total;
+        }
+
+        return $tokens;
+    }
+
+    /**
      * @return float
      */
     public function getVATRate() : float
