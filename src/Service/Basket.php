@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
+use JDT\Pow\Traits\VatCharge;
 
 /**
  * Class Basket.
@@ -15,6 +16,8 @@ use \JDT\Pow\Interfaces\Wallet as iWallet;
  */
 class Basket implements iBasket
 {
+    use VatCharge;
+
     const DEFAULT_INSTANCE = 'default';
 
     protected $session;
@@ -221,19 +224,6 @@ class Basket implements iBasket
     }
 
     /**
-     * @param int $totalPrice
-     * @return float|int
-     */
-    public function getVATCharge($totalPrice)
-    {
-        if(empty($this->vat) || empty($totalPrice)) {
-            return 0;
-        }
-
-        return ($this->vat / 100) * $totalPrice;
-    }
-
-    /**
      * @return BasketPrices
      */
     public function getTotalPrices() : BasketPrices
@@ -258,10 +248,10 @@ class Basket implements iBasket
         $prices = new BasketPrices();
         $prices->setOriginalSubTotalPrice($originalSubTotalPrice)
             ->setAdjustedSubTotalPrice($prices->originalSubTotalPrice - $totalDiscount)
-            ->setOriginalVat($this->getVATCharge($prices->originalSubTotalPrice))
-            ->setAdjustedVat($this->getVATCharge($prices->adjustedSubTotalPrice))
-            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$this->getVATCharge($prices->originalSubTotalPrice))
-            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$this->getVATCharge($prices->adjustedSubTotalPrice))
+            ->setOriginalVat($this->getVatCharge($prices->originalSubTotalPrice, $this->vat))
+            ->setAdjustedVat($this->getVatCharge($prices->adjustedSubTotalPrice, $this->vat))
+            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$this->getVatCharge($prices->originalSubTotalPrice, $this->vat))
+            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$this->getVatCharge($prices->adjustedSubTotalPrice, $this->vat))
             ->setDiscountPrice($totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null);
 
         $this->session->put($this->instance, $this->basket);

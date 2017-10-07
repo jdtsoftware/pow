@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\Services\Geocoder\Geocoder;
 use JDT\Pow\Http\Requests\SaveProductRequest;
+use JDT\Pow\Traits\VatCharge;
 
 /**
  * Class Product.
@@ -12,6 +13,7 @@ use JDT\Pow\Http\Requests\SaveProductRequest;
 class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
 {
     use SoftDeletes;
+    use VatCharge;
 
     /**
      * The table associated with the model.
@@ -169,19 +171,6 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
     public function getDescription() : string
     {
         return $this->description;
-    }
-
-    /**
-     * @param $totalPrice
-     * @return float
-     */
-    public function getVATCharge($totalPrice = null, $vatPercentage = null) : float
-    {
-        if(empty($vatPercentage) || empty($totalPrice)) {
-            return 0;
-        }
-
-        return ($vatPercentage / 100) * $totalPrice;
     }
 
     /**

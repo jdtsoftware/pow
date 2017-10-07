@@ -26,7 +26,6 @@ class OrderController extends BaseController
             $pow = app('pow');
             $order = $pow->createOrderFromBasket();
         } catch (\Exception $e) {
-            throw $e;
             return redirect()->route('products');
         }
 
@@ -61,7 +60,7 @@ class OrderController extends BaseController
     public function payAction($uuid)
     {
         $pow = app('pow');
-        $order = $pow->order()->findByUuid($uuid);
+        $order = $pow->order()->findByUuid($uuid, \Auth::user());
         $response = $pow->payForOrder($order, Input::get());
 
         if($response->isSuccessful()) {
@@ -81,7 +80,7 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         if($pow->order()->validOrder($uuid)) {
-            $order = $pow->order()->findByUuid($uuid);
+            $order = $pow->order()->findByUuid($uuid, \Auth::user());
             return view('pow::order.complete', ['order' => $order]);
         } else {
             return redirect()->route('products');

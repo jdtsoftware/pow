@@ -33,18 +33,30 @@ class Order implements iOrder
      * @param int $orderId
      * @return mixed
      */
-    public function findById(int $orderId) : iOrderEntity
+    public function findById(int $orderId, IdentifiableId $creator = null) : iOrderEntity
     {
-        return $this->models['order']::find($orderId);
+        $order = $this->models['order']::where('id', $orderId);
+
+        if($creator) {
+            $order = $order->where('created_user_id', $creator->getId());
+        }
+
+        return $order->first();
     }
 
     /**
      * @param $uuid
      * @return iOrderEntity
      */
-    public function findByUuid($uuid) : iOrderEntity
+    public function findByUuid($uuid, IdentifiableId $creator = null) : iOrderEntity
     {
-        return $this->models['order']::where('uuid', $uuid)->first();
+        $order = $this->models['order']::where('uuid', $uuid);
+
+        if($creator) {
+            $order = $order->where('created_user_id', $creator->getId());
+        }
+
+        return $order->first();
     }
 
     /**

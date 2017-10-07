@@ -207,7 +207,7 @@
 
     <div class="basket-price">
         <p>Sub Total: {{ order.getSubTotalPrice()|price }}</p>
-        <p>VAT: {{ order.getVATCharge()|price }}</p>
+        <p>VAT: {{ order.getAdjustedVatCharge()|price }}</p>
         <p>Total: {{ order.getAdjustedPrice()|price }}</p>
     </div>
     <div class="actions m-2">

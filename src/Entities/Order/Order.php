@@ -205,8 +205,8 @@ class Order extends Model implements iOrderEntity, IdentifiableId
             'original_total_price' => $product->getOriginalPrice($qty),
             'adjusted_total_price' => $product->getAdjustedPrice($qty),
             'vat_percentage' => $vatPercentage,
-            'original_vat_price' => $product->getVATCharge($product->getOriginalPrice($qty), $vatPercentage),
-            'adjusted_vat_price' => $product->getVATCharge($product->getAdjustedPrice($qty), $vatPercentage),
+            'original_vat_price' => $product->getVatCharge($product->getOriginalPrice($qty), $vatPercentage),
+            'adjusted_vat_price' => $product->getVatCharge($product->getAdjustedPrice($qty), $vatPercentage),
         ]);
 
         return $orderItem;
