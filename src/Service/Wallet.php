@@ -200,7 +200,6 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
      */
     public function isVatExempt()
     {
-        return true;
         return $this->walletOwner->isVatExempt();
     }
 }
