@@ -71,7 +71,7 @@ class Pow
      */
     public function basket() : iBasket
     {
-        return new $this->classes['basket']($this->session, $this->events);
+        return new $this->classes['basket']($this->session, $this->events, $this->wallet());
     }
 
     /**
@@ -79,7 +79,7 @@ class Pow
      */
     public function product() : iProduct
     {
-        return new $this->classes['product'];
+        return new $this->classes['product']($this->wallet());
     }
 
     /**
@@ -100,7 +100,7 @@ class Pow
      */
     public function shop() : iShop
     {
-        return new $this->classes['shop']();
+        return new $this->classes['shop']($this->wallet());
     }
 
     /**

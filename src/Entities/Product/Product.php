@@ -175,14 +175,13 @@ class Product extends Model implements \JDT\Pow\Interfaces\Entities\Product
      * @param $totalPrice
      * @return float
      */
-    public function getVATCharge($totalPrice = null) : float
+    public function getVATCharge($totalPrice = null, $vatPercentage = null) : float
     {
-        $vat = \Config::get('pow.vat');
-        if(empty($vat) || empty($totalPrice)) {
+        if(empty($vatPercentage) || empty($totalPrice)) {
             return 0;
         }
 
-        return ($vat / 100) * $totalPrice;
+        return ($vatPercentage / 100) * $totalPrice;
     }
 
     /**

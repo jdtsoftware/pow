@@ -141,9 +141,11 @@ class Order extends Model implements iOrderEntity, IdentifiableId
      * @param iProductEntity $product
      * @param iProductShopEntity $productShop
      * @param int $qty
+     * @param int|null $vatPercentage
+     *
      * @return iOrderItemEntity
      */
-    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1) : iOrderItemEntity
+    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1, $vatPercentage = null) : iOrderItemEntity
     {
         $qty = (int) $qty;
         if($qty <= 0) { //lets be safe.
@@ -162,9 +164,9 @@ class Order extends Model implements iOrderEntity, IdentifiableId
             'adjusted_unit_price' => $product->getAdjustedPrice(),
             'original_total_price' => $product->getOriginalPrice($qty),
             'adjusted_total_price' => $product->getAdjustedPrice($qty),
-            'var_percentage' => \Config::get('pow.vat'),
-            'original_vat_price' => $product->getVATCharge($product->getOriginalPrice($qty)),
-            'adjusted_vat_price' => $product->getVATCharge($product->getAdjustedPrice($qty)),
+            'vat_percentage' => $vatPercentage,
+            'original_vat_price' => $product->getVATCharge($product->getOriginalPrice($qty), $vatPercentage),
+            'adjusted_vat_price' => $product->getVATCharge($product->getAdjustedPrice($qty), $vatPercentage),
         ]);
 
         return $orderItem;

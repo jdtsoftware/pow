@@ -118,14 +118,14 @@ class Order implements iOrder
             'payment_gateway_id' => 1,
             'original_total_price' => $prices->originalTotalPrice,
             'adjusted_total_price' => $prices->adjustedTotalPrice,
-            'vat_percentage' => \Config::get('pow.vat'),
+            'vat_percentage' => $this->wallet->getVatPerecentage(),
             'original_vat_price' => $prices->originalVat,
             'adjusted_vat_price' => $prices->adjustedVat,
             'created_user_id' => $creator->getId(),
         ]);
 
         foreach($basketItems['products'] as $productShopId => $item) {
-            $orderItem = $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1);
+            $orderItem = $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1, $this->wallet->getVatPerecentage());
 
             if(!empty($basketItems['order_forms'][$productShopId]['data'])) {
                 $orderFormData = $basketItems['order_forms'][$productShopId]['data'];
@@ -161,6 +161,7 @@ class Order implements iOrder
         $response = $this->paymentGateway->pay($order->getAdjustedPrice(), $paymentData);
 
         $order->update([
+            'po_number' => $paymentData['po_number'] ?? null,
             'payment_gateway_reference' => $response->getReference(),
             'payment_gateway_blob' => json_encode($response->getData()),
             'order_status_id' => $response->isSuccessful() ? $this->models['order_status']::handleToId('paid') : $this->models['order_status']::handleToId('pending')

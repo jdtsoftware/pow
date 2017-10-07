@@ -13,4 +13,7 @@ interface Wallet {
     public function overdraft();
     public function credit(iIdentifiableId $creator, Redeemable $linker, iOrderItemEntity $orderItem);
     public function debit(iIdentifiableId $creator, Redeemable $linker, iOrderItemEntity $orderItem);
+
+    public function getVatPerecentage();
+    public function isVatExempt();
 }

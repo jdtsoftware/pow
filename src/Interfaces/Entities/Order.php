@@ -15,6 +15,6 @@ interface Order {
     public function getAdjustedVATCharge();
     public function getOriginalPrice();
     public function getAdjustedPrice();
-    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1) : iOrderItemEntity;
+    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1, $vatPercentage = null) : iOrderItemEntity;
     public function items();
 }

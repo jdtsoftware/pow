@@ -7,6 +7,7 @@ use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
 use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
+use \JDT\Pow\Interfaces\Wallet as iWallet;
 
 /**
  * Class Basket.
@@ -26,18 +27,21 @@ class Basket implements iBasket
 
     /**
      * Basket constructor.
+     *
      * @param SessionManager $session
      * @param Dispatcher $events
+     * @param iWallet $wallet
      */
-    public function __construct(SessionManager $session, Dispatcher $events)
+    public function __construct(SessionManager $session, Dispatcher $events, iWallet $wallet)
     {
         $this->session = $session;
         $this->events = $events;
+        $this->wallet = $wallet;
 
         $this->models = \Config::get('pow.models');
         $this->classes = \Config::get('pow.classes');
 
-        $this->vat = \Config::get('pow.vat');
+        $this->vat = $this->wallet->getVatPerecentage();
 
         $this->instance(self::DEFAULT_INSTANCE);
     }

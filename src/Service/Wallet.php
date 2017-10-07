@@ -187,4 +187,20 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
         return $this->models['wallet_transaction_type']::where('handle', $type)->first();
     }
 
+    /**
+     *
+     */
+    public function getVatPerecentage()
+    {
+        return $this->isVatExempt() ? null : $this->walletOwner->getVatPerecentage();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function isVatExempt()
+    {
+        return true;
+        return $this->walletOwner->isVatExempt();
+    }
 }

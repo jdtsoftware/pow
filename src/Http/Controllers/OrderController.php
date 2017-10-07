@@ -18,12 +18,17 @@ class OrderController extends BaseController
 {
 
     /**
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function createAction()
     {
-        $pow = app('pow');
-        $order = $pow->createOrderFromBasket();
+        try {
+            $pow = app('pow');
+            $order = $pow->createOrderFromBasket();
+        } catch (\Exception $e) {
+            throw $e;
+            return redirect()->route('products');
+        }
 
         return redirect()->route('order-checkout', ['uuid' => $order->getUuid()]);
     }
