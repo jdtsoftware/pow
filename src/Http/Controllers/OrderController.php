@@ -76,6 +76,10 @@ class OrderController extends BaseController
 
     }
 
+    /**
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
     public function viewAction($uuid)
     {
         $pow = app('pow');
@@ -87,6 +91,9 @@ class OrderController extends BaseController
         }
     }
 
+    /**
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function insufficientBalanceAction()
     {
         return view('pow::order.insufficient-balance');

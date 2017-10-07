@@ -157,19 +157,29 @@ class Pow
             $amount = $order->getAdjustedPrice();
         }
 
-        $response = $this->order()->refund($order, $reason, $amount);
+        $response = $this->order()->refund($order, $amount);
+
         if ($response->isSuccessful()) {
 
             $order->update([
                 'order_status_id' => $this->models['order_status']::handleToId('refund')
             ]);
+
+            $vatRate = $order->getVATRate();
             foreach($order->items as $item) {
+                $refundItem = $this->models['order_item_refund']::where('order_id', $order->getId())
+                    ->where('order_item_id', $item->getId())->first();
+
+                if(isset($refundItem)) {
+                    continue;
+                }
+
                 $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
                     'total_amount' => (-1 * abs($amount)),
-                    'total_vat' => '0',
+                    'total_vat' => ($vatRate > 0) ? ($amount / (1 + ($vatRate / 100))) : 0,
                     'tokens_adjustment' => $item->tokens_total,
                     'reason' => $reason,
                     'payment_gateway_reference' => $response->getReference(),

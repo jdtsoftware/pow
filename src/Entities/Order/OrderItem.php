@@ -118,6 +118,20 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
             ->join('product_shop_order_form', 'order_item_form.product_shop_order_form_id', '=', 'product_shop_order_form.id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function refund()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order_item_refund'], 'order_item_id', 'id');
+    }
+
+    /**
+     * @param $productshopOrderFormId
+     * @param $value
+     * @return OrderItemForm
+     */
     public function addFormItem($productshopOrderFormId, $value)
     {
         $models = \Config::get('pow.models');

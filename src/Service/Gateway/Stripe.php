@@ -60,6 +60,11 @@ class Stripe implements iGateway
      */
     public function isSuccessful()
     {
+        $data = $this->response->getData();
+        if(isset($data['error']['message']) && strstr($data['error']['message'], 'has already been refunded.')) {
+            return true;
+        }
+
         return $this->response ? $this->response->isSuccessful() : null;
     }
 
