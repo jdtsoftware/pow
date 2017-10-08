@@ -94,4 +94,28 @@ class OrdersController extends BaseController
 
         return redirect()->route('manage.orders', ['status' => $status]);
     }
+
+
+    /**
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function downloadInvoiceAction($uuid)
+    {
+        $pow = app('pow');
+        if($pow->order()->validOrder($uuid)) {
+            $order = $pow->order()->findByUuid($uuid);
+
+            $pdf = \PDF::loadView(
+                'pow::order.invoice',
+                [
+                    'order' => $order,
+                    'public_local_path' => public_path()
+                ]
+            );
+            return $pdf->download('invoice-'.$order->id.'.pdf');
+        } else {
+            return redirect()->route('manage.orders');
+        }
+    }
 }

@@ -36,8 +36,6 @@ Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@ins
 Route::get('/wallet', 'JDT\Pow\Http\Controllers\WalletController@indexAction')
     ->name('wallet');
 
-
-
 Route::get('/manage/products', 'JDT\Pow\Http\Controllers\Manage\ProductsController@indexAction')
     ->name('manage.products');
 
@@ -56,7 +54,7 @@ Route::get('/manage/orders/{status?}', 'JDT\Pow\Http\Controllers\Manage\OrdersCo
     ->name('manage.orders');
 Route::get('/manage/orders/view/{orderId}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
     ->name('manage.orders.view');
-Route::get('/manage/orders/view/{orderId}/invoice/download', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
+Route::get('/manage/orders/view/{orderId}/invoice/download', 'JDT\Pow\Http\Controllers\Manage\OrdersController@downloadInvoiceAction')
     ->name('manage.orders.download.invoice');
 Route::post('/manage/orders/refund', 'JDT\Pow\Http\Controllers\Manage\OrdersController@refundAction')
     ->name('manage.orders.refund');
