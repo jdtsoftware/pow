@@ -27,6 +27,8 @@ Route::post('/order/{uuid}/pay', 'JDT\Pow\Http\Controllers\OrderController@payAc
     ->name('order-pay');
 Route::get('/order/{uuid}/view', 'JDT\Pow\Http\Controllers\OrderController@viewAction')
     ->name('order-view');
+Route::get('/order/{uuid}/invoice/download', 'JDT\Pow\Http\Controllers\OrderController@downloadInvoiceAction')
+    ->name('order-invoice-download');
 
 Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@insufficientBalanceAction')
     ->name('insufficient-balance');
@@ -54,6 +56,8 @@ Route::get('/manage/orders/{status?}', 'JDT\Pow\Http\Controllers\Manage\OrdersCo
     ->name('manage.orders');
 Route::get('/manage/orders/view/{orderId}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
     ->name('manage.orders.view');
+Route::get('/manage/orders/view/{orderId}/invoice/download', 'JDT\Pow\Http\Controllers\Manage\OrdersController@viewAction')
+    ->name('manage.orders.download.invoice');
 Route::post('/manage/orders/refund', 'JDT\Pow\Http\Controllers\Manage\OrdersController@refundAction')
     ->name('manage.orders.refund');
 Route::post('/manage/orders/approve', 'JDT\Pow\Http\Controllers\Manage\OrdersController@approveOrderAction')

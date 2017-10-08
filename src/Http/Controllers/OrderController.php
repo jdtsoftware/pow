@@ -3,12 +3,7 @@
 namespace JDT\Pow\Http\Controllers;
 
 use Illuminate\Support\Facades\Input;
-use JDT\Api\Payload;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use JDT\Api\Contracts\ApiEndpoint;
 use Illuminate\Routing\Controller as BaseController;
-use Omnipay\Omnipay;
 
 /**
  * Class OrderController
@@ -97,5 +92,28 @@ class OrderController extends BaseController
     public function insufficientBalanceAction()
     {
         return view('pow::order.insufficient-balance');
+    }
+
+    /**
+     * @param $uuid
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\RedirectResponse|\Illuminate\View\View
+     */
+    public function downloadInvoiceAction($uuid)
+    {
+        $pow = app('pow');
+        if($pow->order()->validOrder($uuid)) {
+            $order = $pow->order()->findByUuid($uuid, \Auth::user());
+
+            $pdf = \PDF::loadView(
+                'pow::order.invoice',
+                [
+                    'order' => $order,
+                    'public_local_path' => public_path()
+                ]
+            );
+            return $pdf->download('invoice-'.$order->id.'.pdf');
+        } else {
+            return redirect()->route('products');
+        }
     }
 }

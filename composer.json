@@ -14,7 +14,8 @@
         "illuminate/mail": "^5.4.17",
         "symfony/expression-language": "~v3.0",
         "omnipay/stripe": "~2.0",
-        "proengsoft/laravel-jsvalidation": "^2.0"
+        "proengsoft/laravel-jsvalidation": "^2.0",
+        "barryvdh/laravel-dompdf": "^0.8.1",
     },
     "autoload": {
         "psr-4": {
