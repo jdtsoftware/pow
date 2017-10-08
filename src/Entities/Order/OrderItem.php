@@ -128,6 +128,14 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
     }
 
     /**
+     * @return int
+     */
+    public function tokensAvailable()
+    {
+        return $this->tokens_total - $this->tokens_spent;
+    }
+
+    /**
      * @param $productshopOrderFormId
      * @param $value
      * @return OrderItemForm
@@ -157,7 +165,7 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
      */
     public function getTokenValue()
     {
-        return isset($this->product->token->tokens) ? $this->product->token->tokens : 0;
+        return $this->tokens_total;
     }
 
     /**

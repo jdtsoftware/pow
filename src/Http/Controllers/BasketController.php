@@ -70,7 +70,7 @@ class BasketController extends BaseController
 
         $quantity = $productShop->quantity_lock
             ? $productShop->quantity :
-            $request->input('qty', 1);
+            $request->input('qty', $productShop->quantity);
 
         $pow->basket()->addProduct(
             $productShop,

@@ -12,7 +12,7 @@ use JDT\Pow\Interfaces\Redeemable;
 /**
  * Class OrderItemRefund.
  */
-class OrderItemRefund extends Model
+class OrderItemRefund extends Model implements Redeemable
 {
     use SoftDeletes;
 
@@ -56,12 +56,56 @@ class OrderItemRefund extends Model
         'deleted_at',
     ];
 
+    public function order()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order'], 'id', 'order_id');
+    }
+
+    public function order_item()
+    {
+        $models = \Config::get('pow.models');
+        return $this->hasOne($models['order_item'],'id', 'order_item_id');
+    }
+
     /**
      * @return integer
      */
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTokenValue()
+    {
+        return $this->tokens_adjustment;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTokenType()
+    {
+        return $this->order_item->getTokenType();
+    }
+
+    /**
+     * @return integer
+     */
+    public function getLinkerId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLinkerType()
+    {
+        return get_class($this);
     }
 
 }

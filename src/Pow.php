@@ -174,18 +174,22 @@ class Pow
                     continue;
                 }
 
-                $this->models['order_item_refund']::create([
+                $refundItem = $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
                     'total_amount' => (-1 * abs($amount)),
                     'total_vat' => ($vatRate > 0) ? ($amount / (1 + ($vatRate / 100))) : 0,
-                    'tokens_adjustment' => $item->tokens_total,
+                    'tokens_adjustment' => $item->tokensAvailable(),
                     'reason' => $reason,
                     'payment_gateway_reference' => $response->getReference(),
                     'payment_gateway_blob' => json_encode($response->getData()),
                     'created_user_id' => $this->user->getId()
                 ]);
+
+                if($item->tokensAvailable() > 0) {
+                    $this->wallet()->debit($this->user, $refundItem, $item);
+                }
             }
         }
 
