@@ -15,7 +15,7 @@
         "symfony/expression-language": "~v3.0",
         "omnipay/stripe": "~2.0",
         "proengsoft/laravel-jsvalidation": "^2.0",
-        "barryvdh/laravel-dompdf": "^0.8.1",
+        "barryvdh/laravel-snappy": "^0.4.0"
     },
     "autoload": {
         "psr-4": {
