@@ -2,6 +2,8 @@
     "name": "jdtsoftware/pow",
     "description": "Laravel 5 product, ordering and wallet system",
     "type": "library",
+    "license": "MIT",
+    "keywords": ["product", "basket", "order", "wallet", "tokens"],
     "authors": [
         {
             "name": "Dan Dunford",
@@ -15,7 +17,7 @@
         "symfony/expression-language": "~v3.0",
         "omnipay/stripe": "~2.0",
         "proengsoft/laravel-jsvalidation": "^2.0",
-        "barryvdh/laravel-snappy": "^0.4.0"
+        "barryvdh/laravel-dompdf": "^0.8.1"
     },
     "autoload": {
         "psr-4": {
