@@ -113,7 +113,7 @@ class OrdersController extends BaseController
                     'public_local_path' => public_path()
                 ]
             );
-            return $pdf->stream('invoice-'.$order->id.'.pdf');
+            return $pdf->download('invoice-'.$order->id.'.pdf');
         } else {
             return redirect()->route('manage.orders');
         }
