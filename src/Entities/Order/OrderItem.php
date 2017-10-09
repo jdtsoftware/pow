@@ -199,7 +199,8 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
      */
     public static function findEarliestRedeemableOrderItem($walletId, $tokenTypeHandle) : iOrderItemEntity
     {
-        return OrderItem::join('order', 'order.id', '=', 'order_item.order_id')
+        return OrderItem::select('order_item.*')
+            ->join('order', 'order.id', '=', 'order_item.order_id')
             ->join('product_token', 'order_item.product_id', '=', 'product_token.product_id')
             ->join('wallet_token_type', 'wallet_token_type.id', '=', 'product_token.wallet_token_type_id')
             ->whereRaw('tokens_spent < tokens_total')
