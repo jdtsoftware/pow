@@ -21,6 +21,7 @@ class OrdersController extends BaseController
             'pow::manage.orders.index',
             [
                 'orders' => $orders,
+                'wallet_owner' => $pow->wallet()->getOwner(),
                 'status' => $status,
                 'page' => $orderUuid = $request->input('page', 1)
             ]
@@ -39,7 +40,8 @@ class OrdersController extends BaseController
         return view(
             'pow::manage.orders.view',
             [
-                'order' => $order
+                'order' => $order,
+                'wallet_owner' => $pow->wallet()->getOwner()
             ]
         );
     }
@@ -110,6 +112,7 @@ class OrdersController extends BaseController
                 'pow::order.invoice',
                 [
                     'order' => $order,
+                    'wallet_owner' => $pow->wallet()->getOwner(),
                     'public_local_path' => public_path()
                 ]
             );

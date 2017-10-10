@@ -124,6 +124,7 @@ class Order implements iOrder
         }
 
         $prices = $basket->getTotalPrices();
+        $address = $this->wallet->getOwner()->getAddress();
         $order = $this->models['order']::create([
             'uuid' => Uuid::uuid4()->toString(),
             'wallet_id' => $this->wallet->getId(),
@@ -135,6 +136,8 @@ class Order implements iOrder
             'original_vat_price' => $prices->originalVat,
             'adjusted_vat_price' => $prices->adjustedVat,
             'created_user_id' => $creator->getId(),
+            'address_id' => $address->getId(),
+            'address_type' => $address->getType()
         ]);
 
         foreach($basketItems['products'] as $productShopId => $item) {

@@ -12,6 +12,7 @@ use JDT\Pow\Interfaces\Entities\WalletTokenType as iWalletTokenTypeEntity;
 use JDT\Pow\Interfaces\Redeemable;
 use JDT\Pow\Interfaces\WalletOwner as iWalletOwner;
 use JDT\Pow\Interfaces\IdentifiableId as iIdentifiableId;
+use JDT\Pow\Interfaces\WalletOwner;
 use Lcobucci\JWT\Token;
 use Ramsey\Uuid\Uuid;
 
@@ -196,10 +197,18 @@ class Wallet implements \JDT\Pow\Interfaces\Wallet
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     public function isVatExempt()
     {
         return $this->walletOwner->isVatExempt();
+    }
+
+    /**
+     * @return WalletOwner
+     */
+    public function getOwner() : WalletOwner
+    {
+        return $this->walletOwner;
     }
 }

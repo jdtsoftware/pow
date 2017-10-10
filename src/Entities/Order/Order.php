@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace JDT\Pow\Entities\Order;
 
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use JDT\Pow\Interfaces\IdentifiableId;
@@ -44,6 +45,8 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         'uuid',
         'wallet_id',
         'order_status_id',
+        'address_id',
+        'address_type',
         'vat_percentage',
         'payment_gateway_id',
         'original_total_price',
@@ -263,6 +266,14 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     {
         $models = \Config::get('pow.models');
         return $this->hasOne($models['user'], 'id', 'created_user_id');
+    }
+
+    /**
+     * @return MorphTo
+     */
+    public function address() : MorphTo
+    {
+        return $this->morphTo('address');
     }
 
 }

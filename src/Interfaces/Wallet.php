@@ -16,4 +16,6 @@ interface Wallet {
 
     public function getVatPerecentage();
     public function isVatExempt();
+
+    public function getOwner();
 }

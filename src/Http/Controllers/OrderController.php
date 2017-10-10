@@ -21,6 +21,7 @@ class OrderController extends BaseController
             $pow = app('pow');
             $order = $pow->createOrderFromBasket();
         } catch (\Exception $e) {
+            throw $e;
             return redirect()->route('products');
         }
 
@@ -42,6 +43,7 @@ class OrderController extends BaseController
         return view('pow::order.stripe-pay', [
             'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
             'order' => $order,
+            'wallet_owner' => $pow->wallet()->getOwner()
         ]);
 
     }
@@ -80,7 +82,13 @@ class OrderController extends BaseController
         $pow = app('pow');
         if($pow->order()->validOrder($uuid)) {
             $order = $pow->order()->findByUuid($uuid, \Auth::user());
-            return view('pow::order.complete', ['order' => $order]);
+            return view(
+                'pow::order.complete',
+                [
+                    'order' => $order,
+                    'wallet_owner' => $pow->wallet()->getOwner()
+                ]
+            );
         } else {
             return redirect()->route('products');
         }
@@ -108,6 +116,7 @@ class OrderController extends BaseController
                 'pow::order.invoice',
                 [
                     'order' => $order,
+                    'wallet_owner' => $pow->wallet()->getOwner(),
                     'public_local_path' => public_path()
                 ]
             );
