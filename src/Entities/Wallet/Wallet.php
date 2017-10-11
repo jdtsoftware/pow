@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace JDT\Pow\Entities\Wallet;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use \JDT\Pow\Interfaces\Entities\Wallet as iWalletEntity;
 use \JDT\Pow\Interfaces\Entities\WalletTokenType as iWalletTokenTypeEntity;
+use JDT\Pow\Pow;
 
 /**
  * Class Wallet.
@@ -60,6 +62,22 @@ class Wallet extends Model implements iWalletEntity
         return $this->hasMany($models['wallet_token'], 'wallet_id', 'id');
     }
 
+    public function tokenCount(\JDT\Pow\Interfaces\Entities\WalletTokenType $type = null)
+    {
+        $tokens = $this->token($type);
+        if($tokens instanceof HasOne) {
+            $token = $tokens->first();
+            return $token ? $token->tokens : 0;
+        }
+
+        $count = 0;
+        foreach($tokens->get() as $token) {
+            $count += $token->tokens;
+        }
+
+        return $count;
+    }
+
     /**
      * @return integer
      */
@@ -96,5 +114,10 @@ class Wallet extends Model implements iWalletEntity
             'wallet_token_type_id' => $type->getId(),
             'tokens' => 0
         ]);
+    }
+
+    public function getOwner()
+    {
+        return Pow::getWalletOwner($this->id);
     }
 }

@@ -12,7 +12,14 @@ class WalletsController extends BaseController
 {
     public function indexAction()
     {
+        $pow = app('pow');
 
-        return view('pow::manage.wallets.index');
+        return view(
+            'pow::manage.wallets.index',
+            [
+                'wallets' => $pow->listWallets(),
+                'wallet_token_types' => $pow->walletTokenTypes()
+            ]
+        );
     }
 }

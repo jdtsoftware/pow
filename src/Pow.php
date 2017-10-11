@@ -27,6 +27,7 @@ class Pow
     protected $walletOwner;
 
     protected static $walletOwnerClosure;
+    protected static $walletLookupClosure;
 
     private $classes;
 
@@ -268,10 +269,44 @@ class Pow
     }
 
     /**
+     * @return Collection
+     */
+    public function listWallets()
+    {
+        return $this->models['wallet']::all();
+    }
+
+    /**
+     * @return Collection
+     */
+    public function walletTokenTypes()
+    {
+        return $this->models['wallet_token_type']::all();
+    }
+
+    /**
      * @param \Closure $closure
      */
     public static function setWalletOwnerClosure(\Closure $closure)
     {
         self::$walletOwnerClosure = $closure;
+    }
+
+    /**
+     * @param \Closure $closure
+     */
+    public static function setWalletOwnerLookup(\Closure $closure)
+    {
+        self::$walletLookupClosure = $closure;
+    }
+
+    /**
+     * @param $walletId
+     * @return null
+     */
+    public static function getWalletOwner($walletId)
+    {
+        $lookup = self::$walletLookupClosure;
+        return $lookup ? $lookup($walletId) : null;
     }
 }
