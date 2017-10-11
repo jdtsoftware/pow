@@ -14,8 +14,10 @@ class OrdersController extends BaseController
 {
     public function indexAction(Request $request, $status = null, $perPage = 25)
     {
+        $search = $request->get('search');
+
         $pow = app('pow');
-        $orders = $pow->order()->listAll($perPage, $status);
+        $orders = $pow->order()->listAll($perPage, $status, $search);
 
         return view(
             'pow::manage.orders.index',
@@ -23,7 +25,8 @@ class OrdersController extends BaseController
                 'orders' => $orders,
                 'wallet_owner' => $pow->wallet()->getOwner(),
                 'status' => $status,
-                'page' => $orderUuid = $request->input('page', 1)
+                'page' => $request->input('page', 1),
+                'search' => $search
             ]
         );
     }

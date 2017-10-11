@@ -72,15 +72,22 @@ class Order implements iOrder
      * @param string $status
      * @return Collection
      */
-    public function listAll($perPage = 15, $status = null)
+    public function listAll($perPage = 15, $status = null, $search = null)
     {
         $order = new $this->models['order'];
 
-        if($status) {
+        if(isset($status)) {
             $order = $order->where(
                 'order_status_id',
                 $this->models['order_status']::handleToId($status)
             );
+        }
+
+        if(isset($search)) {
+            $order = $order
+                ->orWhere('uuid', 'like', '%' . $search . '%')
+                ->orWhere('payment_gateway_reference', 'like', '%' . $search . '%')
+                ->orWhere('id', 'like', '%' . $search . '%');
         }
 
         return $order->simplePaginate($perPage);
