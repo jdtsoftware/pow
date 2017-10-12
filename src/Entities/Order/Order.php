@@ -200,7 +200,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
             'order_id' => $this->getId(),
             'product_id' => $product->getId(),
             'product_shop_id' => $productShop->getId(),
-            'tokens_total' => ($product->token->tokens * $qty) ?? 0,
+            'tokens_total' => isset($product->token->tokens) ? ($product->token->tokens * $qty) : 0,
             'tokens_spent' => 0,
             'quantity' => $qty,
             'original_unit_price' => $product->getOriginalPrice(),

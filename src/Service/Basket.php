@@ -106,6 +106,7 @@ class Basket implements iBasket
 
                     $form[$input->getId()] = [
                         'name' => $inputName,
+                        'description' => $input->getDescription(),
                         'label' => $input->getName(),
                         'type' => $input->getType(),
                         'hidden' => $input->isHidden(),

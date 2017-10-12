@@ -155,8 +155,11 @@ class BasketController extends BaseController
                 $validator = \Validator::make($request->file(), $validation, $input['messages'])->validate();
 
                 if (empty($validator)) {
-                    $hashed = \Storage::disk(\Config::get('pow.temp_storage'))->putFile('', $file);
-                    return response()->json(['id' => $hashed], 200);
+                    $storage = \Storage::disk(\Config::get('pow.storage_driver'));
+
+
+                    $hashed = $storage->putFile('', $file);
+                    return response()->json(['id' => $storage->url($hashed)], 200);
                 } else {
                     return response()->json($validator, 422);
                 }

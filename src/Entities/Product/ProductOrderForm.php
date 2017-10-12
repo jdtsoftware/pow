@@ -41,6 +41,7 @@ class ProductOrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Pro
         'validation',
         'type',
         'name',
+        'description',
         'hidden',
         'created_at',
         'updated_at'
@@ -117,10 +118,38 @@ class ProductOrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Pro
     }
 
     /**
+     * @return string
+     */
+    public function getDescription() : string
+    {
+        return $this->description;
+    }
+
+    /**
      * @return bool
      */
     public function isHidden() : bool
     {
         return (bool) false;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTypeAttribute($type)
+    {
+        if(in_array($type, ['image'])) {
+            return 'file2';
+        }
+
+        return $type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isImage()
+    {
+        return $this->getOriginal('type') == 'image';
     }
 }

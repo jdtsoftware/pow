@@ -8,5 +8,6 @@ interface ProductOrderForm {
     public function getType(): string;
     public function getValidation(): string;
     public function getName(): string;
+    public function getDescription(): string;
     public function isHidden(): bool;
 }

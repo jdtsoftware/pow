@@ -2,6 +2,7 @@
 
 namespace JDT\Pow\Http\Controllers\Manage;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
@@ -10,8 +11,10 @@ use Illuminate\Routing\Controller as BaseController;
  */
 class WalletsController extends BaseController
 {
-    public function indexAction()
+    public function indexAction(Request $request)
     {
+        $search = $request->get('search');
+
         $pow = app('pow');
 
         return view(
