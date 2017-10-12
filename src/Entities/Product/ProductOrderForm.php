@@ -139,7 +139,7 @@ class ProductOrderForm extends Model implements \JDT\Pow\Interfaces\Entities\Pro
     public function getTypeAttribute($type)
     {
         if(in_array($type, ['image'])) {
-            return 'file2';
+            return 'file';
         }
 
         return $type;
