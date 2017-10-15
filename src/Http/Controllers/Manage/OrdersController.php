@@ -160,7 +160,7 @@ class OrdersController extends BaseController
                 'adjusted_total_price' => 0,
             ]);
 
-            foreach($order->items() as $item) {
+            foreach($order->items as $item) {
                 $item->update([
                     'adjusted_total_price' => 0,
                     'adjusted_vat_price' => 0,

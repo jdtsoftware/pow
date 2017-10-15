@@ -23,7 +23,7 @@ class WalletsController extends BaseController
             [
                 'wallets' => $pow->listWallets(),
                 'wallet_token_types' => $pow->walletTokenTypes(),
-                'products' => $pow->shop()->listAll(),
+                'products' => $pow->product()->listAll(),
             ]
         );
     }
@@ -47,30 +47,19 @@ class WalletsController extends BaseController
         $pow = app('pow');
         $pow->setWalletOwner($walletOwner);
 
-        $productShopId = (int) $request->input('product_shop_id');
-        $productShop = $pow->shop()->findById($productShopId);
+        $quantity = (int) $request->input('quantity', 1);
+        $productId = (int) $request->input('product_id');
+        $product = $pow->product()->findById($productId);
 
-        if(empty($productShop)) {
+        if(empty($product)) {
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
         $pow->basket('admin')->clearBasket();
 
-        $quantity = $productShop->quantity_lock
-            ? $productShop->quantity :
-            $request->input('qty', $productShop->quantity);
-
-        $pow->basket('admin')->addProduct(
-            $productShop,
-            $quantity,
-            $productShop->quantity_lock
-        );
+        $pow->basket('admin')->addProduct($product, $quantity);
 
         $order = $pow->createOrderFromBasket('admin');
-
-        $order->update([
-            'order_status_id' => OrderStatus::handleToId('pending'),
-        ]);
 
         return redirect()->route('manage.orders.view', ['uuid' => $order->getUuid()]);
     }

@@ -159,7 +159,7 @@ class Order implements iOrder
                 }
             }
 
-            if($item['product_shop']->order_approval_required) {
+            if(isset($item['product_shop']) && $item['product_shop']->order_approval_required) {
                 $order->update([
                     'order_status_id' => $this->models['order_status']::handleToId('pending_approval')
                 ]);
