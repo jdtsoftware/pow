@@ -40,7 +40,7 @@ class Order implements iOrder
         $order = $this->models['order']::where('id', $orderId);
 
         if($limitByWallet) {
-            $order = $order->where('wallet_tid', $this->wallet->getId());
+            $order = $order->where('wallet_id', $this->wallet->getId());
         }
 
         return $order->first();
@@ -56,7 +56,7 @@ class Order implements iOrder
         $order = $this->models['order']::where('uuid', $uuid);
 
         if($limitByWallet) {
-            $order = $order->where('wallet_tid', $this->wallet->getId());
+            $order = $order->where('wallet_id', $this->wallet->getId());
         }
 
         return $order->first();
