@@ -32,14 +32,15 @@ class Order implements iOrder
 
     /**
      * @param int $orderId
-     * @return mixed
+     * @param bool $limitByWallet
+     * @return iOrderEntity
      */
-    public function findById(int $orderId, IdentifiableId $creator = null) : iOrderEntity
+    public function findById(int $orderId, $limitByWallet = false) : iOrderEntity
     {
         $order = $this->models['order']::where('id', $orderId);
 
-        if($creator) {
-            $order = $order->where('created_user_id', $creator->getId());
+        if($limitByWallet) {
+            $order = $order->where('wallet_tid', $this->wallet->getId());
         }
 
         return $order->first();
@@ -47,14 +48,15 @@ class Order implements iOrder
 
     /**
      * @param $uuid
+     * @param bool $limitByWallet
      * @return iOrderEntity
      */
-    public function findByUuid($uuid, IdentifiableId $creator = null) : iOrderEntity
+    public function findByUuid($uuid, $limitByWallet = false) : iOrderEntity
     {
         $order = $this->models['order']::where('uuid', $uuid);
 
-        if($creator) {
-            $order = $order->where('created_user_id', $creator->getId());
+        if($limitByWallet) {
+            $order = $order->where('wallet_tid', $this->wallet->getId());
         }
 
         return $order->first();

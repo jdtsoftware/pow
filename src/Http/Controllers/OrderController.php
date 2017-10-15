@@ -57,7 +57,7 @@ class OrderController extends BaseController
     public function payAction($uuid)
     {
         $pow = app('pow');
-        $order = $pow->order()->findByUuid($uuid, \Auth::user());
+        $order = $pow->order()->findByUuid($uuid, true);
         $response = $pow->payForOrder($order, Input::get());
 
         if($response->isSuccessful()) {
@@ -81,7 +81,7 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         if($pow->order()->validOrder($uuid)) {
-            $order = $pow->order()->findByUuid($uuid, \Auth::user());
+            $order = $pow->order()->findByUuid($uuid, true);
             return view(
                 'pow::order.complete',
                 [
@@ -110,7 +110,7 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         if($pow->order()->validOrder($uuid)) {
-            $order = $pow->order()->findByUuid($uuid, \Auth::user());
+            $order = $pow->order()->findByUuid($uuid, true);
 
             $pdf = \PDF::loadView(
                 'pow::order.invoice',
