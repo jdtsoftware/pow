@@ -4,6 +4,7 @@ namespace JDT\Pow;
 
 use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
+use JDT\Pow\Entities\Order\OrderStatus;
 use JDT\Pow\Entities\Wallet\Wallet;
 use JDT\Pow\Entities\WalletTokenType;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
@@ -93,7 +94,7 @@ class Pow
     {
         return new $this->classes['order'](
             $this->paymentGateway,
-            $wallet ?? $this->wallet(),
+            $this->wallet(),
             $this->events
         );
     }
@@ -142,6 +143,46 @@ class Pow
     }
 
     /**
+     * @param $order
+     * @param $status
+     * @param bool $creditOrder
+     */
+    public function updateOrderStatus($order, $status, $creditOrder = false)
+    {
+        $orderUpdate = [
+            'payment_gateway_id' => null,
+            'order_status_id' => $this->models['order_status']::handleToId($status),
+        ];
+
+        if($creditOrder) {
+            $orderUpdate = $orderUpdate + [
+                    'adjusted_vat_price' => 0,
+                    'adjusted_total_price' => 0,
+            ];
+
+            foreach($order->items as $item) {
+                $item->update([
+                    'adjusted_total_price' => 0,
+                    'adjusted_vat_price' => 0,
+                ]);
+            }
+
+        }
+
+        if($status == 'complete') {
+            $wallet = $this->wallet($order->wallet->getOwner());
+            foreach ($order->items as $orderItem) {
+                $wallet->credit(
+                    $this->user,
+                    $orderItem,
+                    $orderItem);
+            }
+        }
+
+        $order->update($orderUpdate);
+    }
+
+    /**
      * @param string $uuid
      * @param $reason
      * @param null $amount
@@ -150,6 +191,7 @@ class Pow
     public function refundOrder($uuid, $reason = null, $amount = null)
     {
         $order = $this->order()->findByUuid($uuid);
+        $this->setWalletOwner($order->wallet->getOwner());
         if(!$order) {
             return null;
         }

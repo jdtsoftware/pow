@@ -138,12 +138,10 @@ class OrdersController extends BaseController
     public function markOrderPaidAction($uuid)
     {
         $pow = app('pow');
+
         if ($pow->order()->validOrder($uuid)) {
             $order = $pow->order()->findByUuid($uuid);
-            $order->update([
-                'payment_gateway_id' => null,
-                'order_status_id' => OrderStatus::handleToId('complete')
-            ]);
+            $pow->updateOrderStatus($order, 'complete');
         }
 
         FlashHelper::success('Order '.$uuid.' marked as paid');
@@ -160,19 +158,7 @@ class OrdersController extends BaseController
         $pow = app('pow');
         if ($pow->order()->validOrder($uuid)) {
             $order = $pow->order()->findByUuid($uuid);
-            $order->update([
-                'payment_gateway_id' => null,
-                'order_status_id' => OrderStatus::handleToId('complete'),
-                'adjusted_vat_price' => 0,
-                'adjusted_total_price' => 0,
-            ]);
-
-            foreach($order->items as $item) {
-                $item->update([
-                    'adjusted_total_price' => 0,
-                    'adjusted_vat_price' => 0,
-                ]);
-            }
+            $pow->updateOrderStatus($order, 'complete', true);
         }
 
         FlashHelper::success('Order '.$uuid.' marked as complete without payment');
