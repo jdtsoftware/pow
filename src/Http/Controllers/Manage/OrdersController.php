@@ -2,6 +2,7 @@
 
 namespace JDT\Pow\Http\Controllers\Manage;
 
+use App\Services\Helpers\FlashHelper;
 use Illuminate\Routing\Controller as BaseController;
 use JDT\Pow\Entities\Order\OrderStatus;
 use JDT\Pow\Mail\OrderApproved;
@@ -67,6 +68,8 @@ class OrdersController extends BaseController
                 ->send(new OrderApproved($order));
         }
 
+        FlashHelper::success('Order '.$orderUuid.' has been approved');
+
         return redirect()->route('manage.orders', ['status' => $status]);
     }
 
@@ -97,6 +100,8 @@ class OrdersController extends BaseController
 
         $pow = app('pow');
         $pow->refundOrder($orderUuid, $reason, $amount);
+
+        FlashHelper::success('Order '.$orderUuid.' has been refunded');
 
         return redirect()->route('manage.orders', ['status' => $status]);
     }
@@ -141,6 +146,8 @@ class OrdersController extends BaseController
             ]);
         }
 
+        FlashHelper::success('Order '.$uuid.' marked as paid');
+
         return redirect()->route('manage.orders');
     }
 
@@ -167,6 +174,8 @@ class OrdersController extends BaseController
                 ]);
             }
         }
+
+        FlashHelper::success('Order '.$uuid.' marked as complete without payment');
 
         return redirect()->route('manage.orders');
     }
