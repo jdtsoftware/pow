@@ -147,7 +147,7 @@ class Pow
      * @param null $amount
      * @return mixed
      */
-    public function refundOrder($uuid, $reason, $amount = null)
+    public function refundOrder($uuid, $reason = null, $amount = null)
     {
         $order = $this->order()->findByUuid($uuid);
         if(!$order) {
