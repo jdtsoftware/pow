@@ -272,7 +272,7 @@ class Order implements iOrder
                 ]);
 
                 if($item->tokensAvailable() > 0) {
-                    $this->wallet->debit($this->user, $refundItem, $item);
+                    $this->wallet->debit($creator, $refundItem, $item);
                 }
             }
 
