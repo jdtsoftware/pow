@@ -96,7 +96,7 @@ class OrdersController extends BaseController
         $amount = $request->input('amount');
 
         $pow = app('pow');
-        $response = $pow->refundOrder($orderUuid, $reason, $amount);
+        $pow->refundOrder($orderUuid, $reason, $amount);
 
         return redirect()->route('manage.orders', ['status' => $status]);
     }

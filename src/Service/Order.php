@@ -227,21 +227,60 @@ class Order implements iOrder
 
     /**
      * @param iOrderEntity $order
+     * @param IdentifiableId $creator
+     * @param null $reason
      * @param null $amount
-     * @return Gateway
+     * @return bool
      */
-    public function refund(iOrderEntity $order, $amount = null)
+    public function refund(iOrderEntity $order, IdentifiableId $creator, $reason = null, $amount = null)
     {
         if($amount > $order->getAdjustedPrice() || empty($amount)) {
             $amount = $order->getAdjustedPrice();
         }
 
-        $paymentData = ['token' => $order->payment_gateway_reference];
-        $response = $this->paymentGateway->refund($amount, $paymentData);
+        if(isset($order->payment_gateway_reference)) {
+            $paymentData = ['token' => $order->payment_gateway_reference];
+            $response = $this->paymentGateway->refund($amount, $paymentData);
+        }
 
-        $this->events->fire('order.refunded', $order);
+        if ( (isset($response) && $response->isSuccessful()) || empty($order->payment_gateway_reference)) {
 
-        return $response;
+            $order->update([
+                'order_status_id' => $this->models['order_status']::handleToId('refund')
+            ]);
 
+            $vatRate = $order->getVATRate();
+            foreach($order->items as $item) {
+                $refundItem = $this->models['order_item_refund']::where('order_id', $order->getId())
+                    ->where('order_item_id', $item->getId())->first();
+
+                if(isset($refundItem)) {
+                    continue;
+                }
+
+                $refundItem = $this->models['order_item_refund']::create([
+                    'uuid' => Uuid::uuid4()->toString(),
+                    'order_id' => $order->getId(),
+                    'order_item_id' => $item->getId(),
+                    'total_amount' => (-1 * abs($amount)),
+                    'total_vat' => ($vatRate > 0) ? ($amount / (1 + ($vatRate / 100))) : 0,
+                    'tokens_adjustment' => $item->tokensAvailable(),
+                    'reason' => $reason,
+                    'payment_gateway_reference' => isset($response) ? $response->getReference() : null,
+                    'payment_gateway_blob' => isset($response) ? json_encode($response->getData()) : null,
+                    'created_user_id' => $creator->getId()
+                ]);
+
+                if($item->tokensAvailable() > 0) {
+                    $this->wallet->debit($this->user, $refundItem, $item);
+                }
+            }
+
+            $this->events->fire('order.refunded', $order);
+
+            return true;
+        }
+
+        return false;
     }
 }
