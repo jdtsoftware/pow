@@ -216,7 +216,7 @@ class Order implements iOrder
         $order = $this->findByUuid($uuid);
         if($order) {
             $order->update([
-                'order_status_id' => $this->models['order_status']::handleToId('pending')
+                'order_status_id' => $this->models['order_status']::handleToId('draft')
             ]);
 
             $this->events->fire('order.approved', $order);
