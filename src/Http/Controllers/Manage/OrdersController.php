@@ -3,6 +3,7 @@
 namespace JDT\Pow\Http\Controllers\Manage;
 
 use Illuminate\Routing\Controller as BaseController;
+use JDT\Pow\Entities\Order\OrderStatus;
 use JDT\Pow\Mail\OrderApproved;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -123,5 +124,50 @@ class OrdersController extends BaseController
         } else {
             return redirect()->route('manage.orders');
         }
+    }
+
+    /**
+     * @param $uuid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function markOrderPaidAction($uuid)
+    {
+        $pow = app('pow');
+        if ($pow->order()->validOrder($uuid)) {
+            $order = $pow->order()->findByUuid($uuid);
+            $order->update([
+                'payment_gateway_id' => null,
+                'order_status_id' => OrderStatus::handleToId('complete')
+            ]);
+        }
+
+        return redirect()->route('manage.orders');
+    }
+
+    /**
+     * @param $uuid
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function markOrderCreditAction($uuid)
+    {
+        $pow = app('pow');
+        if ($pow->order()->validOrder($uuid)) {
+            $order = $pow->order()->findByUuid($uuid);
+            $order->update([
+                'payment_gateway_id' => null,
+                'order_status_id' => OrderStatus::handleToId('complete'),
+                'adjusted_vat_price' => 0,
+                'adjusted_total_price' => 0,
+            ]);
+
+            foreach($order->items() as $item) {
+                $item->update([
+                    'adjusted_total_price' => 0,
+                    'adjusted_vat_price' => 0,
+                ]);
+            }
+        }
+
+        return redirect()->route('manage.orders');
     }
 }

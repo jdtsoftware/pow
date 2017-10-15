@@ -73,9 +73,9 @@ class BasketController extends BaseController
             $request->input('qty', $productShop->quantity);
 
         $pow->basket()->addProduct(
-            $productShop,
+            $productShop->product,
             $quantity,
-            $productShop->quantity_lock
+            $productShop
         );
 
         return redirect()->route('basket');
@@ -113,17 +113,17 @@ class BasketController extends BaseController
 
     /**
      * @param Request $request
-     * @param $productShopId
+     * @param $productId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateOrderFormAction(Request $request, $productShopId)
+    public function updateOrderFormAction(Request $request, $productId)
     {
         $pow = app('pow');
         $orderForms = $pow->basket()->getOrderForms();
 
-        $validator = \Validator::make($request->toArray(), $orderForms[$productShopId]['validation']);
+        $validator = \Validator::make($request->toArray(), $orderForms[$productId]['validation']);
         if($validator->valid()) {
-            if($pow->basket()->updateOrderForm($request, $productShopId)) {
+            if($pow->basket()->updateOrderForm($request, $productId)) {
                 return response()->json(['response' => 'OK'], 200);
             }
         }

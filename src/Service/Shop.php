@@ -30,6 +30,14 @@ class Shop implements iShop
     }
 
     /**
+     * @return Collection
+     */
+    public function listAll()
+    {
+        return $this->models['product_shop']::all();
+    }
+
+    /**
      * @param $productShopId
      * @return Shop
      */

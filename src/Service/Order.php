@@ -10,6 +10,7 @@ use \JDT\Pow\Interfaces\Wallet as iWallet;
 use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
+use JDT\Pow\Interfaces\WalletOwner;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Events\Dispatcher;
 
@@ -173,6 +174,7 @@ class Order implements iOrder
 
         return $order;
     }
+
 
     /**
      * @param iOrderEntity $order

@@ -188,7 +188,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
      *
      * @return iOrderItemEntity
      */
-    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop, int $qty = 1, $vatPercentage = null) : iOrderItemEntity
+    public function addLineItem(iProductEntity $product, iProductShopEntity $productShop = null, int $qty = 1, $vatPercentage = null) : iOrderItemEntity
     {
         $qty = (int) $qty;
         if($qty <= 0) { //lets be safe.
@@ -199,7 +199,7 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         $orderItem = $models['order_item']::create([
             'order_id' => $this->getId(),
             'product_id' => $product->getId(),
-            'product_shop_id' => $productShop->getId(),
+            'product_shop_id' => isset($productShop) ? $productShop->getId() : null,
             'tokens_total' => isset($product->token->tokens) ? ($product->token->tokens * $qty) : 0,
             'tokens_spent' => 0,
             'quantity' => $qty,

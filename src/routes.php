@@ -36,6 +36,7 @@ Route::get('insufficient-balance', 'JDT\Pow\Http\Controllers\OrderController@ins
 Route::get('/wallet', 'JDT\Pow\Http\Controllers\WalletController@indexAction')
     ->name('wallet');
 
+
 Route::get('/manage/products', 'JDT\Pow\Http\Controllers\Manage\ProductsController@indexAction')
     ->name('manage.products');
 
@@ -63,7 +64,16 @@ Route::post('/manage/orders/approve', 'JDT\Pow\Http\Controllers\Manage\OrdersCon
 Route::get('/manage/orders/{orderId}/{fileHash}', 'JDT\Pow\Http\Controllers\Manage\OrdersController@downloadOrderFormFileAction')
     ->name('manage.orders.download');
 
+Route::post('/manage/orders/{orderId}/paid', 'JDT\Pow\Http\Controllers\Manage\OrdersController@markOrderPaidAction')
+    ->name('manage.orders.paid');
+Route::post('/manage/orders/{orderId}/credit', 'JDT\Pow\Http\Controllers\Manage\OrdersController@markOrderCreditAction')
+    ->name('manage.orders.credit');
+
+
 
 
 Route::get('/manage/wallets', 'JDT\Pow\Http\Controllers\Manage\WalletsController@indexAction')
     ->name('manage.wallets');
+
+Route::post('/wallet/{wallet}/order/create', 'JDT\Pow\Http\Controllers\Manage\WalletsController@createOrderAction')
+    ->name('manage.wallet.order.create');

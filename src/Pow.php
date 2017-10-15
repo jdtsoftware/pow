@@ -69,11 +69,13 @@ class Pow
     }
 
     /**
+     * @param string $instance
+     *
      * @return iBasket
      */
-    public function basket() : iBasket
+    public function basket($instance = null) : iBasket
     {
-        return new $this->classes['basket']($this->session, $this->events, $this->wallet());
+        return new $this->classes['basket']($this->session, $this->events, $this->wallet(), $instance);
     }
 
     /**
@@ -85,10 +87,9 @@ class Pow
     }
 
     /**
-     * @param iWallet|null $wallet
      * @return iOrder
      */
-    public function order(iWallet $wallet = null) : iOrder
+    public function order() : iOrder
     {
         return new $this->classes['order'](
             $this->paymentGateway,
@@ -106,26 +107,25 @@ class Pow
     }
 
     /**
-     * @param iWallet|null $wallet
+     * $param string|null $basketInstance
      * @return iOrderEntity
      */
-    public function createOrderFromBasket(iWallet $wallet = null) : iOrderEntity
+    public function createOrderFromBasket($basketInstance = null) : iOrderEntity
     {
-        return $this->order($wallet)->createFromBasket($this->basket(), $this->user);
+        return $this->order()->createFromBasket($this->basket($basketInstance), $this->user);
     }
 
     /**
      * @param $order
      * @param $input
-     * @param iWallet|null $wallet
      * @return Gateway
      */
-    public function payForOrder($order, $input, iWallet $wallet = null) : Gateway
+    public function payForOrder($order, $input) : Gateway
     {
         $response = $this->order()->pay($order, $input);
 
         if ($response->isSuccessful()) {
-            $wallet = $wallet ?? $this->wallet();
+            $wallet = $this->wallet();
             foreach ($order->items as $orderItem) {
                 $wallet->credit(
                     $this->user,
@@ -201,10 +201,9 @@ class Pow
      * @param IdentifiableId $redeemer
      * @param Redeemable $redeemableLinker
      * @param iOrderItemEntity|null $orderItemEntity
-     * @param iWallet|null $wallet
      * @throws \Exception
      */
-    public function redeemToken(IdentifiableId $redeemer, Redeemable $redeemableLinker, iOrderItemEntity $orderItemEntity = null, iWallet $wallet = null)
+    public function redeemToken(IdentifiableId $redeemer, Redeemable $redeemableLinker, iOrderItemEntity $orderItemEntity = null)
     {
         $tokenVaue = (int) $redeemableLinker->getTokenValue();
         if($tokenVaue < 0) {
@@ -219,8 +218,7 @@ class Pow
             'tokens_spent' => $orderItemEntity->tokens_spent + $tokenVaue
         ]);
 
-        $wallet = $wallet ?? $this->wallet();
-        $wallet->debit($redeemer, $redeemableLinker, $orderItemEntity);
+        $this->wallet()->debit($redeemer, $redeemableLinker, $orderItemEntity);
     }
 
     /**
@@ -239,6 +237,14 @@ class Pow
     public function hasWallet() : bool
     {
         return $this->wallet()->exists();
+    }
+
+    /**
+     * @param $walletOwner
+     */
+    public function setWalletOwner(iWalletOwner $walletOwner)
+    {
+        $this->walletOwner = $walletOwner;
     }
 
     /**

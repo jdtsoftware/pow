@@ -41,6 +41,14 @@ class Product implements iProduct
     }
 
     /**
+     * @return Collection
+     */
+    public function listAll()
+    {
+        return $this->models['product']::all();
+    }
+
+    /**
      * @param SaveProductRequest $requestData
      * @param iProductEntity|null $product
      * @return iProductEntity

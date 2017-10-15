@@ -6,6 +6,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Session\SessionManager;
 use Illuminate\Support\Collection;
 use JDT\Pow\Interfaces\Entities\Shop as iProductShopEntity;
+use JDT\Pow\Interfaces\Entities\Product as iProductEntity;
 use \JDT\Pow\Interfaces\Basket as iBasket;
 use \JDT\Pow\Interfaces\Wallet as iWallet;
 use JDT\Pow\Traits\VatCharge;
@@ -34,8 +35,9 @@ class Basket implements iBasket
      * @param SessionManager $session
      * @param Dispatcher $events
      * @param iWallet $wallet
+     * @param string $instance
      */
-    public function __construct(SessionManager $session, Dispatcher $events, iWallet $wallet)
+    public function __construct(SessionManager $session, Dispatcher $events, iWallet $wallet, $instance = null)
     {
         $this->session = $session;
         $this->events = $events;
@@ -46,7 +48,7 @@ class Basket implements iBasket
 
         $this->vat = $this->wallet->getVatPerecentage();
 
-        $this->instance(self::DEFAULT_INSTANCE);
+        $this->instance($instance);
     }
 
     /**
@@ -63,36 +65,42 @@ class Basket implements iBasket
     }
 
     /**
-     * @param iProductShopEntity $shopProduct
+     * @return bool
+     */
+    public function isInstance($instance)
+    {
+        return $this>instance == $instance;
+    }
+
+    /**
+     * @param iProductEntity $product
      * @param int $qty
-     * @param boolean $qtyLocked
+     * @param null|iProductShopEntity $productShop
      *
      * @return $this
      */
-    public function addProduct(iProductShopEntity $shopProduct, int $qty = 1, $qtyLocked = false)
+    public function addProduct(iProductEntity $product, int $qty = 1, iProductShopEntity $productShop = null)
     {
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
-
-            $product = $shopProduct->product;
 
             $unitPrice     = $product->getOriginalPrice();
             $originalPrice = $product->getOriginalPrice($qty);
             $adjustedPrice = $product->getAdjustedPrice($qty);
             $discount = $originalPrice - $adjustedPrice;
 
-            $this->basket['products'][$shopProduct->getId()] = [
+            $this->basket['products'][$product->getId()] = [
                 'product' => $product,
-                'product_shop' => $shopProduct,
+                'product_shop' => $productShop,
                 'qty' => $qty,
-                'qty_locked' => $qtyLocked,
+                'qty_locked' => isset($productShop) ? $productShop->quantity_lock : false,
                 'unit_price' => $unitPrice,
                 'adjusted_price' => $adjustedPrice,
                 'original_price' => $originalPrice,
                 'discount' => $discount,
             ];
 
-            if($product->orderForm instanceof Collection && $product->orderForm->count() > 0    ) {
+            if($product->orderForm instanceof Collection && $product->orderForm->count() > 0) {
                 $messages = [
                     'required' => 'This field is required',
                     'date' => 'Enter a valid date',
@@ -123,18 +131,18 @@ class Basket implements iBasket
                     }
                 }
 
-                $this->basket['order_forms'][$shopProduct->getId()]['form'] = $form;
-                $this->basket['order_forms'][$shopProduct->getId()]['validation'] = $validation;
-                $this->basket['order_forms'][$shopProduct->getId()]['messages'] = $messages;
+                $this->basket['order_forms'][$product->getId()]['form'] = $form;
+                $this->basket['order_forms'][$product->getId()]['validation'] = $validation;
+                $this->basket['order_forms'][$product->getId()]['messages'] = $messages;
             }
 
             $this->session->put($this->instance, $this->basket);
             $this->events->fire('basket.added', $product);
         } else {
             $this->basket = $this->session->get($this->instance);
-            unset($this->basket[$shopProduct->getId()]);
+            unset($this->basket[$product->getId()]);
             $this->session->put($this->instance, $this->basket);
-            $this->events->fire('basket.removed', $shopProduct);
+            $this->events->fire('basket.removed', $product);
         }
 
         return $this;
@@ -160,16 +168,16 @@ class Basket implements iBasket
 
     /**
      * @param $request
-     * @param $productShopId
+     * @param $productId
      * @return bool
      */
-    public function updateOrderForm($request, $productShopId)
+    public function updateOrderForm($request, $productId)
     {
         $this->basket = $this->session->get($this->instance);
 
         $orderForms = $this->getOrderForms();
-        $form = $orderForms[$productShopId]['form'];
-        $validation = $orderForms[$productShopId]['validation'];
+        $form = $orderForms[$productId]['form'];
+        $validation = $orderForms[$productId]['validation'];
 
         $formData = [];
 
@@ -184,7 +192,7 @@ class Basket implements iBasket
         }
 
         if(\Validator::make($formData, $validation)->valid()) {
-            $this->basket['order_forms'][$productShopId]['data'] = $formData;
+            $this->basket['order_forms'][$productId]['data'] = $formData;
             $this->session->put($this->instance, $this->basket);
             return true;
         }
@@ -194,15 +202,15 @@ class Basket implements iBasket
 
 
     /**
-     * @param iProductShopEntity $shopProduct
+     * @param iProductEntity $product
      * @return $this
      */
-    public function removeProduct(iProductShopEntity $shopProduct)
+    public function removeProduct(iProductEntity $product)
     {
         $this->basket = $this->session->get($this->instance);
-        unset($this->basket['products'][$shopProduct->getId()]);
+        unset($this->basket['products'][$product->getId()]);
         $this->session->put($this->instance, $this->basket);
-        $this->events->fire('basket.removed', $shopProduct);
+        $this->events->fire('basket.removed', $product);
 
         return $this;
     }
