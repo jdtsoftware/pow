@@ -47,7 +47,6 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         'order_status_id',
         'address_id',
         'address_type',
-        'vat_percentage',
         'payment_gateway_id',
         'original_total_price',
         'adjusted_total_price',
@@ -119,14 +118,6 @@ class Order extends Model implements iOrderEntity, IdentifiableId
         }
 
         return $tokens;
-    }
-
-    /**
-     * @return float
-     */
-    public function getVATRate() : float
-    {
-        return (float) $this->vat_percentage;
     }
 
     /**

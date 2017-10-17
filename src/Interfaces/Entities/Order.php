@@ -10,7 +10,6 @@ interface Order {
 
     public function getId();
     public function getUuid();
-    public function getVATRate();
     public function getOriginalVATCharge();
     public function getAdjustedVATCharge();
     public function getOriginalPrice();

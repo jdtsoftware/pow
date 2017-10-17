@@ -135,6 +135,7 @@ class Order implements iOrder
 
         $prices = $basket->getTotalPrices();
         $address = $this->wallet->getOwner()->getAddress();
+
         $order = $this->models['order']::create([
             'uuid' => Uuid::uuid4()->toString(),
             'wallet_id' => $this->wallet->getId(),
@@ -142,7 +143,6 @@ class Order implements iOrder
             'payment_gateway_id' => 1,
             'original_total_price' => $prices->originalTotalPrice,
             'adjusted_total_price' => $prices->adjustedTotalPrice,
-            'vat_percentage' => $this->wallet->getVatPerecentage(),
             'original_vat_price' => $prices->originalVat,
             'adjusted_vat_price' => $prices->adjustedVat,
             'created_user_id' => $creator->getId(),
@@ -151,7 +151,9 @@ class Order implements iOrder
         ]);
 
         foreach($basketItems['products'] as $productShopId => $item) {
-            $orderItem = $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1, $this->wallet->getVatPerecentage());
+            $productVat = isset($item['vat_percentage']) ? $item['vat_percentage'] : $this->wallet->getVatPerecentage();
+
+            $orderItem = $order->addLineItem($item['product'], $item['product_shop'], $item['qty'] ?? 1, $productVat);
 
             if(!empty($basketItems['order_forms'][$productShopId]['data'])) {
                 $orderFormData = $basketItems['order_forms'][$productShopId]['data'];
@@ -251,7 +253,6 @@ class Order implements iOrder
                 'order_status_id' => $this->models['order_status']::handleToId('refund')
             ]);
 
-            $vatRate = $order->getVATRate();
             foreach($order->items as $item) {
                 $refundItem = $this->models['order_item_refund']::where('order_id', $order->getId())
                     ->where('order_item_id', $item->getId())->first();
@@ -260,6 +261,7 @@ class Order implements iOrder
                     continue;
                 }
 
+                $vatRate = $item->vat_percentage;
                 $refundItem = $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),

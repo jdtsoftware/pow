@@ -98,6 +98,7 @@ class Basket implements iBasket
                 'adjusted_price' => $adjustedPrice,
                 'original_price' => $originalPrice,
                 'discount' => $discount,
+                'vat_percentage' => $product->config('vat_percentage')
             ];
 
             if($product->orderForm instanceof Collection && $product->orderForm->count() > 0) {
@@ -244,7 +245,10 @@ class Basket implements iBasket
 
         $originalSubTotalPrice = 0;
         $totalDiscount = 0;
+        $originalVatCharge = 0;
+        $adjustedVatCharge = 0;
         foreach($this->basket['products'] as $product) {
+            $productVat = isset($product['vat_percentage']) ? $product['vat_percentage'] : $this->vat;
 
             $originalTotalPrice = $product['product']->getOriginalPrice($product['qty']);
             $adjustedTotalPrice = $product['product']->getAdjustedPrice($product['qty']);
@@ -252,15 +256,17 @@ class Basket implements iBasket
 
             $originalSubTotalPrice += $originalTotalPrice;
             $totalDiscount += $discount;
+            $originalVatCharge += $this->getVatCharge($originalTotalPrice, $productVat);
+            $adjustedVatCharge += $this->getVatCharge($adjustedTotalPrice, $productVat);
         }
 
         $prices = new BasketPrices();
         $prices->setOriginalSubTotalPrice($originalSubTotalPrice)
             ->setAdjustedSubTotalPrice($prices->originalSubTotalPrice - $totalDiscount)
-            ->setOriginalVat($this->getVatCharge($prices->originalSubTotalPrice, $this->vat))
-            ->setAdjustedVat($this->getVatCharge($prices->adjustedSubTotalPrice, $this->vat))
-            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$this->getVatCharge($prices->originalSubTotalPrice, $this->vat))
-            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$this->getVatCharge($prices->adjustedSubTotalPrice, $this->vat))
+            ->setOriginalVat($originalVatCharge)
+            ->setAdjustedVat($adjustedVatCharge)
+            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$originalVatCharge)
+            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$adjustedVatCharge)
             ->setDiscountPrice($totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null);
 
         $this->session->put($this->instance, $this->basket);
