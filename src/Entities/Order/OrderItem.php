@@ -70,10 +70,36 @@ class OrderItem extends Model implements iOrderItemEntity, Redeemable
     }
 
     /**
+     * @param bool $includeVat
+     * @return int|mixed
+     */
+    public function getOriginalTotalPrice($includeVat = false)
+    {
+        if($includeVat) {
+            return $this->original_total_price + $this->original_vat_price;
+        }
+
+        return $this->original_total_price;
+    }
+
+    /**
+     * @param $includeVat
      * @return float
      */
-    public function getTotalPrice()
+    public function getAdjustedTotalPrice($includeVat)
     {
+        return $this->getTotalPrice($includeVat);
+    }
+
+    /**
+     * @return float
+     */
+    public function getTotalPrice($includeVat = false)
+    {
+        if($includeVat) {
+            return $this->adjusted_total_price + $this->adjusted_vat_price;
+        }
+
         return $this->adjusted_total_price;
     }
 
