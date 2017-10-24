@@ -250,8 +250,9 @@ class Order implements iOrder
 
         if ( (isset($response) && $response->isSuccessful()) || empty($order->payment_gateway_reference)) {
 
+            $partialRefund = $order->items->count() != count($items);
             $order->update([
-                'order_status_id' => $this->models['order_status']::handleToId('refund')
+                'order_status_id' => $this->models['order_status']::handleToId($partialRefund ? 'partial_refund' : 'refund')
             ]);
 
             foreach($order->items as $item) {
