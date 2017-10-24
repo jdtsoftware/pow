@@ -184,11 +184,11 @@ class Pow
 
     /**
      * @param string $uuid
+     * @param $items
      * @param $reason
-     * @param null $amount
      * @return mixed
      */
-    public function refundOrder($uuid, $reason = null, $amount = null)
+    public function refundOrder($uuid, $items, $reason = null)
     {
         $order = $this->order()->findByUuid($uuid);
         $this->setWalletOwner($order->wallet->getOwner());
@@ -196,11 +196,7 @@ class Pow
             return null;
         }
 
-        if($amount > $order->getAdjustedPrice() || empty($amount)) {
-            $amount = $order->getAdjustedPrice();
-        }
-
-        return $this->order()->refund($order, $this->user, $reason, $amount);
+        return $this->order()->refund($order, $this->user, $items, $reason);
     }
 
     /**

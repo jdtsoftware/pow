@@ -81,19 +81,27 @@ class Basket implements iBasket
      */
     public function addProduct(iProductEntity $product, int $qty = 1, iProductShopEntity $productShop = null)
     {
+        $basketId = $product->getId().'-'.$productShop ? $productShop->getId() : '0';
+
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
+
+            $qtyLocked = isset($productShop) ? $productShop->quantity_lock : false;
+            if(isset($this->basket['products'][$basketId]) && $qtyLocked == false) {
+                $qty = $this->basket['products'][$basketId]['qty'] + $qty;
+            }
 
             $unitPrice     = $product->getOriginalPrice();
             $originalPrice = $product->getOriginalPrice($qty);
             $adjustedPrice = $product->getAdjustedPrice($qty);
             $discount = $originalPrice - $adjustedPrice;
 
-            $this->basket['products'][$product->getId()] = [
+
+            $this->basket['products'][$basketId] = [
                 'product' => $product,
                 'product_shop' => $productShop,
                 'qty' => $qty,
-                'qty_locked' => isset($productShop) ? $productShop->quantity_lock : false,
+                'qty_locked' => $qtyLocked,
                 'unit_price' => $unitPrice,
                 'adjusted_price' => $adjustedPrice,
                 'original_price' => $originalPrice,
@@ -122,26 +130,35 @@ class Basket implements iBasket
                         'validation' => $input->getValidation(),
                         'messages' => $messages
                     ];
+
                     $validation[$inputName] = $input->getValidation();
 
                     if($input->getType() == 'file') {
                         $uploadedName = 'file_'.$input->getId();
 
                         $form[$input->getId()]['uploaded_name'] = $uploadedName;
+                        $validation[$inputName] =
+                            str_replace(
+                                'required',
+                                'required_without:'.$uploadedName,
+                                $validation[$inputName]
+                            );  //hacky hacky
+
                         $validation[$uploadedName] = 'string';
                     }
                 }
 
-                $this->basket['order_forms'][$product->getId()]['form'] = $form;
-                $this->basket['order_forms'][$product->getId()]['validation'] = $validation;
-                $this->basket['order_forms'][$product->getId()]['messages'] = $messages;
+                $this->basket['order_forms'][$basketId]['form'] = $form;
+                $this->basket['order_forms'][$basketId]['validation'] = $validation;
+                $this->basket['order_forms'][$basketId]['messages'] = $messages;
             }
 
             $this->session->put($this->instance, $this->basket);
             $this->events->fire('basket.added', $product);
         } else {
             $this->basket = $this->session->get($this->instance);
-            unset($this->basket[$product->getId()]);
+            unset($this->basket['products'][$basketId]);
+            unset($this->basket['order_forms'][$basketId]);
             $this->session->put($this->instance, $this->basket);
             $this->events->fire('basket.removed', $product);
         }
@@ -169,16 +186,16 @@ class Basket implements iBasket
 
     /**
      * @param $request
-     * @param $productId
+     * @param $basketId
      * @return bool
      */
-    public function updateOrderForm($request, $productId)
+    public function updateOrderForm($request, $basketId)
     {
         $this->basket = $this->session->get($this->instance);
 
         $orderForms = $this->getOrderForms();
-        $form = $orderForms[$productId]['form'];
-        $validation = $orderForms[$productId]['validation'];
+        $form = $orderForms[$basketId]['form'];
+        $validation = $orderForms[$basketId]['validation'];
 
         $formData = [];
 
@@ -193,7 +210,7 @@ class Basket implements iBasket
         }
 
         if(\Validator::make($formData, $validation)->valid()) {
-            $this->basket['order_forms'][$productId]['data'] = $formData;
+            $this->basket['order_forms'][$basketId]['data'] = $formData;
             $this->session->put($this->instance, $this->basket);
             return true;
         }
@@ -203,15 +220,21 @@ class Basket implements iBasket
 
 
     /**
-     * @param iProductEntity $product
+     * @param integer $basketId
      * @return $this
      */
-    public function removeProduct(iProductEntity $product)
+    public function removeProduct($basketId)
     {
         $this->basket = $this->session->get($this->instance);
-        unset($this->basket['products'][$product->getId()]);
-        $this->session->put($this->instance, $this->basket);
-        $this->events->fire('basket.removed', $product);
+        if(isset($this->basket['products'][$basketId])) {
+
+            $product = $this->basket['products'][$basketId]['product'];
+            unset($this->basket['products'][$basketId]);
+            unset($this->basket['order_forms'][$basketId]);
+            $this->session->put($this->instance, $this->basket);
+
+            $this->events->fire('basket.removed', $product);
+        }
 
         return $this;
     }

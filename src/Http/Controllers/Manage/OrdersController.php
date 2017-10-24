@@ -96,10 +96,10 @@ class OrdersController extends BaseController
         $status = $request->input('status');
         $orderUuid = $request->input('uuid');
         $reason = $request->input('reason');
-        $amount = $request->input('amount');
+        $items = $request->input('items');
 
         $pow = app('pow');
-        $pow->refundOrder($orderUuid, $reason, $amount);
+        $pow->refundOrder($orderUuid, $items, $reason);
 
         FlashHelper::success('Order '.$orderUuid.' has been refunded');
 

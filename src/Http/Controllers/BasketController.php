@@ -31,12 +31,12 @@ class BasketController extends BaseController
             $orderForms = $pow->basket()->getOrderForms();
 
             $orderFormValidation = [];
-            foreach ($orderForms as $productId => $orderFormInputs) {
+            foreach ($orderForms as $basketId => $orderFormInputs) {
                 if (empty($orderFormInputs['validation'])) {
                     continue;
                 }
 
-                $orderFormValidation[$productId] = \JsValidator::make($orderFormInputs['validation'], $orderFormInputs['messages']);
+                $orderFormValidation[$basketId] = \JsValidator::make($orderFormInputs['validation'], $orderFormInputs['messages']);
             }
         }
 
@@ -59,21 +59,24 @@ class BasketController extends BaseController
     public function addProductAction(Request $request)
     {
         $pow = app('pow');
-        $productShopId = (int) $request->input('product_shop_id');
-        $productShop = $pow->shop()->findById($productShopId);
+        $productId = (int) $request->input('product_id', null);
+        $productShopId = (int) $request->input('product_shop_id', null);
 
-        if(empty($productShop)) {
+        $productShop = $pow->shop()->findById($productShopId);
+        $product = $pow->product()->findById($productId);
+
+        if(empty($productShop) && empty($product)) {
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
-        $pow->basket()->clearBasket();
+        //$pow->basket()->clearBasket();
 
-        $quantity = $productShop->quantity_lock
+        $quantity = (isset($productShop) && $productShop->quantity_lock)
             ? $productShop->quantity :
-            $request->input('qty', $productShop->quantity);
+            $request->input('qty', isset($productShop->quantity) ? $productShop->quantity : 1);
 
         $pow->basket()->addProduct(
-            $productShop->product,
+            $productShop->product ? $productShop->product : $product,
             $quantity,
             $productShop
         );
@@ -88,15 +91,8 @@ class BasketController extends BaseController
     public function removeProductAction(Request $request)
     {
         $pow = app('pow');
-        $productShopId = (int) $request->input('product_shop_id');
-        $productShop = $pow->shop()->findById($productShopId);
-
-        if(empty($productShop)) {
-            return back()->withErrors(['message' => 'Invalid Product']);
-        }
-
-        $pow->basket()->removeProduct($productShop);
-
+        $basketId = (int) $request->input('basket_id');
+        $pow->basket()->removeProduct($basketId);
         return redirect()->route('basket');
     }
 
@@ -113,17 +109,17 @@ class BasketController extends BaseController
 
     /**
      * @param Request $request
-     * @param $productId
+     * @param $basketId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function updateOrderFormAction(Request $request, $productId)
+    public function updateOrderFormAction(Request $request, $basketId)
     {
         $pow = app('pow');
         $orderForms = $pow->basket()->getOrderForms();
 
-        $validator = \Validator::make($request->toArray(), $orderForms[$productId]['validation']);
+        $validator = \Validator::make($request->toArray(), $orderForms[$basketId]['validation']);
         if($validator->valid()) {
-            if($pow->basket()->updateOrderForm($request, $productId)) {
+            if($pow->basket()->updateOrderForm($request, $basketId)) {
                 return response()->json(['response' => 'OK'], 200);
             }
         }
@@ -133,19 +129,19 @@ class BasketController extends BaseController
 
     /**
      * @param Request $request
-     * @param $productShopId
+     * @param $basketId
      * @param $inputId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function receiveFileAction(Request $request, $productShopId, $inputId)
+    public function receiveFileAction(Request $request, $basketId, $inputId)
     {
         $files = $request->file();
 
         $pow = app('pow');
         $orderForms = $pow->basket()->getOrderForms();
 
-        if(isset($orderForms[$productShopId]['form'][$inputId])) {
-            $input = $orderForms[$productShopId]['form'][$inputId];
+        if(isset($orderForms[$basketId]['form'][$inputId])) {
+            $input = $orderForms[$basketId]['form'][$inputId];
 
             if(isset($files[$input['name']])) {
                 $file = $files[$input['name']];

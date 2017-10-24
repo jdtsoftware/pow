@@ -232,19 +232,20 @@ class Order implements iOrder
     /**
      * @param iOrderEntity $order
      * @param IdentifiableId $creator
+     * @param $items
      * @param null $reason
-     * @param null $amount
      * @return bool
      */
-    public function refund(iOrderEntity $order, IdentifiableId $creator, $reason = null, $amount = null)
+    public function refund(iOrderEntity $order, IdentifiableId $creator, $items, $reason = null)
     {
-        if($amount > $order->getAdjustedPrice() || empty($amount)) {
-            $amount = $order->getAdjustedPrice();
+        $totalAmount = 0;
+        foreach($items as $itemId => $amount) {
+            $totalAmount += $amount;
         }
 
         if(isset($order->payment_gateway_reference)) {
             $paymentData = ['token' => $order->payment_gateway_reference];
-            $response = $this->paymentGateway->refund($amount, $paymentData);
+            $response = $this->paymentGateway->refund($totalAmount, $paymentData);
         }
 
         if ( (isset($response) && $response->isSuccessful()) || empty($order->payment_gateway_reference)) {
@@ -254,6 +255,10 @@ class Order implements iOrder
             ]);
 
             foreach($order->items as $item) {
+                if(!isset($items[$item->id])) {
+                    continue;
+                }
+
                 $refundItem = $this->models['order_item_refund']::where('order_id', $order->getId())
                     ->where('order_item_id', $item->getId())->first();
 
@@ -262,12 +267,13 @@ class Order implements iOrder
                 }
 
                 $vatRate = $item->vat_percentage;
+                $itemAmount = $items[$item->id];
                 $refundItem = $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
-                    'total_amount' => (-1 * abs($amount)),
-                    'total_vat' => ($vatRate > 0) ? ($amount / (1 + ($vatRate / 100))) : 0,
+                    'total_amount' => (-1 * abs($itemAmount)),
+                    'total_vat' => ($vatRate > 0) ? ($itemAmount / (1 + ($vatRate / 100))) : 0,
                     'tokens_adjustment' => $item->tokensAvailable(),
                     'reason' => $reason,
                     'payment_gateway_reference' => isset($response) ? $response->getReference() : null,
