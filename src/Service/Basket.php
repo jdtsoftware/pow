@@ -81,7 +81,7 @@ class Basket implements iBasket
      */
     public function addProduct(iProductEntity $product, int $qty = 1, iProductShopEntity $productShop = null)
     {
-        $basketId = $product->getId().'-'.$productShop ? $productShop->getId() : '0';
+        $basketId = $product->getId();
 
         if($qty > 0) {
             $this->basket = $this->session->get($this->instance);
