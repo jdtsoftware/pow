@@ -269,12 +269,13 @@ class Order implements iOrder
 
                 $vatRate = $item->vat_percentage;
                 $itemAmount = $items[$item->id];
+                $exVatAmount = ($itemAmount / (1 + ($vatRate / 100)));
                 $refundItem = $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
                     'total_amount' => (-1 * abs($itemAmount)),
-                    'total_vat' => ($vatRate > 0) ? ($itemAmount / (1 + ($vatRate / 100))) : 0,
+                    'total_vat' => ($vatRate > 0) ? ($itemAmount - $exVatAmount) : 0,
                     'tokens_adjustment' => $item->tokensAvailable(),
                     'reason' => $reason,
                     'payment_gateway_reference' => isset($response) ? $response->getReference() : null,
