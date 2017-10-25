@@ -243,6 +243,17 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @param bool $includePartially
+     * @return bool
+     */
+    public function isRefunded($includePartially = true) : bool
+    {
+        return $this->order_status_id === OrderStatus::handleToId('refuned')
+            || $includePartially === true
+                && $this->order_status_id === OrderStatus::handleToId('partial_refund');
+    }
+
+    /**
      * @return bool
      */
     public function isApproved()

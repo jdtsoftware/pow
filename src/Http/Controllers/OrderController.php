@@ -36,7 +36,7 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         $order = $pow->order()->findByUuid($uuid);
-        if($order->isComplete()) {
+        if($order->isComplete() || $order->isRefunded()) {
             return redirect()->route('order-view', [$uuid]);
         }
 

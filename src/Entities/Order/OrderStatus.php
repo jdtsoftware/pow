@@ -56,7 +56,8 @@ class OrderStatus extends Model
      */
     public static function handleToId($handle)
     {
-        return self::where('handle', $handle)->first()->id;
+        $status = self::where('handle', $handle)->first();
+        return isset($status->id) ? $status->id : null;
     }
 
 }
