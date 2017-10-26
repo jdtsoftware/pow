@@ -33,6 +33,7 @@ class Stripe implements iGateway
             'currency' => \Config::get('pow.stripe_options.currency'),
             'source' => $paymentData['stripeToken'],
             'amount' => round($totalPrice, 2),
+            'metadata' => $paymentData['metadata'] ?? []
         ])->send();
 
         return $this;
@@ -48,6 +49,7 @@ class Stripe implements iGateway
         $transaction = $this->gateway->refund([
             'transactionReference' => $paymentData['token'],
             'amount' => round($totalPrice, 2),
+            'metadata' => $paymentData['metadata'] ?? []
         ]);
 
         $this->response = $transaction->send();

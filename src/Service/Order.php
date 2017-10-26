@@ -187,6 +187,12 @@ class Order implements iOrder
      */
     public function pay(iOrderEntity $order, $paymentData = []) : Gateway
     {
+        $paymentData['metadata'] = [
+            'Invoice' => $order->getId(),
+            'Order reference' => $order->getUuid(),
+            'Organisation' => $this->wallet->getOwner()->companyName()
+        ];
+
         $response = $this->paymentGateway->pay($order->getAdjustedPrice(), $paymentData);
 
         $order->update([
@@ -244,7 +250,17 @@ class Order implements iOrder
         }
 
         if(isset($order->payment_gateway_reference)) {
-            $paymentData = ['token' => $order->payment_gateway_reference];
+            $paymentData = [
+                'token' => $order->payment_gateway_reference,
+                'metadata' => [
+                    'Invoice' => $order->getId(),
+                    'Order reference' => $order->getUuid(),
+                    'Organisation' => $this->wallet->getOwner()->companyName(),
+                    'Issuer' => $creator->getId(),
+                    'Reason' => $reason ?? ''
+                ]
+            ];
+
             $response = $this->paymentGateway->refund($totalAmount, $paymentData);
         }
 
