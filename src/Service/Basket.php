@@ -96,7 +96,6 @@ class Basket implements iBasket
             $adjustedPrice = $product->getAdjustedPrice($qty);
             $discount = $originalPrice - $adjustedPrice;
 
-
             $this->basket['products'][$basketId] = [
                 'product' => $product,
                 'product_shop' => $productShop,

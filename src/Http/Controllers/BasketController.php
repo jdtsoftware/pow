@@ -69,7 +69,7 @@ class BasketController extends BaseController
             return back()->withErrors(['message' => 'Invalid Product']);
         }
 
-        //$pow->basket()->clearBasket();
+        $pow->basket()->clearBasket();
 
         $quantity = (isset($productShop) && $productShop->quantity_lock)
             ? $productShop->quantity :
