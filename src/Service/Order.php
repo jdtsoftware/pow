@@ -11,6 +11,7 @@ use \JDT\Pow\Interfaces\Order as iOrder;
 use JDT\Pow\Interfaces\Entities\Order as iOrderEntity;
 use JDT\Pow\Interfaces\Entities\OrderItem as iOrderItemEntity;
 use JDT\Pow\Interfaces\WalletOwner;
+use JDT\Pow\Traits\VatCharge;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Events\Dispatcher;
 
@@ -19,6 +20,8 @@ use Illuminate\Events\Dispatcher;
  */
 class Order implements iOrder
 {
+    use VatCharge;
+
     protected $models;
     protected $order;
 
@@ -245,11 +248,29 @@ class Order implements iOrder
     public function refund(iOrderEntity $order, IdentifiableId $creator, $items, $reason = null)
     {
         $totalAmount = 0;
-        foreach($items as $itemId => $amount) {
+        $refundedItems = [];
+        foreach($items as $itemId => $quantity) {
+            $item = $order->item($itemId);
+            if(empty($item)) {
+                continue;
+            }
+
+            $amount = $quantity * $item->adjusted_unit_price;
+            $vat = $this->getVatCharge($amount, $item->vat_percentage);
+
+            $originalUnitToken = $item->tokens_total / $item->quantity;
+            $tokenAdjustment = $originalUnitToken * $quantity;
+            $refundedItems[] = [
+                'item' => $item,
+                'total_amount' => $amount,
+                'total_vat' => $vat,
+                'token_adjustment' => $tokenAdjustment > $item->tokensAvailable() ? $item->tokensAvailable() : $tokenAdjustment
+            ];
+
             $totalAmount += $amount;
         }
 
-        if(isset($order->payment_gateway_reference)) {
+        if(isset($order->payment_gateway_reference) && $totalAmount > 0) {
             $paymentData = [
                 'token' => $order->payment_gateway_reference,
                 'metadata' => [
@@ -271,10 +292,11 @@ class Order implements iOrder
                 'order_status_id' => $this->models['order_status']::handleToId($partialRefund ? 'partial_refund' : 'refund')
             ]);
 
-            foreach($order->items as $item) {
-                if(!isset($items[$item->id])) {
-                    continue;
-                }
+            foreach($refundedItems as $refundedItem) {
+                $item            = $refundedItem['item'];
+                $totalAmount     = $refundedItem['total_amount'];
+                $totalVat        = $refundedItem['total_vat'];
+                $tokenAdjustment = $refundedItem['token_adjustment'];
 
                 $refundItem = $this->models['order_item_refund']::where('order_id', $order->getId())
                     ->where('order_item_id', $item->getId())->first();
@@ -283,23 +305,20 @@ class Order implements iOrder
                     continue;
                 }
 
-                $vatRate = $item->vat_percentage;
-                $itemAmount = $items[$item->id];
-                $exVatAmount = ($itemAmount / (1 + ($vatRate / 100)));
                 $refundItem = $this->models['order_item_refund']::create([
                     'uuid' => Uuid::uuid4()->toString(),
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
-                    'total_amount' => (-1 * abs($itemAmount)),
-                    'total_vat' => ($vatRate > 0) ? ($itemAmount - $exVatAmount) : 0,
-                    'tokens_adjustment' => $item->tokensAvailable(),
+                    'total_amount' => (-1 * abs($totalAmount)),
+                    'total_vat' => $totalVat,
+                    'tokens_adjustment' => $tokenAdjustment,
                     'reason' => $reason,
                     'payment_gateway_reference' => isset($response) ? $response->getReference() : null,
                     'payment_gateway_blob' => isset($response) ? json_encode($response->getData()) : null,
                     'created_user_id' => $creator->getId()
                 ]);
 
-                if($item->tokensAvailable() > 0) {
+                if($tokenAdjustment > 0) {
                     $this->wallet->debit($creator, $refundItem, $item);
                 }
             }

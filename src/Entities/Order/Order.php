@@ -217,6 +217,18 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @param $itemId
+     * @return OrderItem
+     */
+    public function item($itemId)
+    {
+        $models = \Config::get('pow.models');
+        return $models['order_item']::where('id', $itemId)
+            ->where('order_id', $this->getId())
+            ->first();
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function status()
