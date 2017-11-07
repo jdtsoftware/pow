@@ -248,6 +248,7 @@ class Order implements iOrder
     public function refund(iOrderEntity $order, IdentifiableId $creator, $items, $reason = null)
     {
         $totalAmount = 0;
+        $totalVat = 0;
         $refundedItems = [];
         foreach($items as $itemId => $quantity) {
             $item = $order->item($itemId);
@@ -268,9 +269,11 @@ class Order implements iOrder
             ];
 
             $totalAmount += $amount;
+            $totalVat += $vat;
         }
 
-        if(isset($order->payment_gateway_reference) && $totalAmount > 0) {
+        $totalToRefund = $totalAmount + $totalVat;
+        if(isset($order->payment_gateway_reference) && $totalToRefund > 0) {
             $paymentData = [
                 'token' => $order->payment_gateway_reference,
                 'metadata' => [
@@ -282,7 +285,7 @@ class Order implements iOrder
                 ]
             ];
 
-            $response = $this->paymentGateway->refund($totalAmount, $paymentData);
+            $response = $this->paymentGateway->refund($totalToRefund, $paymentData);
         }
 
         if ( (isset($response) && $response->isSuccessful()) || empty($order->payment_gateway_reference)) {
@@ -310,7 +313,7 @@ class Order implements iOrder
                     'order_id' => $order->getId(),
                     'order_item_id' => $item->getId(),
                     'total_amount' => (-1 * abs($totalAmount)),
-                    'total_vat' => $totalVat,
+                    'total_vat' => (-1 * abs($totalVat)),
                     'tokens_adjustment' => $tokenAdjustment,
                     'reason' => $reason,
                     'payment_gateway_reference' => isset($response) ? $response->getReference() : null,

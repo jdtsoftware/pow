@@ -69,6 +69,16 @@ class OrderItemRefund extends Model implements Redeemable
     }
 
     /**
+     * Return the true total including VAT
+     *
+     * @return float
+     */
+    public function getTotalAttribute()
+    {
+        return $this->total_amount + $this->total_vat;
+    }
+
+    /**
      * @return integer
      */
     public function getId()
