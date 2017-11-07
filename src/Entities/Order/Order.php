@@ -174,6 +174,14 @@ class Order extends Model implements iOrderEntity, IdentifiableId
     }
 
     /**
+     * @return bool
+     */
+    public function isDiscounted()
+    {
+        return (bool) $this->getDiscountPrice();
+    }
+
+    /**
      * @param iProductEntity $product
      * @param iProductShopEntity $productShop
      * @param int $qty
