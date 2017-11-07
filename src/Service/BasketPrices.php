@@ -62,4 +62,9 @@ class BasketPrices
         return $this;
     }
 
+    public function totalPrice()
+    {
+        return $this->adjustedTotalPrice + $this->adjustedVat;
+    }
+
 }

@@ -287,8 +287,8 @@ class Basket implements iBasket
             ->setAdjustedSubTotalPrice($prices->originalSubTotalPrice - $totalDiscount)
             ->setOriginalVat($originalVatCharge)
             ->setAdjustedVat($adjustedVatCharge)
-            ->setOriginalTotalPrice($prices->originalSubTotalPrice+$originalVatCharge)
-            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice+$adjustedVatCharge)
+            ->setOriginalTotalPrice($prices->originalSubTotalPrice)
+            ->setAdjustedTotalPrice($prices->adjustedSubTotalPrice)
             ->setDiscountPrice($totalDiscount > 0 ?  (-1 * abs($totalDiscount)) : null);
 
         $this->session->put($this->instance, $this->basket);
