@@ -5,6 +5,7 @@ namespace JDT\Pow\Http\Controllers\Manage;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use JDT\Pow\Entities\Wallet\Wallet;
+use JDT\Pow\Mail\OrderCreated;
 
 /**
  * Class WalletsController
@@ -60,6 +61,11 @@ class WalletsController extends BaseController
         $pow->basket('admin')->addProduct($product, $quantity);
 
         $order = $pow->createOrderFromBasket('admin');
+
+        if($order) {
+            \Mail::to($walletOwner->getContactEmail())
+                ->send(new OrderCreated($order));
+        }
 
         return redirect()->route('manage.orders.view', ['uuid' => $order->getUuid()]);
     }

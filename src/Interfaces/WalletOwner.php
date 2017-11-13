@@ -8,4 +8,5 @@ interface WalletOwner {
     public function getVatPerecentage();
     public function isVatExempt();
     public function companyName();
+    public function getContactEmail();
 }
