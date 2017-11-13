@@ -210,6 +210,11 @@ class Order implements iOrder
         return $response;
     }
 
+    public function eventPaid($order)
+    {
+        $this->events->fire('order.paid', $order);
+    }
+
     /**
      * @return Collection
      */

@@ -31,6 +31,16 @@ class Product implements iProduct
     }
 
     /**
+     * @param $handle
+     * @return iProductEntity
+     */
+    public function findByHandle($handle) : iProductEntity
+    {
+        return $this->models['product']::where('handle', $handle)->first();
+    }
+
+
+    /**
      * @param $page
      * @param int $perPage
      * @return \Illuminate\Pagination\Paginator

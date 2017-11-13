@@ -177,6 +177,8 @@ class Pow
                     $orderItem,
                     $orderItem);
             }
+
+            $this->order()->eventPaid($order);
         }
 
         $order->update($orderUpdate);
