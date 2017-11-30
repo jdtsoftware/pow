@@ -81,9 +81,7 @@ class powServiceProvider extends ServiceProvider
         }
 
         if($middlewares) {
-            foreach($middlewares as $middleware) {
-                $route->middleware($middleware);
-            }
+            $route->middleware($middlewares);
         }
 
         $route->group(__DIR__.'/routes.php');
