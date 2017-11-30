@@ -36,6 +36,10 @@ class OrderController extends BaseController
     {
         $pow = app('pow');
         $order = $pow->order()->findByUuid($uuid);
+        if($pow->order()->validOrder($uuid, true) === false) {
+            return redirect()->route('wallet');
+        }
+
         if($order->isComplete() || $order->isRefunded()) {
             return redirect()->route('order-view', [$uuid]);
         }
@@ -57,6 +61,10 @@ class OrderController extends BaseController
     public function payAction($uuid)
     {
         $pow = app('pow');
+        if($pow->order()->validOrder($uuid, true) === false) {
+            return redirect()->route('wallet');
+        }
+
         $order = $pow->order()->findByUuid($uuid, true);
         $response = $pow->payForOrder($order, Input::get());
 
@@ -80,18 +88,19 @@ class OrderController extends BaseController
     public function viewAction($uuid)
     {
         $pow = app('pow');
-        if($pow->order()->validOrder($uuid)) {
-            $order = $pow->order()->findByUuid($uuid, true);
-            return view(
-                'pow::order.complete',
-                [
-                    'order' => $order,
-                    'wallet_owner' => $pow->wallet()->getOwner()
-                ]
-            );
-        } else {
-            return redirect()->route('products');
+        if($pow->order()->validOrder($uuid, true) === false) {
+            return redirect()->route('wallet');
         }
+
+        $order = $pow->order()->findByUuid($uuid, true);
+        return view(
+            'pow::order.complete',
+            [
+                'order' => $order,
+                'wallet_owner' => $pow->wallet()->getOwner()
+            ]
+        );
+
     }
 
     /**

@@ -40,6 +40,10 @@ class OrdersController extends BaseController
     public function viewAction($uuid)
     {
         $pow = app('pow');
+        if($pow->order()->validOrder($uuid) === false) {
+            return redirect()->route('products');
+        }
+
         $order = $pow->order()->findByUuid($uuid);
 
         return view(

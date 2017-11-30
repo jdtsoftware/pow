@@ -74,7 +74,7 @@ class powServiceProvider extends ServiceProvider
     {
         $route = Route::prefix(\Config::get('pow.route_prefix'));
         $routesDomain = \Config::get('pow.route_domain');
-        $middlewares = \Config::Get('pow.route_middleware');
+        $middlewares = \Config::get('pow.route_middleware');
 
         if($routesDomain) {
             $route = $route->domain($routesDomain);

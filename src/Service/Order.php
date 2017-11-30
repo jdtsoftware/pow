@@ -38,7 +38,7 @@ class Order implements iOrder
      * @param bool $limitByWallet
      * @return iOrderEntity
      */
-    public function findById(int $orderId, $limitByWallet = false) : iOrderEntity
+    public function findById(int $orderId, $limitByWallet = false) : ?iOrderEntity
     {
         $order = $this->models['order']::where('id', $orderId);
 
@@ -54,7 +54,7 @@ class Order implements iOrder
      * @param bool $limitByWallet
      * @return iOrderEntity
      */
-    public function findByUuid($uuid, $limitByWallet = false) : iOrderEntity
+    public function findByUuid($uuid, $limitByWallet = false) : ?iOrderEntity
     {
         $order = $this->models['order']::where('uuid', $uuid);
 
@@ -110,13 +110,14 @@ class Order implements iOrder
 
     /**
      * @param $uuid
+     * @param bool $limitByWallet
      * @return bool
      */
-    public function validOrder($uuid) : bool
+    public function validOrder($uuid, $limitByWallet = false) : bool
     {
         try {
-            $this->findByUuid($uuid);
-            return true;
+            $order = $this->findByUuid($uuid, $limitByWallet);
+            return (bool) $order;
         } catch (\Throwable $e) {
             return false;
         }
