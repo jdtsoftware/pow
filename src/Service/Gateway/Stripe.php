@@ -84,9 +84,12 @@ class Stripe implements iGateway
         return $this->response ? $this->response->isSuccessful() : null;
     }
 
+    /**
+     * @return bool
+     */
     public function isAlreadyPaid()
     {
-
+        return $this->alreadyPaid;
     }
 
     /**

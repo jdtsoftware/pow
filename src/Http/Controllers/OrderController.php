@@ -75,6 +75,7 @@ class OrderController extends BaseController
             return view('pow::order.stripe-pay', [
                 'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
                 'order' => $order,
+                'already_paid' => isset($response) ? $response->isAlreadyPaid() : null,
                 'error' => isset($response) ? $response->getMessage() : null
             ]);
         }
