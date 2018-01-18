@@ -68,14 +68,14 @@ class OrderController extends BaseController
         $order = $pow->order()->findByUuid($uuid, true);
         $response = $pow->payForOrder($order, Input::get());
 
-        if($response->isSuccessful()) {
+        if(isset($response) && $response->isSuccessful()) {
             return redirect()->route('order-view', [$order->getUuid()]);
         } else {
             //@todo not hard code strip specific things
             return view('pow::order.stripe-pay', [
                 'publishable_key' => \Config::get('pow.stripe_options.publishable_key'),
                 'order' => $order,
-                'error' => $response->getMessage()
+                'error' => isset($response) ? $response->getMessage() : null
             ]);
         }
 

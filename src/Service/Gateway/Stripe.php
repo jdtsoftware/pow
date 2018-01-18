@@ -11,6 +11,7 @@ use Omnipay\Omnipay;
 class Stripe implements iGateway
 {
     protected $gateway;
+    protected $response;
 
     /**
      * Product constructor.
@@ -20,6 +21,7 @@ class Stripe implements iGateway
         $this->models = \Config::get('pow.models');
         $this->gateway = Omnipay::create('Stripe');
         $this->gateway->setApiKey(\Config::get('pow.stripe_options.secret_key'));
+
     }
 
     /**
@@ -58,16 +60,33 @@ class Stripe implements iGateway
     }
 
     /**
+     * @return iGateway
+     */
+    public function alreadyPaid() : iGateway
+    {
+        $this->alreadyPaid = true;
+        $this->data['error']['message'] = 'Order already paid for.';
+        return $this;
+    }
+
+    /**
      * @return bool|null
      */
     public function isSuccessful()
     {
-        $data = $this->response->getData();
-        if(isset($data['error']['message']) && strstr($data['error']['message'], 'has already been refunded.')) {
+        $this->data = isset($this->data) ? $this->data :
+            (isset($this->response) ? $this->response->getData() : []);
+
+        if(isset($this->data['error']['message']) && strstr($this->data['error']['message'], 'has already been refunded.')) {
             return true;
         }
 
         return $this->response ? $this->response->isSuccessful() : null;
+    }
+
+    public function isAlreadyPaid()
+    {
+
     }
 
     /**
@@ -83,7 +102,8 @@ class Stripe implements iGateway
      */
     public function getMessage()
     {
-        return $this->response ? $this->response->getMessage() : null;
+        return isset($this->data['error']['message']) ? $this->data['error']['message'] :
+            ($this->response ? $this->response->getMessage() : null);
     }
 
     /**
@@ -91,6 +111,7 @@ class Stripe implements iGateway
      */
     public function getData()
     {
-        return $this->response ? $this->response->getData() : null;
+        return isset($this->data) ? $this->data :
+            ($this->response ? $this->response->getData() : null);
     }
 }

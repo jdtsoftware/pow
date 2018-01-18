@@ -191,6 +191,11 @@ class Order implements iOrder
      */
     public function pay(iOrderEntity $order, $paymentData = []) : Gateway
     {
+        //if an order is complete, do not attempt payment again!
+        if($order->isComplete()) {
+            return $this->paymentGateway->alreadyPaid();
+        }
+
         $paymentData['metadata'] = [
             'Invoice' => $order->getId(),
             'Order reference' => $order->getUuid(),
